@@ -54,7 +54,6 @@ variants = sys.argv[1:] or ["ewma", "pretrain_ft", "scratch_ft", "pretrain_zeros
 for v in variants:
     t0 = time.time()
     if v == "ewma":
-        mus = np.array([S.FractalTransformer.__new__(S.FractalTransformer) and 0 for _ in dec], float)
         ex = (d.returns["Mkt"] - d.rf).expanding().mean().reindex(dec).to_numpy() * 252
         # piecewise-constant mu as in the strategy (updated every 504 days)
         mus = np.repeat(ex[::504], 504)[:len(dec)]
