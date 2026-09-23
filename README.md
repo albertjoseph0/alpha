@@ -45,3 +45,15 @@ On a long-only universe of 56 real ETFs with per-ETF costs (holdout 2016–2026,
 It beat SPY in only 4 of 11 years, and its margin comes from 2022 and 2025. The other round-3
 strategies beat 60/40 but not SPY. Covered-call ETFs didn't raise CAGR.
 Live orders: `python -m harness.live strategies/r3_options/strategy.py --capital 100000 --refresh`.
+
+## Deep dive (orchestrator, no subagents): `research/deep/REPORT.md`
+
+**deep:trend_switch_ens** is a robust version of the round-3 winner: an ensemble of four trend lengths
+switches between a momentum offense (top 5 ETFs) and a defensive book (top 7 by risk-adjusted
+momentum). It beats SPY in every period tested:
+* 1965–99 proxy: +6.1 points a year;
+* 2000–15: +5.9;
+* 2016–26 holdout: 16.08% vs 14.99%;
+* 2000–26: 12.27% vs 8.27%, with max drawdown −39% vs −55%.
+Recent-period edge is small, and 2016–26 alone is not statistically significant.
+Live orders: `python -m harness.live strategies/deep_trend_switch/strategy.py --capital 100000 --refresh`.
