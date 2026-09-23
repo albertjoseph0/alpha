@@ -52,3 +52,22 @@ are all in 2008–15, where the median setting is a tie.
   booms (2005–07, 2025).
 * Further iteration would fit 2008–15 or the already-seen holdout, so development stops here. The
   honest next test is forward paper trading.
+
+## Forward Monte Carlo (`monte_carlo.py`)
+The simulation builds 10,000 future paths per horizon. Each path is stitched together from chunks
+of real history (strategy and SPY taken on the same days, average chunk length 3 months), which
+keeps volatility clustering and fat tails. Costs are included. Results are in `monte_carlo_*.csv`.
+
+| resampled from | horizon | strategy CAGR, median [p10, p90] | SPY CAGR, median | P(beat SPY) | worst-decile max DD (strategy / SPY) | P(DD < −40%) (strategy / SPY) |
+|---|---|---|---:|---:|---|---|
+| 2000–2026 | 5y | 12.4% [2.4, 23.3] | 8.8% | 72% | −37% / −47% | 6% / 19% |
+| 2000–2026 | 10y | 12.3% [5.1, 19.9] | 8.6% | 80% | −42% / −53% | 14% / 38% |
+| 2008–2026 | 5y | 11.8% [2.8, 21.8] | 12.0% | 52% | −35% / −47% | 3% / 20% |
+| 2008–2026 | 10y | 11.8% [5.3, 18.8] | 11.6% | 53% | −39% / −52% | 9% / 38% |
+
+**What it shows.** The drawdown advantage holds in both sets of history. The return advantage does
+not. Taken over 2000–26, the strategy beats SPY in about 80% of 10-year futures. Taken over 2008–26
+alone, its expected return equals SPY's (P ≈ 53%), but it gets there with about 13 points smaller
+worst-case drawdowns and half the chance of a −40% crash. Its CAGR spread is also slightly narrower
+than SPY's. Whether it *out-earns* SPY depends on the next decade looking more like 2000–07 (bear
+markets, commodity booms) or like 2010–2021 (US large-cap dominance).
