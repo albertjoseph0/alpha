@@ -1,0 +1,14 @@
+{
+  "strategy": "transformer:gpt_token_kelly",
+  "window": "dev_b",
+  "start": "1975-01-02",
+  "end": "1999-12-31",
+  "years": 24.999,
+  "cagr": 0.145001660201044,
+  "gross_violations": 0,
+  "ruined": false,
+  "runtime_s": 430.0,
+  "audited_dates": 52,
+  "git_commit": "57dbb55",
+  "timestamp": "2026-09-23T02:21:55+00:00"
+}

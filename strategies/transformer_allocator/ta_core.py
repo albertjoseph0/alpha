@@ -45,7 +45,7 @@ def _soft_clip(x: np.ndarray, c: float) -> np.ndarray:
     return c * np.tanh(x / c)
 
 
-def features(R: np.ndarray) -> np.ndarray:
+def features(R: np.ndarray, week_sign: bool = True) -> np.ndarray:
     """Token features for every row of simple returns ``R`` (n x A).
 
     Returns ``F`` of shape (n, A, J, N_FEAT); rows before LOOKBACK-1 are NaN.
@@ -71,7 +71,7 @@ def features(R: np.ndarray) -> np.ndarray:
         s2 = C2[b + 1] - C2[a]
         zret = s1 / (sL * math.sqrt(L))
         logv = 0.5 * np.log(np.maximum(s2 / L, 1e-10) * 252) - math.log(0.16)
-        F[ok, :, j, 0] = _soft_clip(zret, 4.0)
+        F[ok, :, j, 0] = _soft_clip(zret, 4.0) if (week_sign or j > 0) else 0.0
         F[ok, :, j, 1] = _soft_clip(logv, 3.0)
         F[ok, :, j, 2] = _soft_clip(logvL, 3.0)
     return F

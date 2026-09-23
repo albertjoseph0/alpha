@@ -23,10 +23,11 @@ torch.set_num_threads(1)
 
 CFG = dict(model="transformer", d=16, heads=2, layers=1, ff=32, drop=0.1, lr=2e-3, wd=0.1,
            epochs=30, patience=6, chunk=26, chunks_per_batch=16, members=4, purge=2)
+WEEK_SIGN = False   # no signed return from the last 5 days (stale-price / lead-lag guard)
 
 
 class TransformerAllocator(Strategy):
-    name = "transformer:alloc_axial_ens4"
+    name = "transformer:alloc_axial_ens4_noweeksign"
     refit_every = 756
 
     def __init__(self, cfg=None):
@@ -36,7 +37,7 @@ class TransformerAllocator(Strategy):
     def fit(self, data: MarketData) -> None:
         R = data.returns[ASSETS].to_numpy(dtype=float)
         rf = data.rf.to_numpy(dtype=float)
-        F = T.features(R)
+        F = T.features(R, week_sign=WEEK_SIGN)
         reb = T.rebalance_mask(data.dates)
         seed = int(data.last_date.strftime("%Y%m%d"))
         self.models, self.info = T.fit_ensemble(F, R, rf, reb, len(R) - 1, self.cfg, seed)
@@ -46,7 +47,7 @@ class TransformerAllocator(Strategy):
         pos = data.dates.get_indexer(dates)
         lo = max(0, int(pos.min()) - T.LOOKBACK - 5)
         R = data.returns[ASSETS].to_numpy(dtype=float)[lo:]
-        F = T.features(R)
+        F = T.features(R, week_sign=WEEK_SIGN)
         reb = T.rebalance_mask(data.dates[max(0, lo - 1):])[1 if lo > 0 else 0:]
         out = np.full((len(dates), len(ASSETS)), np.nan)
         rel = pos - lo

@@ -27,7 +27,7 @@ from harness.engine import simulate
 
 DEFAULT = dict(model="transformer", d=16, heads=2, layers=1, ff=32, drop=0.1, lr=2e-3,
                wd=0.1, epochs=30, patience=6, chunk=26, chunks_per_batch=16, members=4,
-               purge=2, refit=756)
+               purge=2, refit=756, week_sign=1)
 
 
 def sub_cagr(eq, a, b):
@@ -55,7 +55,7 @@ def main():
     data = load_dev()
     dates = data.dates
     R, rf = data.returns[ASSETS].to_numpy(), data.rf.to_numpy()
-    F = T.features(R)
+    F = T.features(R, week_sign=bool(cfg["week_sign"]))
     reb = T.rebalance_mask(dates)
     start, end = WINDOWS["dev"]
     k0 = int(dates.searchsorted(start)); kN = int(dates.searchsorted(end, side="right")) - 1

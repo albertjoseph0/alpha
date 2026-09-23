@@ -9,3 +9,16 @@
 {'date': '1973-10-18', 'best_ep': [11, 12, 22, 16]} 293
 {'date': '1976-10-14', 'best_ep': [1, 25, 18, 26]} 341
 {'date': '1979-10-12', 'best_ep': [28, 20, 25, 13]} 398
+{'date': '1982-10-11', 'best_ep': [27, 22, 30, 21]} 465
+{'date': '1985-10-07', 'best_ep': [12, 18, 13, 21]} 518
+{'date': '1988-10-03', 'best_ep': [19, 27, 22, 27]} 591
+{'date': '1991-09-30', 'best_ep': [13, 27, 26, 25]} 666
+{'date': '1994-09-26', 'best_ep': [16, 15, 18, 21]} 735
+{'date': '1997-09-22', 'best_ep': [16, 27, 19, 25]} 807
+/home/user/alpha/strategies/transformer_allocator/research/wf.py:92: Pandas4Warning: Starting with pandas version 4.0 all arguments of sum will be keyword-only.
+  avg_cash=round(1 - wd.sum(1).mean(), 4), min_invested=round(wd.sum(1).min(), 3),
+/home/user/alpha/strategies/transformer_allocator/research/wf.py:92: Pandas4Warning: Starting with pandas version 4.0 all arguments of sum will be keyword-only.
+  avg_cash=round(1 - wd.sum(1).mean(), 4), min_invested=round(wd.sum(1).min(), 3),
+/home/user/alpha/strategies/transformer_allocator/research/wf.py:93: Pandas4Warning: Starting with pandas version 4.0 all arguments of sum will be keyword-only.
+  avg_mkt=round(wd["Mkt"].mean(), 3), avg_hhi=round((wd ** 2).sum(1).mean(), 3),
+{"label": "tf_base", "cfg": {"model": "transformer", "d": 16, "heads": 2, "layers": 1, "ff": 32, "drop": 0.1, "lr": 0.002, "wd": 0.1, "epochs": 30, "patience": 6, "chunk": 26, "chunks_per_batch": 16, "members": 4, "purge": 2, "refit": 756}, "dev": 0.1582, "a": 0.1092, "b": 0.1975, "avg_cash": 0.0072, "min_invested": 0.859, "avg_mkt": 0.025, "avg_hhi": 0.243, "mean_w": {"Mkt": 0.025, "NoDur": 0.071, "Durbl": 0.082, "Manuf": 0.053, "Enrgy": 0.119, "Chems": 0.07, "BusEq": 0.105, "Telcm": 0.109, "Utils": 0.066, "Shops": 0.065, "Hlth": 0.109, "Money": 0.064, "Other": 0.054}, "runtime": 808}
