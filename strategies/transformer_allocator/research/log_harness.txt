@@ -1,0 +1,2 @@
+transformer:alloc_axial_ens4_noweeksign    dev      1950-01-03 -> 1999-12-31 (50.0y)   CAGR +14.74%
+transformer:alloc_axial_ens4_noweeksign    dev_a    1950-01-03 -> 1974-12-31 (25.0y)   CAGR +10.40%

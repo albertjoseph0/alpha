@@ -31,11 +31,14 @@ DEFAULT = dict(model="transformer", d=16, heads=2, layers=1, ff=32, drop=0.1, lr
 
 
 def sub_cagr(eq, a, b):
-    e = eq.loc[a:b]
-    prev = eq.loc[:a].iloc[:-1]
-    e0 = prev.iloc[-1] if len(prev) else 1.0
-    yrs = (e.index[-1] - (prev.index[-1] if len(prev) else e.index[0])).days / 365.25
-    return (e.iloc[-1] / e0) ** (1 / yrs) - 1
+    """CAGR over calendar years a..b of an equity curve (exact timestamps, not partial strings).
+    (An earlier version sliced with eq.loc[:a], which includes all of year a: the a/b numbers
+    in runs.jsonl for runs before this fix are off; see README for corrected values.)"""
+    before = eq.loc[:pd.Timestamp(f"{a}-01-01") - pd.Timedelta(days=1)]
+    seg = eq.loc[:pd.Timestamp(f"{b}-12-31")]
+    e0 = before.iloc[-1] if len(before) else 1.0
+    t0 = before.index[-1] if len(before) else seg.index[0] - pd.Timedelta(days=4)
+    return (seg.iloc[-1] / e0) ** (365.25 / (seg.index[-1] - t0).days) - 1
 
 
 def main():

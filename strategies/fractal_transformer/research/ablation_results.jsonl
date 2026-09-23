@@ -5,3 +5,4 @@
 {"variant": "pretrain_ft", "secs": 501, "qlike5": 0.3901, "qlike21": 0.2499, "qlike63": 0.2651, "dev": 0.1339, "dev_a": 0.0934, "dev_b": 0.1758, "avg_w": 0.998}
 {"variant": "pretrain_zeroshot", "secs": 5, "qlike5": 0.4022, "qlike21": 0.2525, "qlike63": 0.2423, "dev": 0.1322, "dev_a": 0.0936, "dev_b": 0.1722, "avg_w": 0.998}
 {"variant": "scratch_ft", "secs": 328, "qlike5": 0.3972, "qlike21": 0.253, "qlike63": 0.2697, "dev": 0.1331, "dev_a": 0.0937, "dev_b": 0.1739, "avg_w": 0.998}
+{"variant": "scratch_ft_long", "secs": 488, "qlike5": 0.4036, "qlike21": 0.2699, "qlike63": 0.2813, "dev": 0.1328, "dev_a": 0.0926, "dev_b": 0.1743, "avg_w": 0.998}
