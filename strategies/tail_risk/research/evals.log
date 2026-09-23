@@ -1,0 +1,17 @@
+{"tag": "port:ew_monthly", "dev": 0.13541, "dev_a": 0.0991, "dev_b": 0.17125, "avg_gross": 0.04736, "maxdd": -0.47267, "vol": 0.12172}
+{"tag": "port:invvol_3y", "dev": 0.13352, "dev_a": 0.09681, "dev_b": 0.16968, "avg_gross": 0.04736, "maxdd": -0.46686, "vol": 0.1165}
+{"tag": "port:tailparity_mu3_3y", "dev": 0.1324, "dev_a": 0.09526, "dev_b": 0.16896, "avg_gross": 0.04736, "maxdd": -0.46559, "vol": 0.11398}
+{"tag": "port:mincvar95_5y", "dev": 0.11073, "dev_a": 0.07302, "dev_b": 0.14671, "avg_gross": 0.04736, "maxdd": -0.43818, "vol": 0.09056}
+{"tag": "timing:bh", "dev": 0.05149, "dev_a": 0.03473, "dev_b": 0.06852, "avg_gross": 1.0, "maxdd": 0.0, "vol": 0.0018}
+{"tag": "timing:kelly_const6", "dev": 0.09967, "dev_a": 0.0309, "dev_b": 0.13155, "avg_gross": 0.99586, "maxdd": -0.48216, "vol": 0.1118}
+{"tag": "timing:kelly_fhs6", "dev": 0.10024, "dev_a": 0.03145, "dev_b": 0.13051, "avg_gross": 0.99451, "maxdd": -0.48216, "vol": 0.11192}
+{"tag": "timing:shock_gt1_half", "dev": 0.10761, "dev_a": 0.04845, "dev_b": 0.1514, "avg_gross": 0.99136, "maxdd": -0.46513, "vol": 0.11734}
+{"tag": "timing:cocrash21_ge2_half", "dev": 0.13319, "dev_a": 0.08879, "dev_b": 0.16283, "avg_gross": 0.97675, "maxdd": -0.4926, "vol": 0.11608}
+{"tag": "timing:bh", "dev": 0.13402, "dev_a": 0.09418, "dev_b": 0.17529, "avg_gross": 1.0, "maxdd": -0.48216, "vol": 0.12608}
+{"tag": "timing:kelly_const6", "dev": 0.13298, "dev_a": 0.09419, "dev_b": 0.17312, "avg_gross": 0.99586, "maxdd": -0.48216, "vol": 0.12303}
+{"tag": "timing:kelly_fhs6", "dev": 0.13357, "dev_a": 0.09479, "dev_b": 0.17371, "avg_gross": 0.99451, "maxdd": -0.48216, "vol": 0.12313}
+{"tag": "timing:shock_gt1_half", "dev": 0.13182, "dev_a": 0.09459, "dev_b": 0.17028, "avg_gross": 0.99136, "maxdd": -0.46564, "vol": 0.12215}
+{"tag": "timing:cocrash21_ge2_half", "dev": 0.13476, "dev_a": 0.09165, "dev_b": 0.17955, "avg_gross": 0.97675, "maxdd": -0.49219, "vol": 0.11695}
+{"tag": "port:mom_top6_ew", "dev": 0.15343, "dev_a": 0.11802, "dev_b": 0.18834, "avg_gross": 1.0, "maxdd": -0.45778, "vol": 0.12866}
+{"tag": "port:mom_top6_mincvar95_5y", "dev": 0.12549, "dev_a": 0.10107, "dev_b": 0.14741, "avg_gross": 1.0, "maxdd": -0.44826, "vol": 0.11208}
+{"tag": "port:mom_top4_ew", "dev": 0.16058, "dev_a": 0.12815, "dev_b": 0.19206, "avg_gross": 1.0, "maxdd": -0.46209, "vol": 0.13419}

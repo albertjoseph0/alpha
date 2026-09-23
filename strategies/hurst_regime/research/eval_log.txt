@@ -1,0 +1,52 @@
+B&H Mkt	dev=+0.1340	dev_a=+0.0942	dev_b=+0.1753
+EW industries (daily rebal target)	dev=+0.1338	dev_a=+0.0979	dev_b=+0.1708
+Mkt TSMOM 126d long/cash monthly	dev=+0.1163	dev_a=+0.1009	dev_b=+0.1319
+Industries TSMOM 126d each 1/12 long/cash monthly	dev=+0.1143	dev_a=+0.1043	dev_b=+0.1244
+Mkt TSMOM 252d long/cash monthly	dev=+0.1177	dev_a=+0.0994	dev_b=+0.1364
+Industries TSMOM 252d each 1/12 long/cash monthly	dev=+0.1207	dev_a=+0.1055	dev_b=+0.1361
+Mkt 200dMA daily	dev=+0.1243	dev_a=+0.1133	dev_b=+0.1355
+Mkt 200dMA monthly	dev=+0.1108	dev_a=+0.0908	dev_b=+0.1311
+XS mom top4 of 12 (12-1m), monthly	dev=+0.1542	dev_a=+0.1219	dev_b=+0.1874
+XS mom top4 of 12 (12m), monthly	dev=+0.1617	dev_a=+0.1295	dev_b=+0.1948
+A: top4 by 12m mom	dev=+0.1617	dev_a=+0.1295	dev_b=+0.1948
+B: top4 by beta(H_rel5y)*rel12m (sign flips if H<.5)	dev=+0.1538	dev_a=+0.1226	dev_b=+0.1858
+B10: top4 by beta(H_rel10y)*rel12m	dev=+0.1602	dev_a=+0.1302	dev_b=+0.1910
+C: top4 by mom12, only among H_rel5y>0.5 (else rank 0)	dev=+0.1668	dev_a=+0.1348	dev_b=+0.1996
+D: top4 by H_rel5y alone	dev=+0.1317	dev_a=+0.0885	dev_b=+0.1765
+E: top4 by mom12 * (2*H_raw5y-1)	dev=+0.1526	dev_a=+0.1270	dev_b=+0.1786
+A-rel: top4 by rel12 (same ranking as A)	dev=+0.1617	dev_a=+0.1295	dev_b=+0.1948
+placebo C x60 (not selection)
+grid A L126 k3	dev=+0.1615	dev_a=+0.1547	dev_b=+0.1684
+grid C L126 k3	dev=+0.1638	dev_a=+0.1596	dev_b=+0.1681
+grid A L126 k4	dev=+0.1597	dev_a=+0.1467	dev_b=+0.1727
+grid C L126 k4	dev=+0.1577	dev_a=+0.1396	dev_b=+0.1760
+grid A L126 k6	dev=+0.1480	dev_a=+0.1291	dev_b=+0.1671
+grid C L126 k6	dev=+0.1476	dev_a=+0.1259	dev_b=+0.1698
+grid A L252 k3	dev=+0.1700	dev_a=+0.1340	dev_b=+0.2072
+grid C L252 k3	dev=+0.1731	dev_a=+0.1303	dev_b=+0.2175
+grid A L252 k4	dev=+0.1617	dev_a=+0.1295	dev_b=+0.1948
+grid C L252 k4	dev=+0.1668	dev_a=+0.1348	dev_b=+0.1996
+grid A L252 k6	dev=+0.1580	dev_a=+0.1245	dev_b=+0.1924
+grid C L252 k6	dev=+0.1599	dev_a=+0.1268	dev_b=+0.1939
+T0 B&H (anchored)	dev=+0.1340	dev_a=+0.0942	dev_b=+0.1753
+T1 Mkt: cash if 12m<0	dev=+0.1177	dev_a=+0.0994	dev_b=+0.1364
+T2[w] Mkt: cash if 12m<0 AND H>0.5	dev=+0.1192	dev_a=+0.0994	dev_b=+0.1394
+T2[pw] Mkt: cash if 12m<0 AND H>0.5	dev=+0.1071	dev_a=+0.0719	dev_b=+0.1435
+T2[lo] Mkt: cash if 12m<0 AND H>0.5	dev=+0.1215	dev_a=+0.0968	dev_b=+0.1467
+T2[mkt_w] Mkt: cash if 12m<0 AND H>0.5	dev=+0.1199	dev_a=+0.0930	dev_b=+0.1475
+T2[mkt_pw] Mkt: cash if 12m<0 AND H>0.5	dev=+0.1137	dev_a=+0.0792	dev_b=+0.1494
+C-pw: prewhitened rel-H > 0.5	dev=+0.1620	dev_a=+0.1299	dev_b=+0.1951
+C-lo: Lo rel-H > 0.5	dev=+0.1674	dev_a=+0.1384	dev_b=+0.1971
+C-xsmed: raw rel-H > cross-sectional median	dev=+0.1543	dev_a=+0.1201	dev_b=+0.1895
+C-lo (dup, reference)	dev=+0.1674	dev_a=+0.1384	dev_b=+0.1971
+D1 dual momentum (abs12<0 -> cash)	dev=+0.1603	dev_a=+0.1383	dev_b=+0.1827
+D2 dual momentum only if Mkt Lo-H>0.5	dev=+0.1631	dev_a=+0.1383	dev_b=+0.1884
+V1 inverse-vol weights among selected	dev=+0.1647	dev_a=+0.1361	dev_b=+0.1941
+PRE1950 B&H Mkt	+0.1412
+PRE1950 EW industries	+0.1509
+PRE1950 T1 Mkt cash if 12m<0	+0.0881
+PRE1950 A top4 rel12	+0.1590
+PRE1950 C-raw top4 rel12, raw rel-H>.5	+0.1437
+PRE1950 C-lo top4 rel12, Lo rel-H>.5	+0.1508
+PRE1950 D1 C-lo + dual momentum	+0.1192
+PRE1950 D2 C-lo + dual mom if Mkt Lo-H>.5	+0.1201

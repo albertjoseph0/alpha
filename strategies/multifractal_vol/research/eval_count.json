@@ -1,0 +1,23 @@
+{
+"n": 18,
+"labels": [
+"buy&hold (sanity)",
+"kelly mu=expanding ewma",
+"kelly mu=expanding garch",
+"kelly mu=expanding har",
+"kelly mu=expanding mrw",
+"kelly mu=expanding mtarch",
+"EW industries monthly",
+"inverse-vol industries (MRW)",
+"vol-proportional industries (MRW)",
+"clock 12-1 mom top4 EW",
+"tt-drift 12-1 (MRW clock) top4 EW",
+"tt-z 12-1 (MRW clock) top4 EW",
+"EW industries monthly",
+"inverse-vol industries (MRW)",
+"vol-proportional industries (MRW)",
+"clock 12-1 mom top4 EW",
+"tt-drift 12-1 (MRW clock) top4 EW",
+"tt-z 12-1 (MRW clock) top4 EW"
+]
+}

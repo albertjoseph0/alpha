@@ -39,7 +39,7 @@ def score(W: pd.DataFrame, tag: str = "", log: bool = True, windows=("dev", "dev
     res = simulate(W, d, s, e)
     eq = res.equity
     dd = (eq / eq.cummax() - 1).min()
-    Wd = W.loc[s:e].fillna(0.0)
+    Wd = W.ffill().loc[s:e].fillna(0.0)
     out["avg_gross"] = float(Wd.abs().sum(axis=1).mean())
     out["maxdd"] = float(dd)
     lr = np.log(eq).diff().dropna()

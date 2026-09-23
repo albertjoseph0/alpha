@@ -1,0 +1,35 @@
+B&H Mkt (sanity)                                 dev +13.40%  a +9.42%  b +17.53%  TO   0.0/y  gross 1.00
+trend200 Mkt daily (sanity)                      dev +12.35%  a +10.12%  b +14.63%  TO   3.2/y  gross 0.80
+volmanaged Mkt (10y median tgt) monthly          dev +11.51%  a +8.83%  b +14.21%  TO   0.6/y  gross 0.88
+EW industries monthly                            dev +13.54%  a +9.91%  b +17.13%  TO   0.0/y  gross 1.00
+inverse-vol industries monthly                   dev +13.32%  a +9.65%  b +16.94%  TO   0.2/y  gross 1.00
+industry mom 12-1 top4 monthly                   dev +16.06%  a +12.82%  b +19.21%  TO   4.1/y  gross 1.00
+R1 RV63 filter                                   dev +9.00%  a +7.87%  b +10.13%  TO   1.8/y  gross 0.77
+R2 lam_cov filter                                dev +9.39%  a +4.45%  b +14.56%  TO   1.7/y  gross 0.78
+R2z lam_zeta(q<=2) filter                        dev +12.65%  a +8.59%  b +16.85%  TO   1.4/y  gross 0.84
+R3 RV & lam_cov filter                           dev +11.04%  a +6.26%  b +16.04%  TO   1.0/y  gross 0.94
+R4 Hoelder-burst filter                          dev +10.67%  a +6.41%  b +15.10%  TO  14.8/y  gross 0.80
+R5 trend OR calm-cascade                         dev +12.37%  a +8.25%  b +16.65%  TO   1.2/y  gross 0.89
+core mom12_1 top4, EW when rv hot                dev +15.50%  a +12.09%  b +18.83%  TO   4.8/y  gross 1.00
+core mom12_1 top4, EW when lam_cov hot           dev +15.31%  a +11.98%  b +18.56%  TO   4.4/y  gross 1.00
+core mom12_1 top4, EW when lam_zeta hot          dev +16.00%  a +12.62%  b +19.30%  TO   4.3/y  gross 1.00
+core eff252 top4                                 dev +16.10%  a +12.41%  b +19.79%  TO   3.7/y  gross 1.00
+core eff252 top4, EW when rv hot                 dev +15.95%  a +11.87%  b +20.01%  TO   4.3/y  gross 1.00
+core eff252 top4, EW when lam_cov hot            dev +15.20%  a +11.50%  b +18.90%  TO   4.0/y  gross 1.00
+core eff252 top4, EW when lam_zeta hot           dev +16.28%  a +12.28%  b +20.30%  TO   3.8/y  gross 1.00
+B&H Mkt  [pre35-49 +9.85%]                       dev +13.40%  a +9.42%  b +17.53%  TO   0.0/y  gross 1.00
+EW industries  [pre35-49 +10.44%]                dev +13.54%  a +9.91%  b +17.13%  TO   0.0/y  gross 1.00
+mom12_1 top4  [pre35-49 +9.79%]                  dev +16.06%  a +12.82%  b +19.21%  TO   4.1/y  gross 1.00
+eff (daily ruler) top4  [pre35-49 +11.78%]       dev +16.10%  a +12.41%  b +19.79%  TO   3.7/y  gross 1.00
+eff (weekly ruler) top4  [pre35-49 +10.66%]      dev +16.26%  a +12.97%  b +19.47%  TO   3.8/y  gross 1.00
+eff_w top4, EW when rv hot  [pre35-49 +10.89%]   dev +15.89%  a +12.37%  b +19.36%  TO   4.5/y  gross 1.00
+Mkt, cash when rv hot  [pre35-49 +8.93%]         dev +9.00%  a +7.87%  b +10.13%  TO   1.8/y  gross 0.77
+eff_w top4, EW when lam_cov hot  [pre35-49 +10.09%] dev +15.33%  a +12.07%  b +18.51%  TO   4.0/y  gross 1.00
+Mkt, cash when lam_cov hot  [pre35-49 +10.55%]   dev +9.39%  a +4.45%  b +14.56%  TO   1.7/y  gross 0.78
+eff_w top4, EW when lam_zeta hot  [pre35-49 +10.00%] dev +16.27%  a +12.80%  b +19.67%  TO   3.9/y  gross 1.00
+Mkt, cash when lam_zeta hot  [pre35-49 +10.40%]  dev +12.65%  a +8.59%  b +16.85%  TO   1.4/y  gross 0.84
+V1 eff_w252 top4  [pre35-49 +10.72%]             dev +16.43%  a +12.98%  b +19.81%  TO   3.8/y  gross 1.00
+V2 eff_w 126+252 rank-avg top4  [pre35-49 +11.30%] dev +16.23%  a +13.66%  b +18.66%  TO   4.6/y  gross 1.00
+V3 sign(X)*(2-D) divider-dim top4  [pre35-49 +11.35%] dev +13.43%  a +9.22%  b +17.67%  TO   6.8/y  gross 1.00
+V4 eff_w252 top4 inv-vol weights  [pre35-49 +10.69%] dev +15.79%  a +12.45%  b +19.02%  TO   4.3/y  gross 1.00
+V5 eff_w252 top6  [pre35-49 +11.29%]             dev +15.20%  a +11.38%  b +18.98%  TO   2.9/y  gross 1.00
