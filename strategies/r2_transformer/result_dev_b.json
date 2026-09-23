@@ -1,0 +1,14 @@
+{
+  "strategy": "r2:transformer_rule49",
+  "window": "dev_b",
+  "start": "1975-01-02",
+  "end": "1999-12-31",
+  "years": 24.999,
+  "cagr": 0.19983392149883206,
+  "gross_violations": 0,
+  "ruined": false,
+  "runtime_s": 3.8,
+  "audited_dates": 52,
+  "git_commit": "b63914c",
+  "timestamp": "2026-09-23T11:07:35+00:00"
+}
