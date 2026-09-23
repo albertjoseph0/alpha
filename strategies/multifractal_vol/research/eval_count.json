@@ -1,5 +1,5 @@
 {
-"n": 18,
+"n": 23,
 "labels": [
 "buy&hold (sanity)",
 "kelly mu=expanding ewma",
@@ -18,6 +18,11 @@
 "vol-proportional industries (MRW)",
 "clock 12-1 mom top4 EW",
 "tt-drift 12-1 (MRW clock) top4 EW",
-"tt-z 12-1 (MRW clock) top4 EW"
+"tt-z 12-1 (MRW clock) top4 EW",
+"tt-z 12-1 (EWMA clock) top4 EW",
+"tt-z MRW top4 + Kelly cap per position",
+"tt-z MRW top3 (robustness)",
+"tt-z MRW top6 (robustness)",
+"tt-z MRW 6-1 top4 (robustness)"
 ]
 }

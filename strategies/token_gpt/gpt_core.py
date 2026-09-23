@@ -238,7 +238,7 @@ def train(model: TinyGPT, c: Corpus, assets: list[int], t_max: int, steps: int, 
         torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
         opt.step()
         if log_every and (step + 1) % log_every == 0:
-            rec = {"step": step + 1, "train": float(loss)}
+            rec = {"step": step + 1, "train": float(loss.detach())}
             if val is not None:
                 rec["val"] = evaluate(model, c, *val)
                 model.train()

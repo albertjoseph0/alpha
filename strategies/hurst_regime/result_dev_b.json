@@ -1,0 +1,14 @@
+{
+  "strategy": "fractal:hurst_xs_persistence",
+  "window": "dev_b",
+  "start": "1975-01-02",
+  "end": "1999-12-31",
+  "years": 24.999,
+  "cagr": 0.19476634418658278,
+  "gross_violations": 0,
+  "ruined": false,
+  "runtime_s": 2.6,
+  "audited_dates": 52,
+  "git_commit": "85dd63b",
+  "timestamp": "2026-09-23T01:52:29+00:00"
+}

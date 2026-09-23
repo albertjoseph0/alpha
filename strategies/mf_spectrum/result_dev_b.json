@@ -1,0 +1,14 @@
+{
+  "strategy": "fractal:mfspec_ruler_rotation",
+  "window": "dev_b",
+  "start": "1975-01-02",
+  "end": "1999-12-31",
+  "years": 24.999,
+  "cagr": 0.19812143628716994,
+  "gross_violations": 0,
+  "ruined": false,
+  "runtime_s": 1.0,
+  "audited_dates": 52,
+  "git_commit": "85dd63b",
+  "timestamp": "2026-09-23T01:51:58+00:00"
+}
