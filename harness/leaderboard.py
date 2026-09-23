@@ -25,7 +25,7 @@ def collect() -> dict[str, dict[str, float]]:
 
 def render(include_holdout: bool) -> str:
     rows = collect()
-    windows = ["dev", "holdout"] if include_holdout else ["dev"]
+    windows = (["holdout"] if include_holdout else []) + ["dev", "dev_a", "dev_b", "early"]
     bench = {}
     for cls in benchmarks.ALL:
         for w in windows:
