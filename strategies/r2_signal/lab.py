@@ -48,6 +48,10 @@ def signal(name, R, Rall):
         return xrank(mom(lp, 21, 252)) + xrank(mom(lp, 126, 252))
     if name == "ens_3way":
         return xrank(mom(lp, 0, 252)) + xrank(mom(lp, 21, 252)) + xrank(mom(lp, 126, 252))
+    if name == "legs3":  # list -> ranked among valid industries only (final strategy.py)
+        return [mom(lp, 0, 252), mom(lp, 21, 252), mom(lp, 126, 252)]
+    if name == "blend_raw":  # raw sum of the three legs = linearly rising month weights 1,2,2,2,2,2,3,...
+        return mom(lp, 0, 252) + mom(lp, 21, 252) + mom(lp, 126, 252)
     if name == "mom18_1":
         return mom(lp, 21, 378)
     if name == "mom12_7":
@@ -95,7 +99,11 @@ class Lab(Strategy):
         first = dates.month != np.where(pos > 0, cal[np.maximum(pos - 1, 0)].month, -1)
         out = pd.DataFrame(np.nan, index=dates, columns=I49)
         for d in dates[first]:
-            m = S.loc[d].where(valid.loc[d]).dropna()
+            if isinstance(S, list):
+                ok = valid.loc[d]
+                m = sum(x.loc[d][ok].rank(pct=True) for x in S)
+            else:
+                m = S.loc[d].where(valid.loc[d]).dropna()
             k = max(1, int(round(len(m) * self.frac)))
             top = m.nlargest(k).index
             out.loc[d] = 0.0; out.loc[d, top] = 1.0 / k

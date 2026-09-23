@@ -1,0 +1,14 @@
+{
+  "strategy": "r2:signal_mom_blend12",
+  "window": "dev",
+  "start": "1950-01-03",
+  "end": "1999-12-31",
+  "years": 49.999,
+  "cagr": 0.17697447101725272,
+  "gross_violations": 0,
+  "ruined": false,
+  "runtime_s": 6.0,
+  "audited_dates": 102,
+  "git_commit": "ec2fffd",
+  "timestamp": "2026-09-23T03:12:04+00:00"
+}
