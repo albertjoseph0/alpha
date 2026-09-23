@@ -1,0 +1,17 @@
+{"config": "r3:options_switch210_mom5_sharpe7", "tag": "reproduce", "etf_dev_a": 13.82, "etf_dev_b": 7.58, "etf_dev": 10.64}
+{"config": "sleeve_off_always", "tag": "diag", "etf_dev_a": 13.64, "etf_dev_b": 3.42, "etf_dev": 8.4}
+{"config": "sleeve_def_always", "tag": "diag", "etf_dev_a": 9.09, "etf_dev_b": 5.18, "etf_dev": 7.15}
+{"config": "r3:options_switch210_mom5_sharpe7", "tag": "r3_options as-is", "etf_dev_a": 13.82, "etf_dev_b": 7.58, "etf_dev": 10.64, "proxy_a": 16.97, "proxy_b": 20.22, "proxy": 18.59}
+{"config": "base_L210", "tag": "excess_vs_SPY", "etf_dev_a": 12.27, "etf_dev_b": 1.12, "proxy_a": 9.92, "proxy_b": 2.33, "min": 1.12}
+{"config": "V1_ensemble", "tag": "excess_vs_SPY", "etf_dev_a": 11.68, "etf_dev_b": 0.19, "proxy_a": 10.3, "proxy_b": 2.34, "min": 0.19}
+{"config": "V2_gate_L210", "tag": "excess_vs_SPY", "etf_dev_a": 11.95, "etf_dev_b": 0.41, "proxy_a": 10.1, "proxy_b": 1.87, "min": 0.41}
+{"config": "V3_ensemble_gate", "tag": "excess_vs_SPY", "etf_dev_a": 11.46, "etf_dev_b": -0.13, "proxy_a": 10.58, "proxy_b": 1.9, "min": -0.13}
+{"config": "ens_E126-252_volcapNone", "tag": "excess_vs_SPY", "etf_dev_a": 11.68, "etf_dev_b": 0.19, "proxy_a": 10.3, "proxy_b": 2.34, "min": 0.19}
+{"config": "ens_E126-252_volcap0.15", "tag": "excess_vs_SPY", "etf_dev_a": 10.32, "etf_dev_b": -0.04, "proxy_a": 10.25, "proxy_b": 2.34, "min": -0.04}
+{"config": "ens_E126-252_volcap0.2", "tag": "excess_vs_SPY", "etf_dev_a": 10.99, "etf_dev_b": 0.2, "proxy_a": 10.45, "proxy_b": 2.43, "min": 0.2}
+{"config": "ens_E126-252_volcap0.25", "tag": "excess_vs_SPY", "etf_dev_a": 11.46, "etf_dev_b": 0.26, "proxy_a": 10.54, "proxy_b": 2.27, "min": 0.26}
+{"config": "ens_E126-252_volcap0.3", "tag": "excess_vs_SPY", "etf_dev_a": 11.62, "etf_dev_b": 0.27, "proxy_a": 10.5, "proxy_b": 2.33, "min": 0.27}
+{"config": "ens_E126-252_floor0.0", "tag": "excess_vs_SPY", "etf_dev_a": 11.68, "etf_dev_b": 0.19, "proxy_a": 10.3, "proxy_b": 2.34, "min": 0.19}
+{"config": "ens_E126-252_floor0.25", "tag": "excess_vs_SPY", "etf_dev_a": 11.79, "etf_dev_b": -0.58, "proxy_a": 10.34, "proxy_b": 2.29, "min": -0.58}
+{"config": "ens_E126-252_floor0.5", "tag": "excess_vs_SPY", "etf_dev_a": 11.89, "etf_dev_b": -1.38, "proxy_a": 10.38, "proxy_b": 2.24, "min": -1.38}
+{"config": "ens_E126-252_floor1.0", "tag": "excess_vs_SPY", "etf_dev_a": 12.09, "etf_dev_b": -3.04, "proxy_a": 10.42, "proxy_b": 2.12, "min": -3.04}

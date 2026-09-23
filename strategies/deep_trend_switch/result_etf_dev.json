@@ -1,0 +1,14 @@
+{
+  "strategy": "deep:trend_switch_ens",
+  "window": "etf_dev",
+  "start": "2000-01-03",
+  "end": "2015-12-31",
+  "years": 16.0,
+  "cagr": 0.09874493867181089,
+  "gross_violations": 0,
+  "ruined": false,
+  "runtime_s": 7.6,
+  "audited_dates": 32,
+  "git_commit": "9cb1fd0",
+  "timestamp": "2026-09-23T22:12:06+00:00"
+}
