@@ -1,0 +1,14 @@
+{
+  "strategy": "fractal:mfvol_ttmom_kelly",
+  "window": "dev",
+  "start": "1950-01-03",
+  "end": "1999-12-31",
+  "years": 49.999,
+  "cagr": 0.15512847362948223,
+  "gross_violations": 0,
+  "ruined": false,
+  "runtime_s": 177.8,
+  "audited_dates": 102,
+  "git_commit": "7f8ca1a",
+  "timestamp": "2026-09-23T01:55:32+00:00"
+}
