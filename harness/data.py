@@ -31,6 +31,7 @@ WINDOWS = {
     "dev": (pd.Timestamp("1950-01-01"), DEV_END),       # agents iterate here (official dev score)
     "dev_a": (pd.Timestamp("1950-01-01"), pd.Timestamp("1974-12-31")),  # dev halves, for
     "dev_b": (pd.Timestamp("1975-01-01"), DEV_END),                     # internal validation
+    "early": (pd.Timestamp("1932-01-01"), pd.Timestamp("1949-12-31")),  # pre-dev robustness check
     "holdout": (pd.Timestamp("2000-01-01"), None),      # sealed: final evaluation only
 }
 

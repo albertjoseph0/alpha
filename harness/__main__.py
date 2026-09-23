@@ -43,7 +43,7 @@ def main(argv=None) -> None:
     ap = argparse.ArgumentParser(prog="python -m harness", description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("strategy", nargs="?", help="path to strategy .py file")
-    ap.add_argument("--window", default="dev", choices=["dev", "dev_a", "dev_b", "holdout"])
+    ap.add_argument("--window", default="dev", choices=["dev", "dev_a", "dev_b", "early", "holdout"])
     ap.add_argument("--benchmarks", action="store_true", help="also print benchmark CAGRs")
     ap.add_argument("--verbose", action="store_true")
     a = ap.parse_args(argv)

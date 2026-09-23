@@ -1,0 +1,14 @@
+{
+  "strategy": "fractal:tails_chiseled_frontier",
+  "window": "early",
+  "start": "1932-01-02",
+  "end": "1949-12-31",
+  "years": 18.001,
+  "cagr": 0.1071075530139689,
+  "gross_violations": 0,
+  "ruined": false,
+  "runtime_s": 9.1,
+  "audited_dates": 44,
+  "git_commit": "5559992",
+  "timestamp": "2026-09-23T02:42:01+00:00"
+}

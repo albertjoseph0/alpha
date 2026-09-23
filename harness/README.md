@@ -28,6 +28,7 @@ Cash earns `RF` (1-month T-bill). Rebuild with `python data/fetch_data.py`.
 |---|---|---|
 | `dev` | 1950-01-01 → 1999-12-31 | everyone; the official development score |
 | `dev_a` / `dev_b` | 1950–1974 / 1975–1999 | everyone; for internal validation |
+| `early` | 1932–1949 | everyone; out-of-period robustness check (only ~5.5y of history before it) |
 | `holdout` | 2000-01-01 → end of data | **orchestrator only** (needs `ALPHA_HOLDOUT=1`) |
 
 Data before a window's start is available to `fit()`, walking forward. For research,

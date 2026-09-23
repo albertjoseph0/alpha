@@ -1,0 +1,14 @@
+{
+  "strategy": "hybrid:fractal_transformer_kelly",
+  "window": "dev",
+  "start": "1950-01-03",
+  "end": "1999-12-31",
+  "years": 49.999,
+  "cagr": 0.13388068858933444,
+  "gross_violations": 0,
+  "ruined": false,
+  "runtime_s": 491.9,
+  "audited_dates": 102,
+  "git_commit": "5559992",
+  "timestamp": "2026-09-23T02:39:03+00:00"
+}
