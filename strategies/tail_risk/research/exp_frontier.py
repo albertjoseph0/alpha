@@ -28,7 +28,11 @@ def mom_rank(k, look=252, skip=21):
     return (r - 5.5) / 5.5
 
 
-def run(name, win=1260, beta=0.95, wmax=0.25, cap_mult=1.0, cap_ref="mkt"):
+base = m.rolling(1260, min_periods=500).std()
+shock = (sum(np.log2(m.rolling(h).std() / base) for h in (5, 21, 63)) / 3).to_numpy()
+
+
+def run(name, win=1260, beta=0.95, wmax=0.25, cap_mult=1.0, cap_ref="mkt", quake=None):
     W = pd.DataFrame(np.nan, index=dates, columns=ASSETS)
     for t in rebal:
         k = dates.get_loc(t)
@@ -39,6 +43,8 @@ def run(name, win=1260, beta=0.95, wmax=0.25, cap_mult=1.0, cap_ref="mkt"):
         else:
             cap = np.inf
         w = frontier_weights(X, s, cap, beta, wmax)
+        if quake is not None and shock[k] > quake:
+            w = np.full(12, 1 / 12)
         W.loc[t, INDUSTRIES] = w
         W.loc[t, "Mkt"] = 0.0
     o = score(W, "frontier:" + name)
@@ -54,3 +60,5 @@ if __name__ == "__main__":
         run("mom_rank_lp_nocap_w25", cap_ref="none")
     if "cap1" in which:
         run("mom_frontier_cvar_le_mkt_w25", cap_mult=1.0)
+    if "quake" in which:
+        run("mom_frontier_cap1_quake1_ew", cap_mult=1.0, quake=1.0)

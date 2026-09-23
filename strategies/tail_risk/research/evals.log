@@ -16,3 +16,4 @@
 {"tag": "port:mom_top6_mincvar95_5y", "dev": 0.12549, "dev_a": 0.10107, "dev_b": 0.14741, "avg_gross": 1.0, "maxdd": -0.44826, "vol": 0.11208}
 {"tag": "port:mom_top4_ew", "dev": 0.16058, "dev_a": 0.12815, "dev_b": 0.19206, "avg_gross": 1.0, "maxdd": -0.46209, "vol": 0.13419}
 {"tag": "frontier:mom_rank_lp_nocap_w25", "dev": 0.16058, "dev_a": 0.12815, "dev_b": 0.19206, "avg_gross": 1.0, "maxdd": -0.46209, "vol": 0.13419}
+{"tag": "frontier:mom_frontier_cvar_le_mkt_w25", "dev": 0.1564, "dev_a": 0.11971, "dev_b": 0.19241, "avg_gross": 1.0, "maxdd": -0.46209, "vol": 0.1279}
