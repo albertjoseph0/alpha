@@ -26,7 +26,7 @@ from dataclasses import asdict, dataclass
 import numpy as np
 import pandas as pd
 
-from .data import ASSETS, WINDOWS, MarketData, load
+from .data import ASSETS, WINDOWS, MarketData, load, load_etf
 from .engine import EXEC_LAG, simulate
 from .strategy import Strategy
 
@@ -102,15 +102,18 @@ def _git_commit() -> str:
 
 def run(strategy: Strategy, window: str = "dev", data: MarketData | None = None,
         audit_per_block: int = 2, seed: int = 0, ledger: bool = True,
-        verbose: bool = False) -> RunResult:
+        verbose: bool = False, long_only: bool | None = None) -> RunResult:
     if window not in WINDOWS:
         raise ValueError(f"window must be one of {sorted(WINDOWS)}")
-    if window == "holdout" and os.environ.get("ALPHA_HOLDOUT") != "1":
+    if window.endswith("holdout") and os.environ.get("ALPHA_HOLDOUT") != "1":
         raise HoldoutLockedError(
-            "The holdout window (2000-01-01 onward) is sealed for the final evaluation. "
-            "Develop and select on window='dev' only.")
+            f"The {window} window is sealed for the final evaluation. "
+            "Develop and select on the dev windows only.")
     t0 = time.time()
-    data = load() if data is None else data
+    is_etf = window.startswith("etf")
+    long_only = is_etf if long_only is None else long_only
+    if data is None:
+        data = load_etf() if is_etf else load()
     start, end = WINDOWS[window]
     cal = data.dates
     k0 = int(cal.searchsorted(start, side="left"))
@@ -130,6 +133,8 @@ def run(strategy: Strategy, window: str = "dev", data: MarketData | None = None,
             strategy.fit(data.until(dates[0]))
             since_fit = 0
         block = _validate(strategy.predict(data.until(dates[-1]), dates), dates, strategy.name, cols)
+        if long_only and (block.to_numpy() < -1e-9).any():
+            raise ValueError(f"{strategy.name}: negative weights are not allowed (long-only universe)")
         # Causality audit: first date of block + random others (last date has identical data).
         cands = list(range(1, len(dates) - 1))
         picks = [0] + (list(rng.choice(cands, size=min(audit_per_block - 1, len(cands)), replace=False))

@@ -92,3 +92,24 @@ and should beat this baseline.
 | 3 | Portfolio construction | `strategies/r2_construction/` | holdings count, score / rank weighting, rebalance frequency, turnover buffers and hysteresis, weight caps, log-growth sizing |
 | 4 | Crash-robust momentum | `strategies/r2_crash_guard/` | handle loser rebounds after bear markets *while staying invested*: dynamic momentum, fallback to the market or equal weight, dual momentum |
 | 5 | Transformer cross-sectional ranker | `strategies/r2_transformer/` | attention over the 49 industries (no identity embeddings) with momentum-family features, trained on log growth; ensembled with the rule baseline |
+
+---
+
+# Round 3 plan: tradeable strategies only (3 agents)
+
+Rounds 1–2 were scored on academic portfolios that can't be bought. Their ETF translation lost
+most of its edge (`strategies/etf_momentum/`). Round 3 therefore scores **only** on a tradeable,
+long-only ETF universe with per-ETF costs, and every strategy must produce live orders through
+`harness.live`.
+
+* Development: `etf_dev` 2000–2015 (halves `etf_dev_a`, `etf_dev_b`). Holdout: 2016 → today, sealed.
+* The long 1926–1999 academic data may be used only for idea discovery.
+* **Bar:** beat both SPY and 60/40 in `etf_dev_a` **and** `etf_dev_b`, net of costs.
+* **Baseline** (`strategies/_example_etf`: top-5 12-1 momentum across all ETFs, monthly): dev 8.91%,
+  dev_a 14.07%, dev_b 4.01%. It fails dev_b (SPY 6.46%).
+
+| # | agent | directory | angle |
+|---|---|---|---|
+| 1 | Cross-asset momentum and trend | `strategies/r3_cross_asset/` | rotation across all asset classes, using round-2 construction lessons (rank weights, staggered tranches) and trend rules that rotate to bonds or gold rather than cash |
+| 2 | Equity rotation | `strategies/r3_equity_rotation/` | momentum within the equity sleeve (sectors, industries, countries, styles) with the same lessons, tested on real ETF breadth |
+| 3 | Option-income and defensive sleeve | `strategies/r3_options/` | whether covered-call / buy-write ETFs, low-vol and other defined-risk funds raise CAGR, alone or combined with a momentum core |

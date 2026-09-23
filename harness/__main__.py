@@ -43,7 +43,8 @@ def main(argv=None) -> None:
     ap = argparse.ArgumentParser(prog="python -m harness", description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("strategy", nargs="?", help="path to strategy .py file")
-    ap.add_argument("--window", default="dev", choices=["dev", "dev_a", "dev_b", "early", "holdout"])
+    ap.add_argument("--window", default="dev", choices=["dev", "dev_a", "dev_b", "early", "holdout",
+                             "etf_dev", "etf_dev_a", "etf_dev_b", "etf_holdout"])
     ap.add_argument("--benchmarks", action="store_true", help="also print benchmark CAGRs")
     ap.add_argument("--verbose", action="store_true")
     a = ap.parse_args(argv)
@@ -57,7 +58,7 @@ def main(argv=None) -> None:
         out = pathlib.Path(a.strategy).resolve().parent / f"result_{a.window}.json"
         out.write_text(json.dumps(asdict(res), indent=2) + "\n")
     if a.benchmarks or not a.strategy:
-        for cls in benchmarks.ALL:
+        for cls in (benchmarks.ETF_ALL if a.window.startswith("etf") else benchmarks.ALL):
             print(run(cls(), window=a.window, ledger=False).summary())
 
 

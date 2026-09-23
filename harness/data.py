@@ -59,6 +59,7 @@ class MarketData:
     returns: pd.DataFrame  # index: trading dates; columns: ASSETS
     rf: pd.Series          # index: trading dates
     extra: pd.DataFrame | None = None  # 49-industry returns (columns I49), NaN = unavailable
+    costs: pd.Series | None = None     # per-asset cost per unit turnover (decimal); None = engine default
 
     @property
     def dates(self) -> pd.DatetimeIndex:
@@ -83,11 +84,11 @@ class MarketData:
         """Copy of the data up to and including `date`."""
         date = pd.Timestamp(date)
         ex = None if self.extra is None else self.extra.loc[:date].copy()
-        return MarketData(self.returns.loc[:date].copy(), self.rf.loc[:date].copy(), ex)
+        return MarketData(self.returns.loc[:date].copy(), self.rf.loc[:date].copy(), ex, self.costs)
 
     def tail(self, n: int) -> "MarketData":
         ex = None if self.extra is None else self.extra.iloc[-n:].copy()
-        return MarketData(self.returns.iloc[-n:].copy(), self.rf.iloc[-n:].copy(), ex)
+        return MarketData(self.returns.iloc[-n:].copy(), self.rf.iloc[-n:].copy(), ex, self.costs)
 
     def tradeable_returns(self) -> pd.DataFrame:
         """Returns of every tradeable asset (ASSETS + I49), NaN where unavailable."""
@@ -116,3 +117,36 @@ def load_dev() -> MarketData:
     sealed holdout.
     """
     return load(until=DEV_END)
+
+
+# ---------------------------------------------------------------------------
+# Round 3: tradeable ETF universe (data/fetch_etf_universe.py). Long only.
+# ---------------------------------------------------------------------------
+ETF_PATH = REPO / "data" / "etf_universe_daily.csv"
+ETF_META_PATH = REPO / "data" / "etf_universe_meta.csv"
+ETF_DEV_END = pd.Timestamp("2015-12-31")
+WINDOWS.update({
+    "etf_dev": (pd.Timestamp("2000-01-01"), ETF_DEV_END),       # official ETF development score
+    "etf_dev_a": (pd.Timestamp("2000-01-01"), pd.Timestamp("2007-12-31")),
+    "etf_dev_b": (pd.Timestamp("2008-01-01"), ETF_DEV_END),
+    "etf_holdout": (pd.Timestamp("2016-01-01"), None),          # sealed
+})
+
+
+def etf_meta() -> pd.DataFrame:
+    return pd.read_csv(ETF_META_PATH).set_index("ticker")
+
+
+def load_etf(until=None) -> MarketData:
+    """ETF universe: returns (NaN before inception), T-bill RF, per-ETF trading costs."""
+    r = pd.read_csv(ETF_PATH, index_col="date", parse_dates=["date"])
+    rf = load().rf.reindex(r.index).ffill().fillna(0.0)  # French T-bill, carried past its last date
+    costs = etf_meta()["cost_bps"].reindex(r.columns) / 1e4
+    if until is not None:
+        r, rf = r.loc[:pd.Timestamp(until)], rf.loc[:pd.Timestamp(until)]
+    return MarketData(r.copy(), rf.copy(), None, costs)
+
+
+def load_etf_dev() -> MarketData:
+    """ETF data through 2015-12-31: the only ETF data strategy developers may look at."""
+    return load_etf(until=ETF_DEV_END)

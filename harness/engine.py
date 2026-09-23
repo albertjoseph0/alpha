@@ -5,7 +5,8 @@ Every strategy is scored by the exact same code path with the same frictions:
     of day t+1 and earns returns from day t+2 onward. (Prevents exploiting the
     stale-price autocorrelation in old index data, and matches reality: you
     cannot trade at the close you just observed. See research/REVIEW.md.)
-  * COST = 5 bp per unit of one-way turnover, measured against drifted weights.
+  * COST = 5 bp per unit of one-way turnover (or per-asset costs from data.costs,
+    e.g. the ETF universe), measured against drifted weights.
   * GROSS_CAP = 1: rows with sum(|w|) > 1 are scaled down to 1 (and counted).
   * Cash (1 - sum(w)) earns the daily T-bill rate.
 """
@@ -69,6 +70,8 @@ def simulate(decisions: pd.DataFrame, data: MarketData,
 
     # NaN return = asset unavailable that day; booked as 0 (no gain, no loss).
     R = np.nan_to_num(tradeable.iloc[k0:kN + 1].to_numpy(dtype=float), nan=0.0)
+    C = (np.full(len(cols), COST_PER_TURNOVER) if data.costs is None
+         else data.costs.reindex(cols).fillna(COST_PER_TURNOVER).to_numpy(dtype=float))
     RF = data.rf.iloc[k0:kN + 1].to_numpy(dtype=float)
     n, m = R.shape
 
@@ -87,8 +90,7 @@ def simulate(decisions: pd.DataFrame, data: MarketData,
                 target = target * (GROSS_CAP / gross)
                 violations += 1
         # Trade at the previous close (after the execution lag), pay costs.
-        turnover = np.abs(target - h_drift).sum()
-        eq *= 1.0 - COST_PER_TURNOVER * turnover
+        eq *= 1.0 - float(C @ np.abs(target - h_drift))
         # Earn today's return.
         p = float(target @ R[i] + (1.0 - target.sum()) * RF[i])
         eq *= 1.0 + p

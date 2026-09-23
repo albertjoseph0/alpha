@@ -83,3 +83,36 @@ features in a batch-invariant way (e.g. float64, no normalisation over the whole
 | buy & hold `Mkt` | +13.40% |
 | equal-weight 12 industries, monthly | +13.54% |
 | cash (T-bills) | +5.15% |
+
+## Round 3: tradeable ETF universe (`etf_*` windows)
+
+Everything in this universe can be bought today. `data/fetch_etf_universe.py` builds it:
+56 US-listed ETFs across US equity, sectors, industries, international equity, bonds, real
+assets, option-strategy (covered-call) funds and VIX. The metadata is in
+`data/etf_universe_meta.csv`.
+
+| rule | value |
+|---|---|
+| universe | fixed list, one fund per exposure, no leverage, no inverse funds |
+| long only | negative weights raise an error: no shorting, so no unlimited downside |
+| costs | per ETF, from trailing-year dollar volume: 2 / 4 / 10 / 25 bp per unit turnover |
+| lag, leverage, cash | unchanged: 1-day execution lag, Σw ≤ 1, cash earns T-bills |
+
+| window | period | who |
+|---|---|---|
+| `etf_dev` | 2000–2015 | everyone (official ETF dev score) |
+| `etf_dev_a` / `etf_dev_b` | 2000–2007 / 2008–2015 | everyone |
+| `etf_holdout` | 2016 → today | **orchestrator only** (`ALPHA_HOLDOUT=1`) |
+
+For research, use `harness.load_etf_dev()` (ends 2015-12-31). ETFs start on different dates;
+NaN = not yet listed. Benchmarks are SPY buy & hold, 60/40 SPY/IEF and equal-weight all ETFs:
+
+| benchmark | etf_dev | etf_dev_a | etf_dev_b |
+|---|---:|---:|---:|
+| buy & hold SPY | 3.98% | 1.55% | 6.46% |
+| 60/40 SPY/IEF | 5.05% | 3.54% | 6.61% |
+| equal-weight all ETFs | 4.68% | 5.58% | 3.81% |
+
+**Live orders use the same code path.**
+`python -m harness.live strategies/<dir>/strategy.py --capital 100000 [--refresh]` prints today's
+target weights and share counts.

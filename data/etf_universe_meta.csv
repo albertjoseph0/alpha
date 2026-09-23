@@ -1,0 +1,57 @@
+ticker,asset_class,description,inception,avg_dollar_volume,cost_bps
+SPY,us_equity,S&P 500,1993-01-29,47012758722,2.0
+QQQ,us_equity,Nasdaq-100,1999-03-10,32789162174,2.0
+MDY,us_equity,S&P MidCap 400,1995-05-04,550219050,4.0
+IWM,us_equity,Russell 2000,2000-05-26,8789376199,2.0
+IWD,us_equity,Russell 1000 Value,2000-05-26,672335817,4.0
+IWF,us_equity,Russell 1000 Growth,2000-05-26,854423626,4.0
+USMV,us_equity,US min volatility,2011-10-20,215527905,4.0
+MTUM,us_equity,US momentum factor,2013-04-18,304508508,4.0
+XLB,sector,Materials,1998-12-22,643141919,4.0
+XLE,sector,Energy,1998-12-22,2098962451,2.0
+XLF,sector,Financials,1998-12-22,2161199391,2.0
+XLI,sector,Industrials,1998-12-22,1630717315,2.0
+XLK,sector,Technology,1998-12-22,2226477626,2.0
+XLP,sector,Consumer staples,1998-12-22,1177795926,2.0
+XLU,sector,Utilities,1998-12-22,972551782,4.0
+XLV,sector,Health care,1998-12-22,1756873179,2.0
+XLY,sector,Consumer discretionary,1998-12-22,1099865653,2.0
+XLRE,sector,Real estate,2015-10-08,286700196,4.0
+XLC,sector,Communication services,2018-06-19,689210332,4.0
+SOXX,industry,Semiconductors,2001-07-13,3389877350,2.0
+IBB,industry,Biotech,2001-02-12,306834422,4.0
+ITB,industry,Homebuilders,2006-05-05,233733564,4.0
+KRE,industry,Regional banks,2006-06-22,1070384060,2.0
+XME,industry,Metals & mining,2006-06-22,269793989,4.0
+GDX,industry,Gold miners,2006-05-22,2212143480,2.0
+IGV,industry,Software,2001-07-17,1340253104,2.0
+ITA,industry,Aerospace & defense,2006-05-05,191149590,4.0
+EFA,intl_equity,Developed ex-US,2001-08-27,1635091531,2.0
+EEM,intl_equity,Emerging markets,2003-04-14,1826047104,2.0
+EWJ,intl_equity,Japan,1996-03-18,584213245,4.0
+VGK,intl_equity,Europe,2005-03-10,253511726,4.0
+EWZ,intl_equity,Brazil,2000-07-14,1011056018,2.0
+FXI,intl_equity,China large-cap,2004-10-08,1063253799,2.0
+INDA,intl_equity,India,2012-02-03,335524514,4.0
+EWC,intl_equity,Canada,1996-03-18,117862676,4.0
+EWA,intl_equity,Australia,1996-03-18,105131980,4.0
+SHY,bond,Treasury 1-3y,2002-07-30,339099074,4.0
+IEF,bond,Treasury 7-10y,2002-07-30,795448116,4.0
+TLT,bond,Treasury 20y+,2002-07-30,2734955364,2.0
+TIP,bond,TIPS,2003-12-05,258160077,4.0
+LQD,bond,IG corporate,2002-07-30,3464591707,2.0
+HYG,bond,High yield,2007-04-11,3194205558,2.0
+EMB,bond,EM USD bonds,2007-12-19,714968822,4.0
+MUB,bond,Municipal,2007-09-10,442336289,4.0
+BWX,bond,Intl Treasury,2007-10-11,13593530,10.0
+GLD,real_asset,Gold,2004-11-18,5308783683,2.0
+SLV,real_asset,Silver,2006-04-28,3245535369,2.0
+DBC,real_asset,Broad commodities,2006-02-06,27106770,10.0
+DBA,real_asset,Agriculture,2007-01-05,25329234,10.0
+VNQ,real_asset,US REITs,2004-09-29,329766768,4.0
+UUP,real_asset,US dollar index,2007-03-01,49984530,10.0
+PBP,options,S&P 500 BuyWrite (covered call),2007-12-27,1141744,25.0
+XYLD,options,S&P 500 covered call,2013-06-24,32469704,10.0
+QYLD,options,Nasdaq-100 covered call,2013-12-12,111223583,4.0
+JEPI,options,Equity premium income,2020-05-21,284185899,4.0
+VIXY,volatility,Short-term VIX futures (long vol),2011-01-04,96872341,10.0

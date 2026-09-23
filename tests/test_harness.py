@@ -180,3 +180,36 @@ def test_i49_assets_tradeable_and_nan_booked_as_zero():
 def test_until_truncates_extra():
     data = load(until="1960-12-31").until("1955-06-30")
     assert data.extra.index[-1] == data.returns.index[-1]
+
+
+# ---------- round 3: ETF universe ----------
+
+def test_etf_per_asset_costs_and_long_only():
+    from harness.data import load_etf
+    data = load_etf(until="2003-12-31")
+    assert data.costs is not None and data.costs["SPY"] == pytest.approx(0.0002)
+
+    class Short(Strategy):
+        name = "test:short"
+        refit_every = None
+
+        def predict(self, data, dates):
+            return pd.DataFrame({"SPY": -0.5}, index=dates)
+
+    with pytest.raises(ValueError, match="long-only"):
+        run(Short(), window="etf_dev", data=data, ledger=False)
+
+
+def test_etf_cost_charged_per_asset():
+    from harness.data import load_etf
+    data = load_etf(until="2003-12-31")
+    res = run(benchmarks.BuyHoldSPY(), window="etf_dev", data=data, ledger=False)
+    r = data.returns["SPY"].loc["2000-01-01":]
+    years = (r.index[-1] - data.dates[data.dates.get_loc(r.index[0]) - 1]).days / 365.25
+    assert res.cagr == pytest.approx(((1 - 0.0002) * (1 + r).prod()) ** (1 / years) - 1, abs=1e-12)
+
+
+def test_etf_holdout_is_locked(monkeypatch):
+    monkeypatch.delenv("ALPHA_HOLDOUT", raising=False)
+    with pytest.raises(HoldoutLockedError):
+        run(benchmarks.BuyHoldSPY(), window="etf_holdout", ledger=False)
