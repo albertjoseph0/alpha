@@ -65,3 +65,12 @@ if __name__ == "__main__":
         evaluate(monthly(topk(clock_mom(), 4)), "clock 12-1 mom top4 EW")
         evaluate(monthly(topk(tt_mom(mrw), 4)), "tt-drift 12-1 (MRW clock) top4 EW")
         evaluate(monthly(topk(tt_z(mrw), 4)), "tt-z 12-1 (MRW clock) top4 EW")
+    if "final" in which:
+        ex = R["Mkt"] - DATA.rf
+        mu = ex.expanding(min_periods=500).mean() * 252
+        evaluate(monthly(topk(tt_z(ewm), 4)), "tt-z 12-1 (EWMA clock) top4 EW")
+        kel = np.clip((mu.values[:, None] / (mrw[IND] * 252 / H)), 0, 1)
+        evaluate(monthly(topk(tt_z(mrw), 4) * kel), "tt-z MRW top4 + Kelly cap per position")
+        for k in [3, 6]:
+            evaluate(monthly(topk(tt_z(mrw), k)), f"tt-z MRW top{k} (robustness)")
+        evaluate(monthly(topk(tt_z(mrw, L=126), 4)), "tt-z MRW 6-1 top4 (robustness)")
