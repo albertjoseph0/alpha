@@ -57,7 +57,9 @@ def simulate(decisions: pd.DataFrame, data: MarketData,
 
     shift = EXEC_LAG + 1
     need = cal[k0 - shift: kN - shift + 1]
-    dec = decisions.reindex(columns=ASSETS)
+    tradeable = data.tradeable_returns()
+    cols = list(tradeable.columns)
+    dec = decisions.reindex(columns=cols)
     missing = need.difference(dec.index)
     if len(missing):
         raise ValueError(f"decisions missing {len(missing)} required dates, e.g. {missing[:3].tolist()}")
@@ -65,7 +67,8 @@ def simulate(decisions: pd.DataFrame, data: MarketData,
     hold = dec.isna().all(axis=1).to_numpy()
     W = dec.fillna(0.0).to_numpy(dtype=float)
 
-    R = data.returns.reindex(columns=ASSETS).iloc[k0:kN + 1].to_numpy(dtype=float)
+    # NaN return = asset unavailable that day; booked as 0 (no gain, no loss).
+    R = np.nan_to_num(tradeable.iloc[k0:kN + 1].to_numpy(dtype=float), nan=0.0)
     RF = data.rf.iloc[k0:kN + 1].to_numpy(dtype=float)
     n, m = R.shape
 

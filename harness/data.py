@@ -36,11 +36,29 @@ WINDOWS = {
 }
 
 
+DATA_PATH_I49 = REPO / "data" / "market_daily_i49.csv"
+
+
+def _i49_names() -> list[str]:
+    if not DATA_PATH_I49.exists():
+        return []
+    with open(DATA_PATH_I49) as f:
+        return [c for c in f.readline().strip().split(",")[1:]]
+
+
+# Optional extra tradeable assets: 49 value-weighted industries ("i49_" prefix).
+# NaN = portfolio did not exist that day; the engine books a 0 return for NaN,
+# so strategies should only hold i49 assets with recent valid data.
+I49 = _i49_names()
+ALL_TRADEABLE = ASSETS + I49
+
+
 @dataclass(frozen=True)
 class MarketData:
     """Daily returns up to (and including) the last date in the index."""
     returns: pd.DataFrame  # index: trading dates; columns: ASSETS
     rf: pd.Series          # index: trading dates
+    extra: pd.DataFrame | None = None  # 49-industry returns (columns I49), NaN = unavailable
 
     @property
     def dates(self) -> pd.DatetimeIndex:
@@ -64,18 +82,30 @@ class MarketData:
     def until(self, date) -> "MarketData":
         """Copy of the data up to and including `date`."""
         date = pd.Timestamp(date)
-        return MarketData(self.returns.loc[:date].copy(), self.rf.loc[:date].copy())
+        ex = None if self.extra is None else self.extra.loc[:date].copy()
+        return MarketData(self.returns.loc[:date].copy(), self.rf.loc[:date].copy(), ex)
 
     def tail(self, n: int) -> "MarketData":
-        return MarketData(self.returns.iloc[-n:].copy(), self.rf.iloc[-n:].copy())
+        ex = None if self.extra is None else self.extra.iloc[-n:].copy()
+        return MarketData(self.returns.iloc[-n:].copy(), self.rf.iloc[-n:].copy(), ex)
+
+    def tradeable_returns(self) -> pd.DataFrame:
+        """Returns of every tradeable asset (ASSETS + I49), NaN where unavailable."""
+        if self.extra is None:
+            return self.returns
+        return pd.concat([self.returns, self.extra], axis=1)
 
 
 def load(until=None) -> MarketData:
     """Full dataset (optionally truncated). Strategies must NOT call this."""
     df = pd.read_csv(DATA_PATH, index_col="date", parse_dates=["date"])
+    ex = None
+    if DATA_PATH_I49.exists():
+        ex = pd.read_csv(DATA_PATH_I49, index_col="date", parse_dates=["date"]).reindex(df.index)
     if until is not None:
         df = df.loc[:pd.Timestamp(until)]
-    return MarketData(df[ASSETS].copy(), df["RF"].copy())
+        ex = None if ex is None else ex.loc[:pd.Timestamp(until)]
+    return MarketData(df[ASSETS].copy(), df["RF"].copy(), None if ex is None else ex.copy())
 
 
 def load_dev() -> MarketData:

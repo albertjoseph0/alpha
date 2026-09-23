@@ -84,9 +84,23 @@ def build() -> pd.DataFrame:
     return out
 
 
+OUT49 = HERE / "market_daily_i49.csv"
+
+
+def build_i49(index: pd.DatetimeIndex) -> pd.DataFrame:
+    """49 value-weighted industries, columns prefixed 'i49_'. NaN = portfolio not available."""
+    ind = _first_table(_download("49_Industry_Portfolios_daily_CSV"), 8)
+    ind.columns = ["i49_" + c for c in ind.columns]
+    ind = ind.reindex(index)
+    ind.index.name = "date"
+    return ind
+
+
 if __name__ == "__main__":
     df = build()
     df.to_csv(OUT, float_format="%.8f")
+    build_i49(df.index).to_csv(OUT49, float_format="%.8f")
+    print(f"wrote {OUT49}")
     print(f"wrote {OUT} rows={len(df)} {df.index[0].date()} -> {df.index[-1].date()}")
     ann = (1 + df).prod() ** (252 / len(df)) - 1
     print("full-sample annualized (approx):")

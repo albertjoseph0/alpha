@@ -154,3 +154,29 @@ def test_equal_weight_benchmark_is_causal():
     res = run(benchmarks.EqualWeightIndustries(), window="dev", data=load(until="1960-12-31"),
               audit_per_block=10, ledger=False)
     assert np.isfinite(res.cagr)
+
+
+# ---------- 49-industry extension ----------
+
+def test_i49_assets_tradeable_and_nan_booked_as_zero():
+    from harness import I49
+    data = load(until="1960-12-31")
+    assert data.extra is not None and len(I49) == 49
+    asset = "i49_Food"
+
+    class HoldFood(Strategy):
+        name = "test:hold_i49"
+        refit_every = None
+
+        def predict(self, data, dates):
+            return pd.DataFrame({asset: 1.0}, index=dates)
+
+    res = run(HoldFood(), window="dev", data=data, ledger=False)
+    r = data.extra[asset].loc["1950-01-01":].fillna(0.0)
+    years = (r.index[-1] - data.dates[data.dates.get_loc(r.index[0]) - 1]).days / 365.25
+    assert res.cagr == pytest.approx(((1 - COST_PER_TURNOVER) * (1 + r).prod()) ** (1 / years) - 1, abs=1e-12)
+
+
+def test_until_truncates_extra():
+    data = load(until="1960-12-31").until("1955-06-30")
+    assert data.extra.index[-1] == data.returns.index[-1]

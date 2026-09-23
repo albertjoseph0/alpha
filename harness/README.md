@@ -22,6 +22,11 @@ CRSP value-weighted) plus 12 value-weighted industry portfolios
 (`NoDur Durbl Manuf Enrgy Chems BusEq Telcm Utils Shops Hlth Money Other`).
 Cash earns `RF` (1-month T-bill). Rebuild with `python data/fetch_data.py`.
 
+**49-industry extension** (`data/market_daily_i49.csv`): 49 more tradeable assets, named `i49_Agric` …
+`i49_Other`, available as `MarketData.extra` (and in `data.tradeable_returns()`). NaN means the portfolio
+did not exist that day: 6 industries start in 1963–69, and a few series have short gaps. The engine
+books a 0 return for NaN, so only hold i49 assets with recent valid data. `harness.I49` lists the names.
+
 ## Windows
 
 | window | scored period | who may run it |

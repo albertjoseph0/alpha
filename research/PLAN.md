@@ -71,3 +71,24 @@ Hybrid:
 1. Run `pytest` and a dev re-run of each final strategy (reproducibility plus causality audit).
 2. Holdout run of each final strategy (`ALPHA_HOLDOUT=1`), once.
 3. `python -m harness.leaderboard` → `results/leaderboard.md`; commit and push.
+
+---
+
+# Round 2 plan (after `research/ROUND1_REVIEW.md`)
+
+**Principle: power law.** Round 1 found exactly one working idea: cross-sectional industry
+momentum. Round 2 puts all of its agents on it. Each agent attacks a different angle of
+**momentum on the 49-industry universe** (`i49_*` assets, added to the harness for this round).
+
+**Baseline to beat.** This is plain 12-1 momentum, top third, equal weight, monthly
+(`research/round1/breadth_check.py`). It scores dev 17.58%, dev_a 15.08%, dev_b 19.98%,
+early 15.97%. A round-2 strategy must beat buy & hold in *every* window (dev_a, dev_b, early),
+and should beat this baseline.
+
+| # | agent | directory | angle |
+|---|---|---|---|
+| 1 | Signal engineering | `strategies/r2_signal/` | lookback ensembles, skip-month, residual (beta-adjusted) momentum, 52-week-high proximity, industry-size effects |
+| 2 | Fractal momentum refinement | `strategies/r2_fractal_momentum/` | path smoothness (ruler / fractal dimension), jump-filtered momentum (Joseph not Noah), trading-time normalisation, per-industry persistence |
+| 3 | Portfolio construction | `strategies/r2_construction/` | holdings count, score / rank weighting, rebalance frequency, turnover buffers and hysteresis, weight caps, log-growth sizing |
+| 4 | Crash-robust momentum | `strategies/r2_crash_guard/` | handle loser rebounds after bear markets *while staying invested*: dynamic momentum, fallback to the market or equal weight, dual momentum |
+| 5 | Transformer cross-sectional ranker | `strategies/r2_transformer/` | attention over the 49 industries (no identity embeddings) with momentum-family features, trained on log growth; ensembled with the rule baseline |

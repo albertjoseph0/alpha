@@ -63,15 +63,16 @@ class RunResult:
                 f"({self.years:.1f}y)   CAGR {self.cagr:+.2%}")
 
 
-def _validate(block: pd.DataFrame, dates: pd.DatetimeIndex, name: str) -> pd.DataFrame:
+def _validate(block: pd.DataFrame, dates: pd.DatetimeIndex, name: str,
+              cols: list[str] = ASSETS) -> pd.DataFrame:
     if not isinstance(block, pd.DataFrame):
         raise TypeError(f"{name}.predict must return a DataFrame, got {type(block)}")
-    unknown = set(block.columns) - set(ASSETS)
+    unknown = set(block.columns) - set(cols)
     if unknown:
         raise ValueError(f"{name}.predict returned non-tradeable columns: {sorted(unknown)}")
     if not block.index.equals(dates):
         raise ValueError(f"{name}.predict index must equal the requested dates")
-    block = block.reindex(columns=ASSETS).astype(float)
+    block = block.reindex(columns=cols).astype(float)
     vals = block.to_numpy()
     row_all_nan = np.isnan(vals).all(axis=1)
     partial_nan = np.isnan(vals).any(axis=1) & ~row_all_nan
@@ -117,6 +118,7 @@ def run(strategy: Strategy, window: str = "dev", data: MarketData | None = None,
     shift = EXEC_LAG + 1
     decision_dates = cal[k0 - shift: kN - shift + 1]
 
+    cols = list(data.tradeable_returns().columns)
     rng = np.random.default_rng(seed)
     refit = strategy.refit_every
     block_len = PREDICT_BLOCK if refit is None else max(1, min(int(refit), PREDICT_BLOCK))
@@ -127,14 +129,14 @@ def run(strategy: Strategy, window: str = "dev", data: MarketData | None = None,
         if since_fit is None or (refit is not None and since_fit >= refit):
             strategy.fit(data.until(dates[0]))
             since_fit = 0
-        block = _validate(strategy.predict(data.until(dates[-1]), dates), dates, strategy.name)
+        block = _validate(strategy.predict(data.until(dates[-1]), dates), dates, strategy.name, cols)
         # Causality audit: first date of block + random others (last date has identical data).
         cands = list(range(1, len(dates) - 1))
         picks = [0] + (list(rng.choice(cands, size=min(audit_per_block - 1, len(cands)), replace=False))
                        if cands and audit_per_block > 1 else [])
         for i in picks:
             d = dates[i]
-            single = _validate(strategy.predict(data.until(d), dates[i:i + 1]), dates[i:i + 1], strategy.name)
+            single = _validate(strategy.predict(data.until(d), dates[i:i + 1]), dates[i:i + 1], strategy.name, cols)
             if not _rows_equal(block.iloc[i].to_numpy(), single.iloc[0].to_numpy()):
                 raise LookaheadError(
                     f"{strategy.name}: weights for {d.date()} differ when data after {d.date()} is removed.\n"
