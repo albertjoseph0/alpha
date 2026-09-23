@@ -2,6 +2,7 @@
 import os
 os.environ.setdefault("OMP_NUM_THREADS", "1")
 import numpy as np
+np.seterr(invalid="ignore", divide="ignore")
 import pandas as pd
 from harness import Strategy, etf_meta
 
@@ -22,13 +23,13 @@ class XAsset(Strategy):
     refit_every = None
 
     def __init__(self, lookbacks=(252,), skip=21, frac=0.2, weighting="rank", abs_filter=False,
-                 defensive=False, n_def=2, group_cap=None, exclude=("VIXY",), vol_win=63, trend_lbs=None, score="mom", gate="avg", max_corr=None, corr_win=126,
+                 defensive=False, n_def=2, group_cap=None, exclude=("VIXY",), vol_win=63, trend_lbs=None, score="mom", gate="avg", max_corr=None, corr_win=126, breadth=False,
                  name="r3:xasset_research"):
         self.lookbacks, self.skip, self.frac = tuple(lookbacks), skip, frac
         self.weighting, self.abs_filter, self.defensive, self.n_def = weighting, abs_filter, defensive, n_def
         self.group_cap, self.exclude, self.vol_win, self.name = group_cap, set(exclude), vol_win, name
         self.score, self.gate = score, gate
-        self.max_corr, self.corr_win = max_corr, corr_win
+        self.max_corr, self.corr_win, self.breadth = max_corr, corr_win, breadth
         self.trend_lbs = None if trend_lbs is None else tuple(trend_lbs)
 
     def predict(self, data, dates):
@@ -111,6 +112,10 @@ class XAsset(Strategy):
                 p = np.array(picked)
                 iv = rw[p] / vol[p]
                 rw[p] = iv / iv.sum() * rw[p].sum()
+            if self.breadth:  # equity breadth: share of equity-horizon votes in downtrend -> defensive
+                eq = valid & ~excl & np.isin(grp, ("us", "intl"))
+                down = 1.0 - vote[eq].mean() if eq.any() else 0.0
+                rw *= 1.0 - down
             spare = 1.0 - rw.sum()
             if spare > 1e-12 and self.defensive:
                 dpass = (vote > 0.5) if self.gate == "vote" else (ex > 0)

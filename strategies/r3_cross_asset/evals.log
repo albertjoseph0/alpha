@@ -9,3 +9,4 @@ C08_vote_iv	{"abs_filter": true, "defensive": true, "trend_lbs": [21, 63, 252], 
 C09_noind	{"abs_filter": true, "defensive": true, "trend_lbs": [21, 63, 252], "exclude": ["SOXX", "IBB", "ITB", "KRE", "XME", "GDX", "IGV", "ITA", "VIXY"]}	dev=8.28%	dev_a=12.86%	dev_b=3.92%
 C10_corr85	{"abs_filter": true, "defensive": true, "trend_lbs": [21, 63, 252], "max_corr": 0.85}	dev=8.62%	dev_a=12.04%	dev_b=5.28%
 C11_rank6-12	{"abs_filter": true, "defensive": true, "trend_lbs": [21, 63, 252], "lookbacks": [126, 252]}	dev=8.91%	dev_a=12.24%	dev_b=5.54%
+C12_breadth	{"abs_filter": true, "defensive": true, "trend_lbs": [21, 63, 252], "breadth": true}	dev=8.64%	dev_a=11.48%	dev_b=5.74%
