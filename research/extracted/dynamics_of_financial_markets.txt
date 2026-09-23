@@ -1,0 +1,976 @@
+
+
+===== [page 1] =====
+arXiv:cond-mat/0501292v1  [cond-mat.other]  12 Jan 2005
+THE DYNAMICS OF FINANCIAL
+MARKETS – MANDELBROT’S
+MULTIFRACTAL CASCADES,
+AND BEYOND
+Lisa Borland1, Jean-Philippe Bouchaud2,3
+Jean-Fran¸cois Muzy4, Gilles Zumbach5
+February 2, 2008
+1 Evnine-Vaughan Associates, Inc., 456 Montgomery Street, Suite 800, San
+Francisco, CA 94104, USA
+2 Science & Finance, Capital Fund Management, 6 Bd Haussmann, 75009 Paris,
+France
+3 Service de Physique de l’´Etat Condens´e, Centre d’´etudes de Saclay, Orme des
+Merisiers, 91191 Gif-sur-Yvette Cedex, France
+4 Laboratoire SPE, CNRS UMR 6134, Universit´e de Corse, 20250 Corte, France
+5 Consulting in Financial Research, Chemin Charles Baudouin 8, 1228 Saconnex
+d’Arve, Switzerland
+Abstract
+This is a short review in honor of B. Mandelbrot’s 80st birthday, to
+appear in Wilmott magazine. We discuss how multiplicative cascades
+and related multifractal ideas might be relevant to model the main
+statistical features of ﬁnancial time series, in particular the intermit-
+tent, long-memory nature of the volatility. We describe in details the
+Bacry-Muzy-Delour multifractal random walk.
+We point out some
+inadequacies of the current models, in particular concerning time re-
+versal symmetry, and propose an alternative family of multi-timescale
+models, intermediate between GARCH models and multifractal mod-
+els, that seem quite promising.
+1
+
+
+===== [page 2] =====
+1
+Introduction
+Financial time series represent an extremely rich and fascinating source of ques-
+tions, for they store a quantitative trace of human activity, sometimes over hun-
+dreds of years. These time series, perhaps surprisingly, turn out to reveal a very
+rich and particularly non trivial statistical texture, like fat tails and intermittent
+volatility bursts, have been by now well-characterized by an uncountable number
+of empirical studies, initiated by Benoit Mandelbrot more than fourty years ago
+[1]. Quite interestingly, these statistical anomalies are to some degree universal,
+i.e, common across diﬀerent assets (stocks, currencies, commodities, etc.), regions
+(U.S., Europe, Asia) and epochs (from wheat prices in the 18th century to oil
+prices in 2004).
+The statistics of price changes is very far from the Bachelier-
+Black-Scholes random walk model which, nevertheless, is still today the central
+pillar of mathematical ﬁnance: the vast majority of books on option pricing writ-
+ten in the last ten years mostly focus on Brownian motion models and up until
+recently very few venture into the wonderful world of non Gaussian random walks
+[2]. This is the world, full of bushes, gems and monsters, that Mandelbrot started
+exploring for us in the sixties, charting out its scrubby paths, on which droves of
+scientists – admittedly with some delay – now happily look for fractal butterﬂies,
+heavy-tailed marsupials or long-memory elephants. One can only be superlative
+about his relentless eﬀorts to look at the world with new goggles, and to oﬀer the
+tools that he forged to so many diﬀerent communities: mathematicians, physicists,
+geologists, meteorologists, fractologists, economists – and, for our purpose, ﬁnan-
+cial engineers. In our view, one of Mandelbrot’s most important methodological
+messages is that one should look at data, charts and graphs in order to build one’s
+intuition, rather than trust blindly the result of statistical tests, often inadequate
+and misleading, in particular in the presence of non Gaussian eﬀects [3]. This
+visual protocol is particularly relevant when modeling ﬁnancial time series: as dis-
+cussed below, well chosen graphs often allow one to identify important eﬀects, rule
+out an idea or construct a model. This might appear as a trivial statement but,
+as testiﬁed by Mandelbrot himself, is not: he fought all his life against the Bour-
+baki principle that pictures and graphs betray [3]. Unreadable tables of numbers,
+ﬂooding econometrics papers, perfectly illustrate that ﬁgures remain suspicious in
+many quarters.
+The aim of this paper is to give a short review of the stylized facts of ﬁnancial
+time series, and of how multifractal stochastic volatility models, inherited from
+Kolmogorov’s and Mandelbrot’s work in the context of turbulence, fare quite well
+at reproducing many important statistical features of price changes.
+We then
+discuss some inadequacies of the current models, in particular concerning time
+reversal symmetry, and propose an alternative family of multi-timescale models,
+2
+
+
+===== [page 3] =====
+intermediate between GARCH models and multifractal models, that seem quite
+promising. We end on a few words about how these models can be used in practice
+for volatility ﬁltering and option pricing.
+2
+Universal features of price changes
+The modeling of random ﬂuctuations of asset prices is of obvious importance in
+ﬁnance, with many applications to risk control, derivative pricing and systematic
+trading. During the last decade, the availability of high frequency time series has
+promoted intensive statistical studies that lead to invalidate the classic and popular
+“Brownian walk” model, as anticipated by Mandelbrot [4]. In this section, we
+brieﬂy review the main statistical properties of asset prices that can be considered
+as universal, in the sense that they are common across many markets and epochs
+[5, 6, 7].
+If one denotes p(t) the price of an asset at time t, the return rτ(t), at time t
+and scale τ is simply the relative variation of the price from t to t + τ: rτ(t) =
+[p(t + τ) −p(t)] /p(t) ≃ln p(t + τ) −ln p(t).
+The simplest “universal” feature of ﬁnancial time series, uncovered by Bachelier
+in 1900, is the linear growth of the variance of the return ﬂuctuations with time
+scale. More precisely, if mτ is the mean return at scale τ, the following property
+holds to a good approximation:
+⟨(rτ(t) −mτ)2⟩e ≃σ2τ,
+(1)
+where ⟨...⟩e denotes the empirical average. This behaviour typically holds for τ
+between a few minutes to a few years, and is equivalent to the statement that
+relative price changes are, to a good approximation, uncorrelated. Very long time
+scales (beyond a few years) are diﬃcult to investigate, in particular because the
+average drift m becomes itself time dependent, but there are systematic eﬀects
+suggesting some degree of mean-reversion on these long time scales.
+The volatility σ is the simplest quantity that measures the amplitude of return
+ﬂuctuations and therefore that quantiﬁes the risk associated with some given as-
+set. Linear growth of the variance of the ﬂuctuations with time is typical of the
+Brownian motion, and, as mentioned above, was proposed as a model of market
+ﬂuctuations by Bachelier.1 In this model, returns are not only uncorrelated, as
+mentioned above, but actually independent and identical Gaussian random vari-
+ables. However, this model completely fails to capture other statistical features
+1In Bachelier’s model, absolute price changes, rather than relative returns, were con-
+sidered; there are however only minor diﬀerences between the two at short time scales,
+τ < 1 month, but see the detailed discussion [7], Ch. 7.
+3
+
+
+===== [page 4] =====
+0
+50
+100
+0
+10
+20
+30
+90
+95
+100
+0
+5
+10
+95.0
+95.5
+96.0
+0
+2
+4
+1990
+1995
+2000
+0.0
+500.0
+Random Walk
+1900
+1920
+1940
+1960
+1980
+2000
+0.0
+500.0
+Random Walk
+Figure 1: 1-a: Absolute value of the daily price returns for the Dow-Jones index
+over a century (1900-2000), and zoom on diﬀerent scales (1990-2000 and 1995).
+Note that the volatility can remain high for a few years (like in the early 1930’s)
+or for a few days. This volatility clustering can also be observed on high frequency
+(intra-day) data. 1-b: Same plot for a Brownian random walk, which shows a
+featureless pattern in this case.
+of ﬁnancial markets that even a rough analysis of empirical data allows one to
+identify, at least qualitatively:
+(i) The distribution of returns is in fact strongly non Gaussian and its shape
+continuously depends on the return period τ: for τ large enough (around few
+months), one observes quasi-Gaussian distributions while for small τ values,
+the return distributions have a strong kurtosis (see Fig. 2). Several care-
+ful studies suggest that these distributions can be characterized by Pareto
+(power-law) tails |r|−1−µ with an exponent µ in the range 3 −5 even for liq-
+uid markets such as the US stock index, major currencies, or interest rates
+[8, 9, 5, 10]. Note that µ > 2, and excludes an early suggestion by Mandel-
+brot that security prices could be described by L´evy stable laws. Emerging
+markets, however, have even more extreme tails, with an exponent µ that
+can be less than 2 – in which case the volatility is formally inﬁnite – as found
+by Mandelbrot in his famous study of cotton prices [4]. A natural conjec-
+ture is that as markets become more liquid, the value of µ tends to increase
+(although illiquid, yet very regulated markets, could on the contrary show
+truncated tails because of artiﬁcial trading rules [11]).
+(ii) Another striking feature is the intermittent and correlated nature of return
+amplitudes. At some given time period τ, the volatility is a quantity that
+can be deﬁned locally in various ways: the simplest ones being the square
+4
+
+
+===== [page 5] =====
+return r2
+τ(t) or the absolute return |rτ(t)|, or a local moving average of these
+quantities. The volatility signals are characterized by self-similar outbursts
+(see Fig. 1) that are similar to intermittent variations of dissipation rate in
+fully developed turbulence [12]. The occurrence of such bursts are strongly
+correlated and high volatility periods tend to persist in time. This feature
+is known as volatility clustering [13, 14, 6, 7]. This eﬀect can analyzed more
+quantitatively: the temporal correlation function of the (e.g. daily) volatility
+can be ﬁtted by an inverse power of the lag, with a rather small exponent
+in the range 0.1 −0.3 [14, 15, 16, 7, 17].
+(iii) One observes a non-trivial “multifractal” scaling [18, 19, 20, 21, 17, 22, 23],
+in the sense that higher moments of price changes scale anomalously with
+time:
+Mq(τ) = ⟨|rτ(t) −mτ|q⟩e ≃Aqτ ζq,
+(2)
+where the index ζq is not equal to the Brownian walk value q/2. As will be
+discussed more precisely below, this behaviour is intimately related to the
+intermittent nature of the volatility process.
+(iv) Past price changes and future volatilities are negatively correlated, at least
+on stock markets. This is the so called leverage eﬀect, which reﬂects the fact
+that markets become more active after a price drop, and tend to calm down
+when the price rises. This correlation is most visible on stock indices [24].
+This leverage eﬀect leads to an anomalous negative skew in the distribution
+of price changes as a function of time.
+The most important message of these empirical studies is that price changes
+behave very diﬀerently from the simple geometric Brownian motion:
+extreme
+events are much more probable, and interesting non linear correlations (volatility-
+volatility and price-volatility) are observed. These “statistical anomalies” are very
+important for a reliable estimation of ﬁnancial risk and for quantitative option
+pricing and hedging, for which one often requires an accurate model that cap-
+tures return statistical features on diﬀerent time horizons τ. It is rather amazing
+to remark that empirical properties (i-iv) are, to some extent, also observed on
+experimental velocity data in fully developed turbulent ﬂows (see Fig. 2). The
+framework of scaling theory and multifractal analysis, initially proposed to char-
+acterize turbulent signals by Mandelbrot and others [12], may therefore be well-
+suited to further characterize statistical properties of price changes on diﬀerent
+time periods.
+5
+
+
+===== [page 6] =====
+Figure 2: Continuous deformation of turbulent velocity increments and ﬁnancial
+returns distributions from small (top) to large (bottom) scales. 2-a: Standard-
+ized probability distribution functions of spatial velocity increments at diﬀerent
+length scales in a high Reynolds number wind tunnel turbulence experiment. The
+distributions are plotted in logarithmic scale so that a parabola corresponds to a
+Gaussian distribution. 2-b: Standardized p.d.f. of S&P 500 index returns at dif-
+ferent time scales from few minutes to one month. Notice that because of sample
+size limitation, the noise amplitude is larger than in turbulence.
+3
+From multifractal scaling to cascade pro-
+cesses
+3.1
+Multi-scaling of asset returns
+For the geometric Brownian motion, or for the L´evy stable processes ﬁrst sug-
+gested by Mandelbrot as an alternative, the return distribution is identical (up to
+a rescaling) for all τ. As emphasized in previous section, the distribution of real
+returns is not scale invariant, but rather exhibits multi-scaling. Fig. 3 illustrates
+the empirical multifractal analysis of S&P 500 index return. As one can see in Fig.
+3(b), the scaling behavior (2) that corresponds to a linear dependence in a log-log
+representation of the absolute moments versus the time scale τ, is well veriﬁed
+over some range of time scales (typically 3 decades).
+The multifractal nature of the index ﬂuctuations can directly be checked in
+Fig. 3(c), where one sees that the moment ratios strongly depend on the scale
+τ. The estimated ζq spectrum (Fig. 3(d)) has a concave shape that is well ﬁtted
+by the parabola: ζq = q(1/2 + λ2) −λ2q2/2 with λ2 ≃0.03.
+The coeﬃcient
+6
+
+
+===== [page 7] =====
+λ2 that quantiﬁes the curvature of the ζq function is called, in the framework of
+turbulence theory, the intermittency coeﬃcient. The most natural way to account
+for the multi-scaling property (2) is through the notion of cascade from coarse to
+ﬁne scales.
+3.2
+The cascade picture
+As noted previously, for the geometric Brownian motion, the return probability
+distributions at diﬀerent time periods τ are Gaussian and thus diﬀer only by their
+width that is proportional to √τ. If x(t) is a Brownian motion, this property can
+be shortly written as
+rτ(t)
+=law
+στε(t)
+(3)
+σsτ
+=
+s1/2στ
+(4)
+where =law means that the two quantities have the same probability distribution,
+ε(t) is a standardized Gaussian white noise and στ is the volatility at scale τ. When
+going from some scale τ to the scale sτ, the return volatility is simply multiplied by
+s1/2. The cascade model assumes such a multiplicative rule but the multiplicative
+factor is now a random variable and the volatility itself becomes a random process
+στ(t):
+rτ(t)
+=law
+στ(t)ε(t)
+(5)
+σsτ(t)
+=law
+Wsστ(t)
+(6)
+where the law of Ws depends only on the scale ratio s and is independent of στ(t).
+Let T be some coarse time period and let s < 1. Then, by setting W = eξ, and by
+iterating equation (6) n times, one obtains:
+σsnT (t) =
+law WsnσT (t) =
+law e
+Pn
+ℓ=1 ξℓ,sσT (t)
+(7)
+Therefore, the logarithm of the volatility at some ﬁxed scale τ = snT, can be
+written as a sum of an arbitrarily large number n of independent, identically
+distributed random variables. Mathematically, this means that the logarithm of
+the volatility (and hence ξ, the logarithm of the “weights” W) belongs the the
+class of the so-called inﬁnitely divisible distributions [25]. The simplest of such
+distributions (often invoked using the central limit theorem) is the Gaussian law.
+In that case, the volatility is a log-normal random variable. As explained in the
+next subsection, this is precisely the model introduced by Kolmogorov in 1962
+to account for the intermittency of turbulence [26].
+It can be proven that the
+random cascade equations (5) and (6) directly lead to the deformation of return
+7
+
+
+===== [page 8] =====
+probability distribution functions as observed in Fig. 2. Using the fact that ξs is
+a Gaussian variable of mean µ ln(s) and variance λ2 ln(s), one can compute the
+absolute moment of order q of the returns at scale τ = snT (s < 1). One ﬁnds:
+⟨|rτ(t)|q⟩= Aq
+ τ
+T
+µq−λ2q2/2
+(8)
+where Aq = ⟨|rT (t)|q⟩.
+Using a simple multiplicative cascade, we thus have recovered the empirical
+ﬁndings of previous sections. For log-normal random weights Ws, the return pro-
+cess is multifractal with a parabolic ζq scaling spectrum: ζq = qµ −λ2q2/2 where
+the parameter µ is related to the mean of ln Ws and the curvature λ2 (the intermit-
+tency coeﬃcient) is related to the variance of ln Ws and therefore to the variance
+of the log-volatility ln(στ):
+⟨(ln στ(t))2⟩−⟨ln στ(t)⟩2 = −λ2 ln(τ) + V0
+(9)
+The random character of ln Ws is therefore directly related to the intermittency of
+the returns.
+4
+The multifractal random walk
+The above cascade picture assumes that the volatility can be constructed as a
+product of random variables associated with diﬀerent time scales. In the previous
+section, we exclusively focused on return probability distribution functions (mono-
+variate laws) and scaling laws associated with such models. Explicit constructions
+of stochastic processes which marginals satisfy a random multiplicative rule, were
+ﬁrst introduced by Mandelbrot [27] and are known as Mandelbrot’s cascades or
+random multiplicative cascades. The construction of a Mandelbrot cascade, illus-
+trated in Fig. 4, always involves a discrete scale ratio s (generally s = 1/2). One
+begins with the volatility at the coarsest scale and proceeds in a recursive manner
+to ﬁner resolutions: The n-th step of the volatility construction corresponds to
+scale 2−n and is obtained from the (n −1)-th step by multiplication with a pos-
+itive random process W the law of which does not depend on n. More precisely,
+the volatility in each subinterval is the volatility of its parent interval multiplied
+by an independent copy of W.
+Mandelbrot cascades are considered to be the paradigm of multifractal pro-
+cesses and have been extensively used for modeling scale-invariance properties in
+many ﬁelds, in particular statistical ﬁnance by Mandelbrot himself [19, 22]. How-
+ever, this class of models presents several drawbacks: (i) they involve a preferred
+scale ratio s, (ii) they are not stationary and (iii) they violate causality. In that
+8
+
+
+===== [page 9] =====
+respect, it is diﬃcult to see how such models could arise from a realistic (agent
+based) description of ﬁnancial markets.
+Recently, Bacry, Muzy and Delour (BMD) [17, 29] introduced a model that
+does not possess any of the above limitations and captures the essence of cascades
+through their correlation structure (see also [31, 32] for alternative multifractal
+models).
+In the BMD model, the key ingredient is the volatility correlation shape that
+mimics cascade features. Indeed, as remarked in ref. [33], the tree like structure
+underlying a Mandelbrot cascade, implies that the volatility logarithm covariance
+decreases very slowly, as a logarithm function, i.e.,
+⟨ln(στ(t)) ln(στ(t + ∆t))⟩−⟨ln(στ(t))⟩2 = C0 −λ2 ln(∆t + τ)
+(10)
+This equation can be seen as a generalization of Kolmogorov equation (9) that
+describes only the behavior of the log-volatility variance. It is important to note
+that such a logarithmic behaviour of the covariance has indeed been observed for
+empirically estimated log-volatilities in various stock market data [33]. The BMD
+model involves Eq. (10) within the continuous time limit of a discrete stochastic
+volatility model. One ﬁrst discretizes time in units of an elementary time step τ0
+and sets t ≡iτ0. The volatility σi at “time” i is a log-normal random variable
+such that σi = σ0 exp ξi, where the Gaussian process ξi has the same covariance
+as in Eq. (10):
+⟨ξi⟩= −λ2 ln( T
+τ0
+) ≡µ0;
+⟨ξiξj⟩−µ2
+0 = λ2 ln( T
+τ0
+) −λ2 ln(|i −j| + 1),
+(11)
+for |i −j|τ0 ≤T. Here T is a large cut-oﬀtime scale beyond which the volatility
+correlation vanishes. In the above equation, the brackets stands for the mathe-
+matical expectation. The choice of the mean value µ0 is such that ⟨σ2⟩= σ2
+0. As
+before, the parameter λ2 measures the intensity of volatility ﬂuctuations (or, in
+the ﬁnance parlance, the ‘vol of the vol’), and corresponds to the intermittency
+parameter.
+Now, the price returns are constructed as:
+x [(i + 1)τ0] −x [iτ0] = rτ0(i) ≡σiεi = σ0eξiεi,
+(12)
+where the εi are a set of independent, identically distributed random variables of
+zero mean and variance equal to τ0. One also assumes that the εi and the ξi are
+independent (but see [34] where some correlations are introduced). In the original
+BMD model, εi’s are Gaussian, and the continuous time limit τ0 = dt →0 is
+taken. Since x = ln p, where p is the price, the exponential of a sample path of
+the BMD model is plotted in Fig. 5(a), which can be compared to the real price
+chart of 2(a).
+9
+
+
+===== [page 10] =====
+The multifractal scaling properties of this model can be computed explicitly.
+Moreover, using the properties of multivariate Gaussian variables, one can get
+closed expressions for all even moments Mq(τ) (q = 2k). In the case q = 2 one
+trivially ﬁnds:
+M2(τ = ℓτ0) = σ2
+0 ℓτ0 ≡σ2
+0τ,
+(13)
+independently of λ2. For q̸ = 2, one has to distinguish between the cases qλ2 < 1
+and qλ2 > 1. For qλ2 < 1, the corresponding moments are ﬁnite, and one ﬁnds,
+in the scaling region τ0 ≪τ ≤T, a genuine multifractal behaviour [17, 29], for
+which Eq. (2) holds exactly. For qλ2 > 1, on the other hand, the moments diverge,
+suggesting that the unconditional distribution of x(t+τ)−x(t) has power-law tails
+with an exponent µ = 1/λ2 (possibly multiplied by some slow function). These
+multifractal scaling properties of BMD processes are numerically checked in Figs.
+5-a and 5-b where one recovers the same features as in Fig. 3 for the S&P 500 index.
+Since volatility correlations are absent for τ ≫T, the scaling becomes that of a
+standard random walk, for which ζq = q/2. The corresponding distribution of price
+returns thus becomes progressively Gaussian. An illustration of the progressive
+deformation of the distributions as τ increases, in the BMD model is reported
+in Fig. 5-c. This ﬁgure can be directly compared to Fig. 2. As shown in Fig.
+5-e, this model also reproduces the empirically observed logarithmic covariance of
+log-volatility (Eq. (10). This functional form, introduced at a “microscopic” level
+(at scale τ0 →0), is therefore stable across ﬁnite time scales τ.
+To summarize, the BMD process is attractive for modeling ﬁnancial time series
+since it reproduces most “stylized facts” reviewed in section 2 and has exact mul-
+tifractal properties as described in section 3. Moreover, this model has stationary
+increments, does not exhibit any particular scale ratio and can be formulated in
+a purely causal way: the log volatility ξi can be expressed as a sum over “past”
+random shocks, with a memory kernel that decays as the inverse square root of the
+time lag [35]. Let us mention that generalized stationary continuous cascades with
+compound Poisson and inﬁnitely divisible statistics have been recently contructed
+and mathematically studied by Mandelbrot and Barral [36], and in [30] However,
+there is no distinction between past and future in this model – but see below.
+5
+Multifractal models: empirical data under
+closer scrutiny
+Multifractal models either postulate or predict a number of precise statistical fea-
+tures that can be compared with empirical price series. We review here several
+successes, but also some failures of this family of models, that suggest that the
+10
+
+
+===== [page 11] =====
+century old quest for a faithful model of ﬁnancial prices might not be over yet,
+despite Mandelbrot’s remarkable eﬀorts and insights. Our last section will be de-
+voted to an idea that may possibly bring us a little closer to the yet unknown
+“ﬁnal” model.
+5.1
+Volatility distribution
+Mandelbrot’s cascades construct the local volatility as a product of random volatil-
+ities over diﬀerent scales. As mentioned above, this therefore leads to the local
+volatility being log-normally distributed (or log inﬁnitely divisible), an assumption
+that the BMD model postulates from scratch. Several direct studies of the distri-
+bution of the volatility are indeed compatible with log-normality; option traders
+actually often think of volatility changes in relative terms, suggesting that the log-
+volatility is the natural variable. However, other distributions, such as an inverse
+gamma distribution ﬁts the data equally well, or even better [37, 7].
+5.2
+Intermittency coeﬃcient
+One of the predictions of the BMD model is the equality between the intermittency
+coeﬃcient estimated from the curvature of the ζq function and the slope of the log-
+volatility covariance logarithmic decrease. The direct study of various empirical
+log-volatility correlation functions, show that can they can indeed be ﬁtted by
+a logarithm of the time lag, with a slope that is in the same ball-park as the
+corresponding intermittency coeﬃcient λ2. The agreement is not perfect, though.
+These empirical studies furthermore suggest that the integral time T is on the
+scale of a few years [17].
+5.3
+Tail index
+As mentioned above, and as realized by Mandelbrot long ago through his famous
+“star equation” [27], multifractal models lead to power law tails for the distribution
+of returns. The BMD model predicts that the power-law index should be µ = 1/λ2,
+which, for the empirical values of λ2 ∼0.03, leads to a value of µ ten times larger
+than the empirical value of µ, found in the range 3 −5 for many assets [8, 9, 5].
+Of course, the random variable ε could itself be non Gaussian and further fattens
+the tails. However, as recently realized by Bacry, Kozhemyak and Muzy [38], a
+kind of ‘ergodicity breaking’ seems to take place in these models, in such a way
+that the theoretical value µ = 1/λ2 may not correspond to the most probable
+value of the estimator of the tail of the return distribution for a given realization
+of the volatility, the latter being much smaller than the former. So, even if this
+11
+
+
+===== [page 12] =====
+scenario is quite non trivial, multifractal models with Gaussian residuals may still
+be consistent with fat tails.
+5.4
+Time reversal invariance
+Both Mandelbrot’s cascade models and the BMD model are invariant under time
+reversal symmetry, meaning that no statistical test of any nature can distinguish
+between a time series generated with such models and its time reversed. There
+are however various direct indications that real price changes are not time reversal
+invariant. One well known fact is the “leverage eﬀect” (point (iv) of Section 2, see
+also [24]), whereby a negative price change is on average followed by a volatility
+increase.
+This eﬀect leads to a skewed distribution of returns, which in turn
+can be read as a skew in option volatility smiles. In the BMD model, one has
+by symmetry that all odd moments of the process vanish. A simple possibility,
+recently investigated in [34], is to correlate negatively the variable ξi with ‘past’
+values of the variables εj, j < i, through a kernel that decays as a power-law.
+In this case, the multifractality properties of the model are preserved, but the
+expression for ζq is diﬀerent for q even and for q odd (see also [39]).
+Another eﬀect breaking the time reversal invariance is the asymmetric struc-
+ture of the correlations between the past and future volatilities at diﬀerent time
+horizons. This asymmetry is present in all time series, even when the above lever-
+age eﬀect is very small or inexistent, such as for the exchange rate between two
+similar currencies (e.g. Dollar vs. Euro). The full structure of the volatility corre-
+lations is shown by the following “mug shots” introduced in [40]. These plots show
+how past volatilities measured on diﬀerent time horizons (horizontal axis) aﬀect
+future volatilities, again on diﬀerent time horizons (vertical axis). For empirical
+price changes, the correlations between past volatilities and future volatilities is
+asymmetric, as shown on Fig. 6. This ﬁgure reveals clearly two very important
+features: (a) the volatility at a given time horizon is aﬀected mainly by the volatili-
+ties at longer time horizon (the “cascade” eﬀect, partly discovered in [33]), and (b)
+correlations are strongest for time horizons corresponding to the natural human
+cycles, i.e: intra-day, one day, one week and one month. The feature (a) points
+to a diﬀerence with the volatility cascade used in turbulence, where eddies at a
+given scale break down into eddies at the immediately smaller scale. For ﬁnancial
+time series, the volatilities at all time horizons feed the volatility at the shortest
+time horizon [40]. The overall asymmetry around the diagonal of the ﬁgure mea-
+sures the asymmetry of the price time series under time reversal invariance. For a
+time reversal symmetric process, these mug shots are symmetric. An example of
+a very symmetric process is given in Fig. 7, for a volatility cascade as given in Eq.
+(7). The process for the “log-volatility” ξn at the n-th scale obeys an Ornstein-
+12
+
+
+===== [page 13] =====
+Uhlenbeck process, with a characteristic time s−n. In order to obtain a realistic
+cascade of volatilities, the (instantaneous) mean for the process ξn is taken as the
+volatility at the larger scale ξn−1. Yet, the resulting mug shot is very diﬀerent from
+the empirical one, in particular it is exactly symmetric (at least theoretically).
+Building a multifractal model that reproduces the observed time asymmetry is
+still an open problem. There might however be other avenues, as we now discuss.
+6
+Multi-timescale GARCH processes and sta-
+tistical feedback
+The above description of ﬁnancial data using multifractal, cascade-like ideas is
+still mostly phenomenological. An important theoretical issue is to understand the
+underlying mechanisms that may give rise to the remarkable statistical structure
+of the volatility emphasized by multifractal models: (nearly) log-normal, with
+logarithmically decaying correlations.
+Furthermore, from a fundamental point
+of view, the existence of two independent statistical processes, one for returns
+and another for the volatility, may not be very natural. In stochastic volatility
+models, such as the multifractal model, the volatility has its own dynamics and
+sources of randomness, without any feedback from the price behaviour. The time
+asymmetry revealed by the above mug-shots however unambiguously shows that
+a strong feedback, beyond the leverage eﬀect, exists in ﬁnancial markets.
+This time asymmetry, on the other hand, is naturally present in GARCH
+models, where the volatility is a (deterministic) function of the past price changes.
+The underlying intuition is that when recent price changes are large, the activity of
+market agents increases, in turn creating possibly large price changes. This creates
+a non linear feedback, where rare events trigger more rare events, generating non
+trivial probability distributions and correlations. Most GARCH models describe
+the feedback as quadratic in past returns, with the following general form. The
+(normalized) return at time i, computed over a time interval kτ0 is given by ˜ri,k =
+(xi −xi−k)/√kτ0. The general form of the volatility is:
+σ2
+i = σ2
+0 +
+X
+j<i
+X
+k>0
+L(i −j; k)˜r2
+j,k
+(14)
+where σ0 is a ‘bare’ volatility that would prevail in the absence of feedback, and
+L(i −j; k) a kernel that describes how square returns on diﬀerent time scales k,
+computed for diﬀerent days j in the past, aﬀect the uncertainty of the market at
+time i. [Usually, these processes are rather formulated through a set of recursive
+equations, with a few parameters. By expanding these recursion equations, one
+obtains the AR(∞) form given above.]
+13
+
+
+===== [page 14] =====
+The literature on GARCH-like processes is huge, with literaly dozen of varia-
+tions that have been proposed (for a short perspective, see [40, 41]). Some of these
+models are very successful at reproducing most of the empirical facts, including the
+“mug shot” for the volatility correlation. An example, that was ﬁrst investigated
+in [40] and recently rediscovered in [42] as a generalization of previous work [43],
+is to choose L(i −j; k) ≡δi,jK(k). This choice means that the current volatility
+is only aﬀected by observed price variations between diﬀerent dates i −k in the
+past and today i. The quadratic dependence of the volatility on past returns is
+precisely the one found in the framework of the statistical feedback process in-
+troduced in [43], where the volatility is proportional to a negative power of the
+probability of past price changes – hence the increased volatility after rare events.
+The time series resulting from the above choice of kernel are found to exhibit fat,
+power-law tails, volatility bursts and long range memory [42]. Furthermore, the
+distribution of volatilities is found to be very close to log-normal [42]. Choosing K
+to be a power-law of time [40, 44] allows one to reproduce the power-law decay of
+volatility correlations observed in real data [14, 16, 7, 17], the power-law response
+of the volatility to external shocks [35, 45], an apparent multifractal scaling [46]
+and, most importantly for our purpose, the shape of the mug-shots shown above
+[40]. Many of these results can be obtained analytically [42, 44]. Note that one
+could choose K(k) to spike for the day, week, month time scales unveiled by the
+mug-shots [40, 41]. Yet, a detailed systematic comparison of empirical facts against
+the predictions of the models, GARCH-like or multifractal-like, is still lacking.
+The above model can be generalized further by postulating a Landau-like ex-
+pansion of the volatility as a function of past returns as:
+σ2
+i = σ2
+0 +
+X
+k>0
+K(k)G[˜ri,k]
+(15)
+with G(r) = g1r + g2r2 + ... [44].
+The case g1 = 0 corresponds to the model
+discussed above, whereas g1 < 0 allows one to reproduce the leverage eﬀect and
+a negative skewness. Other eﬀects, such as trends, could also be included [47].
+The interest of this type of models, compared to multifractal stochastic volatility
+models, is that their fundamental justiﬁcation, in terms of agent based strategy, is
+relatively direct and plausible. One can indeed argue that agents use thresholds for
+their interventions (typically stop losses, entry points or exit points) that depend
+on the actual path of the price over some investment horizon, which may diﬀer
+widely between diﬀerent investors – hence a power-law like behaviour of the kernels
+K(k). Note in passing that, quite interestingly, Eq. (14) is rather at odds with the
+eﬃcient market hypothesis, which asserts that the price past history should have
+no bearing whatsoever on the behaviour of investors. Establishing the validity of
+Eq. (14) could have important repercussions on that front, too.
+14
+
+
+===== [page 15] =====
+7
+Conclusion: why are these models useful
+anyway ?
+For many applications, such as risk control and option pricing, we need a model
+that allows one to predict, as well as possible, the future volatility of an asset over
+a certain time horizon, or even better, to predict that probability distribution of
+all possible price paths between now and a certain future date. A useful model
+should therefore provide a well deﬁned procedure to ﬁlter the series past price
+changes, and to compute the weights of the diﬀerent future paths. Multifractal
+models oﬀer a well deﬁned set of answers to these questions, and their predictive
+power have been shown to be quite good [31, 48, 32].
+Other models, more in
+the spirit of GARCH or of Eq.
+(15) have been shown to also fare rather well
+[49, 41, 44, 47].
+Filtering past information within both frameworks is actually
+quite similar; it would be interesting to compare their predictive power in more
+details, with special care for non-Gaussian eﬀects. Once calibrated, these models
+can in principle be used for VaR estimates and option pricing. However, their
+mathematical complexity do not allow for explicit analytical solutions (except in
+some special cases, see e.g. [43]) and one has to resort to numerical, Monte-Carlo
+methods.
+The diﬃculty for stochastic volatility models or GARCH models in
+general is that the option price must be computed conditional to the past history
+[50], which considerably complexiﬁes Monte-Carlo methods, in particular for path
+dependent options, or when non-quadratic hedging objectives are considered. In
+other words, both the option price and the optimal hedge are no longer simple
+functions of the current price, but functionals of the whole price history. Finding
+operational ways to generalize, e.g. the method of Longstaﬀand Schwartz [51],
+or the optimally hedged Monte-Carlo method of [52] to account for this history
+dependence, seems to us a major challenge if one is to extract the best of these
+sophisticated volatility models. The toolkit that Mandelbrot gave us to describe
+power-law tails and long-range memory is still incomplete: is there an Ito lemma to
+deal elegantly with multifractal phenomena? Probably not – but as Paul Cootner
+pointed out long ago in his review of the famous cotton price paper [4], Mandelbrot
+promised us with blood, sweat, toil and tears. After all, a faithful model, albeit
+diﬃcult to work with, is certainly better than Black and Scholes’s pristine, but
+often misleading, simplicity [53].
+Acknowledgments
+We thank E. Bacry, J. Delour and B. Pochart for sharing their results with us,
+T. Lux and M. Potters for important discussions, and J. Evnine for his continu-
+15
+
+
+===== [page 16] =====
+ous support and useful comments. This work arose from discussions between the
+authors during the meeting: “Volatility of Financial Markets” organized by the
+Lorentz Center, Leiden in October 2004.
+References
+[1] For an inspiring recent account, see B. B. Mandelbrot, R. Hudson, The
+(mis)behaviour of markets, Perseus Books, Cambridge MA (2004)
+[2] E. Montroll, M. Shlesinger, The wonderful world of random walks, in Non
+Equilibrium Phenomena II, Studies in Statistical Mechanics, 11, E. Montroll,
+J. Lebowitz Edts, North Holland (1984).
+[3] see, e.g. [1], p. 88 and sq.
+[4] B. B. Mandelbrot, The variation of certain speculative prices, J. Business 36,
+394 (1963).
+[5] D. M. Guillaume, M. M. Dacorogna, R. D. Dav´e, U. A. M¨uller, R. B.
+Olsen and O. V. Pictet, Finance and Stochastics 1 95 (1997); M. Dacorogna,
+R. Gen¸cay, U. M¨uller, R. Olsen, and O. Pictet, An Introduction to High-
+Frequency Finance (Academic Press, London, 2001).
+[6] R. Mantegna & H. E. Stanley, An Introduction to Econophysics, Cambridge
+University Press, 1999.
+[7] J.-P. Bouchaud and M. Potters, Theory of Financial Risks and Derivative
+Pricing, Cambridge University Press, 2004.
+[8] V. Plerou, P. Gopikrishnan, L.A. Amaral, M. Meyer, H.E. Stanley, Scaling
+of the distribution of price ﬂuctuations of individual companies, Phys. Rev.
+E60 6519 (1999); P. Gopikrishnan, V. Plerou, L. A. Amaral, M. Meyer, H. E.
+Stanley, Scaling of the distribution of ﬂuctuations of ﬁnancial market indices,
+Phys. Rev. E 60 5305 (1999)
+[9] T. Lux, The stable Paretian hypothesis and the frequency of large returns: an
+examination of major German stocks, Applied Financial Economics, 6, 463,
+(1996).
+[10] F. Longin, The asymptotic distribution of extreme stock market returns, Jour-
+nal of Business, 69 383 (1996)
+[11] K. Matia, M. Pal, H. E. Stanley, H. Salunkay, Scale dependent price ﬂuctua-
+tions for the Indian stock market, cond-mat/0308013.
+16
+
+
+===== [page 17] =====
+[12] U. Frisch, Turbulence: The Legacy of A. Kolmogorov, Cambridge University
+Press (1997).
+[13] A. Lo, Long term memory in stock market prices, Econometrica, 59, 1279
+(1991).
+[14] Z. Ding, C. W. J. Granger and R. F. Engle, A long memory property of stock
+market returns and a new model, J. Empirical Finance 1, 83 (1993).
+[15] M. Potters, R. Cont, J.-P. Bouchaud, Financial Markets as Adaptive Ecosys-
+tems, Europhys. Lett. 41, 239 (1998).
+[16] Y. Liu, P. Cizeau, M. Meyer, C.-K. Peng, H. E. Stanley, Correlations in
+Economic Time Series, Physica A245 437 (1997)
+[17] J.-F. Muzy, J. Delour, E. Bacry, Modelling ﬂuctuations of ﬁnancial time se-
+ries: from cascade process to stochastic volatility model, Eur. Phys. J. B 17,
+537-548 (2000).
+[18] S. Ghashghaie, W. Breymann,J. Peinke, P. Talkner, Y. Dodge, Turbulent
+cascades in foreign exchange markets Nature 381 767 (1996).
+[19] B. B. Mandelbrot, Fractals and Scaling in Finance, Springer, New York,
+1997; A. Fisher, L. Calvet, B.B. Mandelbrot, Multifractality of DEM/$ rates,
+Cowles Foundation Discussion Paper 1165 (1997); B.B. Mandelbrot, A mul-
+tifractal walk down Wall street, Scientiﬁc American, Feb. (1999).
+[20] F. Schmitt, D. Schertzer, S. Lovejoy, Multifractal analysis of Foreign exchange
+data, Applied Stochastic Models and Data Analysis, 15 29 (1999);
+[21] M.-E. Brachet, E. Taﬂin, J.M. Tch´eou, Scaling transformation and probability
+distributions for ﬁnancial time series, e-print cond-mat/9905169
+[22] T. Lux, Turbulence in ﬁnancial markets: the surprising explanatory power of
+simple cascade models, Quantitative Finance 1, 632, (2001 )
+[23] L. Calvet, A. Fisher, Multifractality in asset returns, theory and evidence, The
+Review of Economics and Statistics, 84, 381 (2002)
+[24] J.P. Bouchaud, A. Matacz, M. Potters, The leverage eﬀect in ﬁnancial mar-
+kets: retarded volatility and market panic Physical Review Letters, 87, 228701
+(2001)
+[25] W. Feller, An introduction to probability theory and is applications, Vol. 2,
+John Wiley & Sons (1971).
+17
+
+
+===== [page 18] =====
+[26] A.N. Kolmogorov, A reﬁnement of previous hypotheses concerning the local
+structure of turbulence in a viscous incompressible ﬂuid at high Reynolds num-
+ber, J. Fluid. Mech. 13, 82 (1962).
+[27] B.B. Mandelbrot, Intermittent turbulence in self-similar cascades: divergence
+of high moments and dimension of the carrier, J. Fluid Mech. 62, 331 (1974).
+[28] J.F. Muzy, E. Bacry and A. Arneodo, The multifractal formalism revisited
+with wavelets, Int. J. of Bifurcat. and Chaos 4, 245 (1994)
+[29] E. Bacry, J. Delour and J.F. Muzy, Multifractal random walk, Phys. Rev. E
+64, 026103 (2001).
+[30] J.F. Muzy and E. Bacry, Multifractal stationary random measures and mul-
+tifractal random walks with log-inﬁnitely divisible scaling laws, Phys. Rev. E
+66, 056121 (2002).
+[31] L. Calvet, A. Fisher, Forecasting multifractal volatility, Journal of Econo-
+metrics, 105, 27, (2001), L. Calvet, A. Fisher, How to Forecast Long-Run
+Volatility: Regime Switching and the Estimation of Multifractal Processes, J.
+Financial Econometrics, 2, 49 (2004).
+[32] T. Lux, Multi-Fractal Processes as a Model for Financial Returns: Simple
+Moment and GMM Estimation, in revision for Journal of Business and Eco-
+nomic Statistics.
+[33] A. Arneodo, J.-F. Muzy, D. Sornette, Causal cascade in the stock market from
+the ‘infrared’ to the ‘ultraviolet’, Eur. Phys. J. B 2, 277 (1998)
+[34] B. Pochart and J.P. Bouchaud, The skewed multifractal random walk with
+applications to option smiles, Quantitative Finance, 2, 303 (2002).
+[35] D. Sornette, Y. Malevergne, J.F. Muzy, What causes crashes, Risk Magazine,
+67 (Feb. 2003).
+[36] B. B. Mandelbrot, J. Barral, Multifractal products of cylindrical pulses, Prob.
+Th. and Related Fields, 124, 409 (2002).
+[37] S. Miccich`e, G. Bonanno, F. Lillo, R. N. Mantegna, Volatility in ﬁnancial
+markets: stochastic models and empirical results, Physica A 314, 756, (2002).
+[38] E. Bacry, A. Kozhemyak, J. F. Muzy, in preparation.
+[39] Z. Eisler, J. Kertesz, Multifractal model of asset returns with leverage eﬀect,
+e-print cond-mat/0403767
+18
+
+
+===== [page 19] =====
+[40] G. Zumbach, P. Lynch Heterogeneous volatility cascade in ﬁnancial markets,
+Physica A, 3-4, 521, (2001); P. Lynch, G. Zumbach Market heterogeneity and
+the causal structure of volatility, Quantitative Finance, 3, 320, (2003).
+[41] G. Zumbach, Volatility processes and volatility forecast with long memory,
+Quantitative Finance 4 70 (2004).
+[42] L. Borland, A multi-time scale non-Gaussian model of stock returns, e-print
+cond-mat/0412526
+[43] L. Borland, A Theory of non-Gaussian Option Pricing, Quantitative Finance
+2, 415-431, (2002).
+[44] L. Borland, J. P. Bouchaud, in preparation.
+[45] A. G. Zawadowski, J. Kertesz, G. Andor, Large price changes on small scales,
+e-print cond-mat/0401055
+[46] J.P. Bouchaud, M. Potters, M. Meyer, Apparent multifractality in ﬁnancial
+time series, Eur. Phys. J. B 13, 595 (1999).
+[47] G. Zumbach, Volatility conditional on past trends, working paper.
+[48] E. Bacry, J. F. Muzy, in preparation.
+[49] M. Dacorogna, U. Muller, R. B. Olsen, O.Pictet, Modelling Short-Term
+Volatility with GARCH and HARCH Models, Nonlinear Modelling of High
+Frequency Financial Time Series, 1998
+[50] For a unconditional option prices within the BMD model, see [34].
+[51] F.A. Longstaﬀ, E. S. Schwartz, Valuing American Options by Simulation: A
+Simple Least-Squares Approach, Rev. Fin. Studies 14 113 (2001).
+[52] M. Potters, J.P. Bouchaud, D. Sestovic, Hedged Monte-Carlo: low variance
+derivative pricing with objective probabilities, Physica A, 289 517 (2001); B.
+Pochart, J.P. Bouchaud, Option pricing and hedging with minimum local ex-
+pected shortfall, to appear in Quantitative Finance.
+[53] on this point of view, see J.P. Bouchaud, M. Potters, Welcome to a non
+Black-Scholes world, Quantitative Finance, 1, 482 (2001)
+19
+
+
+===== [page 20] =====
+Figure 3: Multifractal scaling analysis of S&P 500 returns. 3-a: S&P 500 index
+price series sampled at a 5 minutes rate. 3-b: First ﬁve absolute moments of the
+index (deﬁned in Eq. (2)) as a function of the time period τ in double logarithmic
+representation. For each moment, a linear ﬁt of the small scale behavior provides
+an estimate of ζq. 3-c: Moment ratios Mq(τ)/M2(τ)q/2 in log-log representation.
+Such curves would be ﬂat for a geometric Brownian process. 3-d: ζq spectrum
+estimate versus q.
+Negative q values are obtained using a wavelet method as
+deﬁned in e.g.
+[28].
+This function is well ﬁtted by a Kolmogorov log-normal
+spectrum (see text).
+20
+
+
+===== [page 21] =====
+Figure 4: Multiplicative construction of a Mandelbrot cascade. One starts at the
+coarsest scale T and constructs the volatility ﬂuctuations at ﬁne scales using a
+recursive multiplication rule. The variables W are independent copies of the same
+random variable.
+21
+
+
+===== [page 22] =====
+Figure 5: Multifractal properties of BMD model. 5-a: Exponential of a BMD
+process realization.
+The parameters have been adjusted in order to mimic the
+features of S&P 500 index reported in Fig. 3. 5-b: Multifractal scaling of BMD
+return moments for q = 1, 2, 3, 4, 5.
+5-c: Estimated ζq spectrum (◦) compared
+with the log-normal analytical expression (solid line). 5-d: Evolution of the re-
+turn probability distributions across scales, from nearly Gaussian at coarse scale
+(bottom) to fat tailed law at small scales (top). (e) Log-volatility covariance as a
+function of the logarithm of the lag τ.
+22
+
+
+===== [page 23] =====
+25
+25
+30
+30
+35
+35
+35
+35
+40
+40
+40
+40
+40
+45
+45
+45
+45
+45
+45
+45
+45
+50
+50
+50
+50
+50
+50
+50
+vol_h
+vol_r
+5
+10
+15
+20
+5
+10
+15
+20
+Figure 6: The correlation between past historical volatilities σh[τ] (ln(τ) on the
+horizontal axis) and the future realized volatilities σr[τ ′] (ln(τ ′) on the vertical
+axis) for the USD/CHF foreign exchange time series. The units correspond to the
+time intervals: 1h 12min for (1), 4h 48min (4), 1d 14h 24min (10), 6d 9h 36min
+(14), and 25d 14h 24min (18).
+23
+
+
+===== [page 24] =====
+5
+10
+10
+10
+15
+15
+15
+15
+20
+20
+20
+20
+25
+25
+25
+25
+30
+30
+30
+30
+35
+35
+35
+35
+40
+40
+40
+40
+45
+45
+45
+45
+50
+50
+50
+50
+55
+55
+55
+60
+60
+60
+65
+65
+65
+70
+70
+70
+70
+75
+75
+75
+vol_h
+vol_r
+5
+10
+15
+20
+5
+10
+15
+20
+Figure 7: As for Fig. 6, but for a theoretical volatility cascade with Ornstein-
+Uhlenbeck partial log-volatilities ξn. The cascade includes components from 0.25
+day to 4 days. Note the symmetry of this mug-shot, to be contrasted with the
+previous ﬁgure. A similar, symmetric mug-shot would also obtain for multifractal
+models..
+24

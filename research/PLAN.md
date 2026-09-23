@@ -1,0 +1,73 @@
+# Plan: parallel strategy research with sub-agents
+
+## Goal
+Develop trading strategies grounded in the supplied documents: fractal/multifractal
+finance (Mandelbrot, Bouchaud, Borland, Muzy, Zumbach) and transformers (Wolfram).
+Score every strategy **only by CAGR**, through one harness with identical data,
+frictions and walk-forward rules.
+
+## Shared infrastructure (built before any agent starts)
+| piece | location | purpose |
+|---|---|---|
+| extracted texts | `research/extracted/*.txt` | full text of all 4 PDFs with `[page N]` markers; nobody re-parses PDFs |
+| review | `research/REVIEW.md` | the digest of all documents, with page pointers; every agent reads this first |
+| data | `data/market_daily.csv` | 100 years of daily total returns: US market + 12 industries + T-bills (Ken French library) |
+| harness | `harness/` (`README.md`) | walk-forward runner, causality audit, cost/lag/leverage rules, CAGR |
+| env | `.venv/` | numpy, pandas, scipy, statsmodels, scikit-learn, PyWavelets, torch (CPU) are pre-installed |
+
+## Evaluation protocol
+1. Agents iterate **only** on the `dev` window (1950–1999), optionally checking
+   `dev_a`/`dev_b` halves for stability. Research reads data via `harness.load_dev()`.
+2. Each agent submits **exactly one** final strategy (`strategies/<dir>/strategy.py`).
+   Selecting the best of many variants inflates dev CAGR; the holdout corrects for it.
+3. The orchestrator runs the **sealed holdout** (2000-01-01 → 2026-07-31) once per
+   final strategy, in the same code path, and publishes `results/leaderboard.md`
+   ranked by holdout CAGR, next to dev CAGR and the benchmarks.
+
+## Agent roster (7 agents, same model and permissions as the orchestrator)
+
+Fractal-mathematics family:
+
+| # | agent | directory | core idea (documents) |
+|---|---|---|---|
+| 1 | Joseph effect: long memory | `strategies/hurst_regime/` | Rolling Hurst exponent (R/S, DFA, variance-time; Lo-robust) to switch between trend and mean-reversion/defensive per asset and across industries. Book ch. IX–X; Notes p. 326. Must handle stale-price bias. |
+| 2 | Multifractal volatility and trading time | `strategies/multifractal_vol/` | Forecast volatility with MSM (Calvet–Fisher), MRW log-vol kernel, or Zumbach/Borland multi-timescale ARCH with leverage (g₁<0). Size exposure and allocate by forecast vol; momentum measured in *trading time*. Borland et al. eqs. 10–15; heresy 9. |
+| 3 | Noah effect: tails and crash avoidance | `strategies/tail_risk/` | Rolling Hill/tail-index α, tail dependence across industries, "tail chiseling" portfolio (Bouchaud et al. 1998), market-shock "Richter" index; de-risk when tails and co-crash risk rise. Book ch. VIII, heresies 2/3/7/9, ch. XIII. |
+| 4 | Multifractal spectrum signals | `strategies/mf_spectrum/` | Rolling MF-DFA / wavelet-leader estimates of ζ(q), intermittency λ², singularity-spectrum width; turbulence/regime indicator and multi-scale cascade asymmetry (Zumbach mug-shots) for timing and allocation. Book ch. XI; Borland et al. §3, §5.4. |
+
+Transformer family:
+
+| # | agent | directory | core idea (documents) |
+|---|---|---|---|
+| 5 | Tokenised next-token GPT | `strategies/token_gpt/` | Wolfram-style: discretise vol-normalised returns into a token vocabulary, train a small causal transformer on next-token prediction, decode the predictive distribution (temperature) into positions. |
+| 6 | End-to-end transformer allocator | `strategies/transformer_allocator/` | Attention over time × assets outputs portfolio weights directly, trained to maximise mean log growth (the in-sample CAGR objective) under Σ\|w\| ≤ 1, with strong regularisation and ensembling. |
+
+Hybrid:
+
+| # | agent | directory | core idea (documents) |
+|---|---|---|---|
+| 7 | Fractal-pretrained transformer | `strategies/fractal_transformer/` | Pretrain on large synthetic multifractal markets (MMAR / MRW / fBm-in-multifractal-time "forgeries"), fine-tune on real dev data; and/or fractal features (H, α, λ², multi-scale vols) as token embeddings. Tests Wolfram's "simulated data" lore against Mandelbrot's generators. |
+
+## Rules every agent follows (restated in each agent's prompt)
+* Read `research/REVIEW.md` and `harness/README.md` first. Consult `research/extracted/*.txt`
+  (grep `[page N]`) instead of the PDFs. Don't read the whole book: jump to cited pages.
+* Write only inside your own `strategies/<dir>/`. Don't modify `harness/`, `data/`,
+  `tests/`, `research/`, or other agents' directories. No git commands.
+* Only dev data. Never run `--window holdout`, never set `ALPHA_HOLDOUT`, and never read
+  post-1999 rows of the CSV. Don't hard-code knowledge of historical events or dates.
+* CPU budget: 4 shared cores, no GPU. Set `torch.set_num_threads(1)` and
+  `OMP_NUM_THREADS=1`. The final strategy's full dev run should finish in about 20
+  minutes or less, since the holdout run is similar in length.
+* Deliverables in `strategies/<dir>/`:
+  * `strategy.py`: the one final strategy.
+  * `README.md`: hypothesis with document citations, method, parameters, dev / dev_a /
+    dev_b CAGR, what was tried (including failures), the number of dev evaluations run,
+    runtime, and known risks.
+  * `result_dev.json`: written by the harness CLI.
+  * Optional: `research/` scripts.
+* If you think the harness is wrong, say so in your report. Don't modify it.
+
+## After the agents finish
+1. Run `pytest` and a dev re-run of each final strategy (reproducibility plus causality audit).
+2. Holdout run of each final strategy (`ALPHA_HOLDOUT=1`), once.
+3. `python -m harness.leaderboard` → `results/leaderboard.md`; commit and push.

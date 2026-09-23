@@ -1,0 +1,452 @@
+
+
+===== [page 1] =====
+Mandelbrot, Financial Markets and
+the Origins of “Econophysics”
+JP Bouchaud
+CFM & Acad´emie des Sciences
+Abstract
+This text1 revisits the origins of econophysics through the figure of Benoˆıt Mandelbrot,
+not as the father of fractals, but as the instigator of a distinctive scientific posture. The
+guiding thread is methodological: accept the stubborn features of the data and use models as
+instruments for intuition rather than as axiomatic certificates of truth. In this perspective,
+scaling, intermittency and extremes are not peripheral imperfections around a well-behaved
+equilibrium; they are the very texture of economic and financial fluctuations. This naturally
+shifts attention from exogenous narratives to endogenous dynamics: interactions, feedback
+loops, and collective amplification mechanisms that can make systems intrinsically fragile.
+We argue that the importation of concepts from statistical physics – criticality, disorder,
+emergence, multiplicative cascades – should be read not as an artificial transposition but
+as a candid attempt to look for generic mechanisms compatible with empirical regularities
+observed across scales, from markets to macroeconomic aggregates.
+Les paradoxes d’aujourd’hui sont les pr´ejug´es de demain
+Marcel Proust, Les Plaisirs et les Jours (1896)
+Prologue: staring at data until it stares back
+Econophysics is sometimes caricatured as the naive transfer of physics tools into economics and
+finance. The caricature is convenient for both sides: economists can dismiss it as methodologi-
+cally suspect, while physicists can pretend that their importation of concepts is automatically
+legitimate. The more faithful description is much simpler and, in fact, much more Mandelbrotian:
+econophysics is first and foremost a style of inquiry. It privileges empirical regularities, insists on
+visual and qualitative confrontation with data, and is willing to use “toy” models—metaphors,
+analogies, minimal mechanisms—to organize robust facts before attempting any axiomatic closure.
+This style was actually pioneered by Benoˆıt Mandelbrot. He did not merely propose a model
+for speculative prices; he opened a breach. The breach is epistemological: the claim that market
+data are not well described by Gaussian fluctuations around an equilibrium; that large events
+are not peripheral anomalies but a central feature; and that scale invariance (or something close
+to it) is not an exotic curiosity but a plausible organizing principle.
+Econophysics, in that sense, is the continuation of Mandelbrot’s heresy by a statistical physics
+community that was itself going through a conceptual revolution. We learned, from critical
+1written for the proceedings of the conference ’Mandelbrot’s propositions in economics and finance, and their
+legacy’, 10-11 December 2024, Maison des Sciences ´Economiques, Paris. I thank Christian Walter for inviting me
+and insisting I should write this piece.
+1
+arXiv:2602.02078v1  [cond-mat.stat-mech]  2 Feb 2026
+
+
+===== [page 2] =====
+phenomena, turbulence, spin glasses, chaos, and self-organized criticality, that complex collective
+behavior often cannot be inferred from individual ingredients. “More is different” is not a slogan;
+it is a methodological warning. Markets and economies—collections of interacting heterogeneous
+agents, feeding back on one another through prices, expectations, constraints—are precisely the
+kind of systems for which this warning is relevant.
+The talk summarized here sketches a genealogical thread: from Mandelbrot’s early work on
+speculative prices and fractional Brownian motion, to the data-driven discovery (or rediscovery)
+of fat tails and volatility clustering, to multifractality and multiplicative chaos, to practical
+implementations in option pricing and risk management, and finally to broader economic
+regularities such as Pareto and Zipf laws and the “granularity” hypothesis for macroeconomic
+volatility. The thread is not purely historical. It points to a persistent intellectual tension
+that has become clearer over the years: efficient systems may also be fragile, and endogenous
+dynamics can generate “Black Swans” even when exogenous news is scarce.
+1
+What is econophysics? A methodological definition
+The term “econophysics” is not particularly important; what matters is the shift in attitude it
+signals (Bouchaud 2019). This section proposes a compact definition in four ingredients.
+• (i) Priority to data; qualitative statistics; stylized facts.
+Econophysics begins with the empirical record. Not only with the mean and the variance,
+but with the full distribution, the temporal dependence structure, and the multi-scale
+organization of fluctuations. It tolerates, even encourages, “eye-balling statistics”: stare at
+graphs and charts, compare scales, plot distributions on log-log axes, look for collapses,
+check robustness across assets, epochs, and sampling frequencies. In physics this is routine;
+in economics it has sometimes been regarded as indecorous, because it does not immediately
+speak the language of structural parameters.
+Stylized facts are not a substitute for theory, but they are its constraints. They are also a
+defense against the tendency to overfit narratives to events.
+• (ii) Scale invariance, fat tails, concentration
+At the heart of the Mandelbrot program lies scale invariance and its consequences: power
+laws, heavy tails, and intermittency. “Concentration” is Mandelbrot’s way of emphasizing
+that a small fraction of events can account for a large fraction of aggregate variation. In
+financial returns, a few extreme days can dominate long-run performance; in wealth, a
+small fraction of individuals hold a large fraction of total assets; in firm sizes, a small
+number of firms account for a large fraction of output.
+Scale invariance is not an aesthetic preference. It is a statement about the absence of a
+characteristic scale, which typically indicates either (a) proximity to a critical point, (b)
+multiplicative growth and random proportional effects, or (c) aggregation of heterogeneous
+processes across scales. Each of these interpretations leads to different classes of models
+and different policy intuitions.
+2
+
+
+===== [page 3] =====
+• (iii) Toy models, metaphors, intuitive mechanisms
+The econophysics style rejects the idea that a model must be derived from axioms of
+rationality to be legitimate. This is not necessarily an attack on rationality; it is rather an
+admission of epistemic modesty. We do not know what the correct axioms should be, and
+we know that many elegant axioms produce embarrassingly wrong predictions. Toy models
+are useful precisely because they clarify mechanisms and produce qualitative signatures
+that can be checked in data.
+• (iv) A shared culture with statistical physics and complex systems
+The last ingredient is sociological and intellectual: econophysics is the application of the
+complex-systems mindset to economic data. Interactions matter, feedback loops matter,
+disorder matters, and collective phenomena can be qualitatively different from the behavior
+of the constituents. This culture was not invented in finance; it migrated there, with
+Mandelbrot as an early guide.
+2
+A partial2 timeline: Mandelbrot among the revolutions of
+statistical physics
+This section offers a “partial2” timeline, which is an apt description: it is partial in selection
+and partial in the sense of being biased toward Mandelbrot and the physics community. But the
+point is not historiography; it is to show the remarkable synchronization between Mandelbrot’s
+financial insights and the physics community’s growing obsession with scaling, disorder, and
+emergence.
+2.1
+1960s: speculative prices, Brownian heresy, and the fractal program
+Mandelbrot’s 1963 paper on speculative prices is often presented as the birth certificate of the
+field. It attacked the Gaussian dogma by exhibiting heavy tails and proposing stable laws as
+a first approximation. Even when the pure L´evy-stable hypothesis fails in detail (and it does),
+the core message survives: returns have far more probability mass in their tails than a Gaussian
+world allows.
+By 1967, the conceptual apparatus broadens to include fractional Brownian motion (fBM):
+a Gaussian process with long-range dependence. One must be careful here. Financial returns
+themselves in liquid markets are close to uncorrelated (otherwise obvious arbitrages would exist),
+but volatility is not. The long memory of amplitudes is the real empirical fact, and fBM is a
+natural object for thinking about scaling and memory.
+2.2
+Late 1960s–1970s: critical phenomena, chaos, and early econophysics
+Wilson–Kadanoff scaling theory (1966/1970) is the canonical physics framework in which scale
+invariance becomes a predictive tool. The renormalization group teaches us that macroscopic laws
+can be insensitive to microscopic details, and that power laws can be universal. This intellectual
+background is essential: it makes it natural to look for universality in market fluctuations.
+3
+
+
+===== [page 4] =====
+Around 1971, the Ruelle–Takens picture and the rise of chaos theory (and later Doyne
+Farmer’s influence) emphasize that complex dynamics can arise endogenously in deterministic
+systems. The same year sees early econophysics-like papers (Weidlich, de Gennes), in parallel
+with Schelling’s micromotives-macrobehavior. Again the same theme: aggregate patterns emerge
+from interactions, not from representative agents.
+2.3
+1970s–1990s: turbulence, spin glasses, complex systems, SOC, Santa Fe,
+and the explosion
+In 1974 Mandelbrot returns to turbulence and multifractals, later formalized in the Frisch–
+Parisi multifractal framework (1980). Turbulence is the archetype of intermittent, multi-scale
+fluctuations; finance will later look like turbulence with a suit and tie.
+In 1979 Parisi solves the “spin glass” problem (a milestone recognized by the 2021 Nobel
+Prize). The spin-glass paradigm—rugged landscapes, hierarchical organization, non-ergodicity,
+and the centrality of disorder—becomes part of the complex-systems toolbox, with a renewed
+interest (possibly defining a central paradigm) in the context of Machine Learning and AI.
+In 1987 Bak proposes the concept of self-organized criticality (SOC), popularizing the idea
+that power laws can arise without fine tuning. The same year, the first Santa Fe conference on
+the economy as a complex evolving system signals that complexity may be crucial to understand
+economic systems. By 1991, econophysics explodes both in academia and in the finance industry:
+Mantegna, Stanley, Farmer, Sornette, Galam, Zhang, and others, with parallel developments in
+quantitative firms (Prediction Company, CFM, etc.). In 1997, multifractal modeling of FX rates
+(Bacry–Muzy and collaborators) operationalizes the turbulence analogy proposed by Mandelbrot
+into concrete stochastic processes.
+3
+Statistical “phynance”: the initial ambition
+The first wave of econophysics in finance was not macroeconomics, not equilibrium theory, and
+certainly not welfare theorems. It was the humble activity of measuring before modelling. I had
+proposed calling the field “statistical phynance” (after Alfred Jarry), but it did not stick.
+3.1
+Fat tails: universal, but not L´evy-stable
+A robust empirical fact is the presence of fat tails in return distributions. The word “universal”
+is tempting: across asset classes, one often finds tail exponents in a similar range, and one finds
+strong deviations from Gaussianity at short and medium horizons. But the data emphasizes an
+important caveat: empirical tails are fat, but not L´evy-stable. In practice, very large returns are
+less frequent than a pure stable law would predict; moments exist (at least up to some order);
+and there are cutoffs, regime shifts, and volatility states.
+This nuance matters. A pure L´evy stable model is elegant but too rigid. The right attitude
+is to preserve the central insight—the market produces extremes endogenously and far more often
+than Gaussian theory predicts—while allowing for more realistic mechanisms, such as stochastic
+volatility, multiplicative cascades, or mixtures of regimes.
+4
+
+
+===== [page 5] =====
+3.2
+Volatility clustering and long memory: Mandelbrot’s early insight
+Mandelbrot’s famous sentence captures the central temporal regularity:
+Large changes tend to be followed by large changes, of either sign, and small changes
+tend to be followed by small changes.
+Returns have weak autocorrelation, but volatility does not. The autocorrelation of |rt| or r2
+t
+decays slowly, often compatible with a power law. This is the financial analog of intermittency in
+turbulence: bursts of activity separated by calm periods, with structure across many time scales.
+3.3
+Most “jumps” come from nowhere: excess volatility and endogenous
+dynamics
+Another striking empirical observation is that a large fraction of big price moves cannot be traced
+to identifiable public news. This is not a claim that news is irrelevant, but that the mapping
+between news and prices is weak, nonlinear, and mediated by market microstructure and crowd
+dynamics.
+The classical economist may respond: “news is often private or hard to measure.” True, but
+the econophysicist retorts: then the relevant object is not news but the system’s internal state—
+liquidity, leverage, positioning, risk constraints, herding—because these govern the amplification
+of small perturbations into large moves. (And, by the way, the last thing an informed trader
+should do is to make prices jump!)
+This connects to the theme of “excess volatility”: price variability seems too large relative to
+what can be justified by changes in fundamentals. Whether one embraces that argument in its
+strongest form or not, the practical implication is the same: a large component of volatility is
+generated by the market itself.
+4
+From turbulence to finance: multifractality and the Multifrac-
+tal Random Walk
+The turbulence analogy is not merely rhetorical. It suggests a class of models in which variability
+is organized across scales through multiplicative mechanisms.
+4.1
+Multifractality: many exponents, many scales
+A monofractal process is characterized by a single Hurst exponent; multifractality is characterized
+by a spectrum of scaling exponents. In finance, empirical structure functions often display
+anomalous scaling, suggesting intermittent cascades rather than simple Brownian scaling. Again,
+one must separate signal from noise: microstructure effects, finite samples, and non-stationarity
+can mimic multifractality. But the persistence of multi-scale volatility structure motivates explicit
+multifractal models.
+5
+
+
+===== [page 6] =====
+4.2
+The Multifractal Random Walk: long memory in amplitudes
+The “Multifractal Random Walk” (MRW) is a famous scale-invariant time series relevant for
+turbulence and finance. The key idea is to model returns as
+rt = σtϵt,
+with ϵt close to i.i.d. Gaussian, but with a stochastic volatility σt whose logarithm has long-range
+correlations. This produces:
+• Heavy tails (mixture of Gaussians with random variance).
+• Volatility clustering and long memory (through the correlation structure of log σt).
+• Approximate scaling and multifractal-like behavior.
+Conceptually, MRW and related models shift the explanatory burden from returns to volatility.
+Prices may be close to martingales, but the activity level of the market is not. It has its own
+dynamics, reminiscent of energy dissipation in turbulence.
+4.3
+From physics to finance and back: cracks, landscapes, multiplicative chaos
+An important intellectual message is the two-way street: ideas migrate from physics to finance,
+but also from finance back to physics. Multifractal cracks (Vernede et al.) and hierarchical
+landscapes are examples where similar mathematics appears in different guises. Multiplicative
+chaos, for instance, is not a financial invention; it is a deep probabilistic construction (Kahane)
+that has become a central tool in modern probability and field theory (see Vargas & Rhodes).
+Finance provides an empirical playground where log-correlated volatility fields and multiplicative
+cascades acquire a concrete operational meaning.
+5
+From market data to applications: pricing, hedging, and syn-
+thetic series
+One should not judge econophysics only by its metaphors; one should also judge it by its usefulness
+for applications in option pricing, hedging, and portfolio construction when fat tails and volatility
+clustering are present.
+5.1
+Fat tails and clustered volatility: the end of the Black–Scholes comfort
+zone
+In a Gaussian i.i.d. world, delta hedging errors are small and well behaved; risk can be summarized
+by variance; and option smiles should not exist. In real markets:
+• Volatility clustering makes risk state-dependent and persistent.
+• Tail risk makes large hedging errors inevitable, leading to a demise of “perfect replication”
+and unambiguous option prices.
+6
+
+
+===== [page 7] =====
+• Implied volatility smiles are ubiquitous (and, in fact, already visible in Bachelier’s empirical
+data in 1900!).
+The last remark is not merely historical trivia. It reminds us that the empirical deviations
+from Gaussianity are old; what is new is the awakening to the true risk they entail and their
+industrial-scale quantification (Walter).
+5.2
+Rough volatility: an fBM extension of MRW
+“Rough volatility” can be seen as a modern synthesis of Mandelbrot’s fBM intuition with the
+stochastic-volatility viewpoint. Empirically, volatility appears rougher than Brownian motion,
+with an effective Hurst exponent H < 1/2 at short time scales. (The Multifractal Random Walk
+corresponds formally to the limit H →0). This roughness is not a small detail; it changes the
+term structure of implied volatility skews, the behavior of short-dated options, and the statistics
+of realized variance.
+In the Mandelbrot genealogy, rough volatility is a return of fBM through the back door:
+not for returns themselves (which remain close to uncorrelated), but for volatility as a rough,
+persistent field. This is perhaps one of the clearest examples where an idea that looked like an
+academic curiosity becomes a practical modeling tool.
+5.3
+Wavelets and multi-scaling: generating high-quality synthetic time series
+Recent work using wavelets (with R. Morel & S. Mallat) as a method to capture multi-scaling
+and generate synthetic financial time series. Wavelets are naturally adapted to multi-resolution
+structure; they provide localized scale-by-scale representations. For finance, the goal of high-
+quality synthetic series is not entertainment: it is stress testing, benchmarking of strategies, and
+risk management under realistic temporal dependence structures.
+6
+From financial markets to economics: power laws everywhere
+The striking observation is the pervasiveness of power laws in socio-economic data, from finance
+to economics at large, many known to Mandelbrot.
+6.1
+Pareto wealth tails and toy models
+The Pareto distribution of wealth is a canonical example of fat tails: a small fraction holds a
+disproportionate share. This fact has spawned a host of toy models, many of them “econophysics”
+flavored, often based on random exchange, multiplicative growth, saving propensities, or preferen-
+tial attachment. The key is not to claim that any one toy model is “the” economy, but to identify
+mechanisms that robustly generate Pareto tails under broad conditions (Bouchaud, M´ezard).
+6.2
+Zipf laws for firms, cities, sectors
+Zipf’s law—roughly, rank proportional to size−1—appears in firm sizes, city sizes, and sector sizes.
+Such regularities suggest underlying proportional growth mechanisms or equilibrium between
+growth and fragmentation. Again, one must avoid overinterpretation: institutions and policies
+7
+
+
+===== [page 8] =====
+must matter. But the persistence of Zipf-like laws across countries indicates that strong statistical
+regularities can coexist with institutional diversity. Again, random multiplicative growth models
+are useful to think about such regularities (Gabaix 1999).
+6.3
+Granularity and the failure of the Central Limit Theorem at the macro
+level
+Perhaps the most policy-relevant part of this zoom-out is the “granularity hypothesis” (Gabaix):
+if the distribution of firm sizes is fat-tailed, then the idiosyncratic shocks of the largest firms do
+not average out. The Central Limit Theorem fails in practice because the effective number of
+independent contributors is small: the top firms dominate.
+The crucial empirical finding is that growth rate fluctuations decay much slower than S−1/2
+with firm size S. This slow decay is directly connected to the “small shocks / large business
+cycle puzzle”: macroeconomic volatility appears too large to be explained by the aggregation of
+many independent micro shocks in a world where everything averages out.
+The granularity view is a clean, falsifiable mechanism: measure the firm size distribution,
+quantify the contribution of the top firms, and assess whether macro fluctuations can indeed
+be traced to micro-level granularity. It does not claim that this is the whole story. Financial
+amplification, network effects, leverage cycles, and policy feedbacks also matter. But it provides
+an explicit route by which “micro” noise can remain “macro”.
+7
+Looking for mechanisms: why do small causes lead to large
+effects?
+At this point, the intellectual program anticipated by Mandelbrot becomes explicit: we observe
+fat tails, clustering, intermittency, large crises with weak news triggers, power laws in wealth
+and firm sizes, and anomalously large macro volatility. What mechanisms can plausibly generate
+these patterns?
+7.1
+Fluctuations + interactions ⇒emergence and endogenous dynamics
+Statistical physics offers a template: fluctuations are amplified by interactions. When local
+variables are coupled, the system can develop collective modes, long correlations, and nontrivial
+responses. The list of examples one can think of—earthquakes, avalanches, epileptic seizures,
+financial and economic crises, fads and fashions—is intentionally heterogeneous. The point is
+that large events can be endogenous outcomes of systems with threshold dynamics, feedback,
+and slow driving.
+In finance, interaction takes many forms: order flow impacts prices; price moves affect risk
+constraints; risk constraints feed back on trading; expectations are formed from past prices;
+and liquidity itself is state-dependent. Even if each agent is “rational” in a narrow sense, the
+aggregate can be unstable.
+8
+
+
+===== [page 9] =====
+7.2
+Self-organized criticality and the efficiency–fragility tradeoff
+SOC (Bak) provides an overarching metaphor: systems driven slowly with local relaxation
+can self-tune near criticality, producing scale-free avalanches. Whether financial markets are
+literally SOC systems is debatable, but the metaphor captures an uncomfortable possibility:
+markets may evolve toward states that are locally efficient—liquidity provision, tight spreads,
+high leverage, intense competition—yet globally fragile. Efficiency at the micro level may create
+critical sensitivity at the macro level (Bouchaud 2024 and refs. therein).
+This perspective complements (and challenges) the standard efficient market hypothesis. A
+market can be informationally efficient in some sense, while being dynamically unstable because
+of feedback and endogenous risk-taking.
+7.3
+Multiplicative growth and fat tails
+As already mentioned, multiplicative processes—random proportional growth—are another robust
+route to fat tails. They appear in wealth accumulation, firm growth, and cascade models of
+volatility. In finance, multiplicative volatility cascades naturally generate heavy tails without
+requiring explicit “news jumps.” In economics, multiplicative growth under constraints and
+entry/exit can generate Pareto and Zipf laws.
+It is tempting to suggest that SOC and multiplicative growth may be overarching mechanisms
+for Black Swans. One should not seek a single universal explanation, but these two families
+of mechanisms have the virtue of being both mathematically generative of power laws and
+conceptually aligned with the observed endogeneity of large events.
+8
+Mandelbrot’s intellectual legacy: “Les paradoxes d’aujourd’hui
+sont les pr´ejug´es de demain”
+When thinking about Mandelbrot’s legacy, it is apt to quote Proust: “Today’s paradoxes are
+tomorrow’s prejudices.” His claims were paradoxical in a Gaussian, equilibrium-based intellectual
+climate: heavy tails, scale invariance, discontinuous-looking moves, long memory in volatility.
+Many of these claims are now banal. Option traders live with smiles; risk managers live with fat
+tails; regulators live with systemic crises.
+But the Proust quote is also a warning. Once a paradox becomes a prejudice, it risks becoming
+another dogma. The current fashion for power laws, multifractals, or rough volatility can become
+superficial if it is not disciplined by empirical rigor and mechanistic clarity. The Mandelbrot
+legacy should not be the worship of fractals but rather the insistence that we must build models
+that respect the data, that we should not be embarrassed by complexity, and that endogenous
+crises are not an afterthought but a central object of study.
+The econophysics program remains enticing because the most worrisome phenomena—systemic
+crises in finance and macroeconomics—still lack a fully satisfactory theory. And perhaps they will
+always resist complete domestication, for the same reason fluid turbulence resists it: multi-scale,
+intermittent, feedback-driven dynamics can be characterized statistically, modeled approximately,
+and managed pragmatically, but not reduced to a single closed-form truth.
+9
+
+
+===== [page 10] =====
+References (selected)
+References
+[1] W. B. Arthur, S. N. Durlauf, and D. A. Lane (eds.) (1997). The Economy as an Evolving
+Complex System II. Addison-Wesley / Santa Fe Institute studies.
+[2] L. Bachelier (1900). Th´eorie de la sp´eculation. Annales Scientifiques de l’´Ecole Normale
+Sup´erieure.
+[3] E. Bacry, J. Delour, and J.-F. Muzy (2001). Multifractal random walk. Physical Review E,
+64, 026103.
+[4] P. Bak, C. Tang, and K. Wiesenfeld (1987). Self-Organized Criticality: An Explanation of
+1/f Noise. Physical Review Letters, 59, 381–384.
+[5] C. Bayer, P. K. Friz, M. Fukasawa, J. Gatheral, A. Jacquier, & M. Rosenbaum, (Eds.).
+(2023). Rough volatility. Society for Industrial and Applied Mathematics.
+[6] J.-P. Bouchaud & M. M´ezard (2000). Wealth condensation in a simple model of economy.
+Physica A: Statistical Mechanics and its Applications,282(3-4), 536-545.
+[7] J.-P. Bouchaud (2011). Benoit Mandelbrot, a personal tribute. Quantitative Finance, 11(11),
+1597–1601.
+[8] J.-P. Bouchaud (2019). Econophysics: still fringe after 30 years? Europhysics News, 50(1),
+24–27.
+[9] J.-P. Bouchaud (2024). The self-organized criticality paradigm in economics & finance.
+Available at SSRN 5657431.
+[10] U. Frisch (1995). Turbulence: The Legacy of A. N. Kolmogorov. Cambridge University
+Press.
+[11] U. Frisch and G. Parisi (1985). Turbulence and Predictability in Geophysical Fluid Dynamics
+and Climate Dynamics. (Multifractal ideas formulated circa 1980; see also U. Frisch’s later
+monograph.)
+[12] X. Gabaix (2011). Zipf’s Law and the Growth of Cities. American Economic Review, 89(2),
+129-132.
+[13] X. Gabaix (2011). The Granular Origins of Aggregate Fluctuations. Econometrica, 79(3),
+733–772.
+[14] J. Gatheral, T. Jaisson, and M. Rosenbaum (2018). Volatility is rough. Quantitative Finance,
+18(6), 933–949.
+[15] L. P. Kadanoff (1966). Scaling laws for Ising models near Tc. Physics, 2, 263–272.
+10
+
+
+===== [page 11] =====
+[16] J.-P. Kahane (1985). Sur le chaos multiplicatif. Annales scientifiques de l’´Ecole Normale
+Sup´erieure, 4e s´erie, 15, 171–246.
+[17] R. Morel, S. Mallat, J.-P. Bouchaud (2024). Path shadowing Monte Carlo. Quantitative
+Finance, 24(9), 1199–1225.
+[18] B. B. Mandelbrot (1963). The Variation of Certain Speculative Prices. Journal of Business,
+36(4), 394–419.
+[19] B. B. Mandelbrot and J. W. Van Ness (1968). Fractional Brownian Motions, Fractional
+Noises and Applications. SIAM Review, 10(4), 422–437.
+[20] R. N. Mantegna and H. E. Stanley (1995). Scaling behaviour in the dynamics of an economic
+index. Nature, 376, 46–49.
+[21] R. Rhodes and V. Vargas (2014). Gaussian multiplicative chaos and applications: a review.
+Probability Surveys, 11, 315–392.
+[22] D. Ruelle and F. Takens (1971).
+On the Nature of Turbulence.
+Communications in
+Mathematical Physics, 20, 167–192.
+[23] T. C. Schelling (1978). Micromotives and Macrobehavior. W. W. Norton.
+[24] R. J. Shiller (1981). Do Stock Prices Move Too Much to be Justified by Subsequent Changes
+in Dividends? American Economic Review, 71(3), 421–436.
+[25] D. Sornette (2003). Why Stock Markets Crash: Critical Events in Complex Financial
+Systems. Princeton University Press.
+[26] S. Vern`ede, L. Ponson, and J.-P. Bouchaud (2015). Turbulent fracture surfaces: A footprint
+of damage percolation? Physical Review Letters, 114(21), 215501.
+[27] C. Walter (2018). The leptokurtic crisis and the discontinuous turn in financial modelling.
+In The Making of Finance, pp. 77-89. Routledge.
+[28] K. G. Wilson (1971). Renormalization Group and Critical Phenomena. Physical Review B,
+4, 3174–3183.
+11

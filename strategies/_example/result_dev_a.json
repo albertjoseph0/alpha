@@ -1,0 +1,14 @@
+{
+  "strategy": "example:trend200",
+  "window": "dev_a",
+  "start": "1950-01-03",
+  "end": "1974-12-31",
+  "years": 24.999,
+  "cagr": 0.1011962688226582,
+  "gross_violations": 0,
+  "ruined": false,
+  "runtime_s": 0.6,
+  "audited_dates": 52,
+  "git_commit": "c380216",
+  "timestamp": "2026-09-23T01:26:30+00:00"
+}
