@@ -1,0 +1,14 @@
+{
+  "strategy": "r2:crashguard_plain49",
+  "window": "dev_a",
+  "start": "1950-01-03",
+  "end": "1974-12-31",
+  "years": 24.999,
+  "cagr": 0.15076669834779843,
+  "gross_violations": 0,
+  "ruined": false,
+  "runtime_s": 3.8,
+  "audited_dates": 52,
+  "git_commit": "fcf8dfb",
+  "timestamp": "2026-09-23T03:02:17+00:00"
+}

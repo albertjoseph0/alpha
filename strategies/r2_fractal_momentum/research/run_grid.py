@@ -1,3 +1,4 @@
+import warnings; warnings.filterwarnings("ignore")
 import os, sys, time
 os.environ["OMP_NUM_THREADS"] = "1"
 import numpy as np, pandas as pd

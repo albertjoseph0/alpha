@@ -39,6 +39,10 @@ def signal(kind, r, look=LOOK, skip=SKIP):
         Rk = np.abs(tsum(r, k)); Rk[np.isnan(Rk)] = 0
         L = win(Rk, look - k + 1, skip) / k
         return win(r, look, skip) / L
+    if kind == "dim":                     # minus divider dimension from 5- and 21-day rulers (vol-free smoothness)
+        L5 = win(np.nan_to_num(np.abs(tsum(r, 5))), look - 4, skip) / 5
+        L21 = win(np.nan_to_num(np.abs(tsum(r, 21))), look - 20, skip) / 21
+        return np.log(L21 / L5) / np.log(21 / 5) - 1
     if kind.startswith("tt"):             # trading-time z: X / sqrt(sum of k-day r^2 / k)
         k = int(kind[2:])
         Rk = tsum(r, k) ** 2; Rk[np.isnan(Rk)] = 0
