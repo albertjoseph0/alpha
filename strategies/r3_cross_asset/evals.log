@@ -1,0 +1,11 @@
+C01_r2port	{}	dev=8.10%	dev_a=12.52%	dev_b=3.87%
+C02_abs_def	{"abs_filter": true, "defensive": true}	dev=7.35%	dev_a=11.27%	dev_b=3.58%
+C03_abs_def_iv	{"abs_filter": true, "defensive": true, "weighting": "rank_iv"}	dev=7.56%	dev_a=10.68%	dev_b=4.48%
+C04_abs_def_cap50	{"abs_filter": true, "defensive": true, "group_cap": 0.5}	dev=7.14%	dev_a=11.58%	dev_b=2.88%
+C05_trend1-3-12	{"abs_filter": true, "defensive": true, "trend_lbs": [21, 63, 252]}	dev=8.52%	dev_a=11.67%	dev_b=5.48%
+C06_sharpe_rank	{"abs_filter": true, "defensive": true, "trend_lbs": [21, 63, 252], "score": "sharpe"}	dev=5.95%	dev_a=7.21%	dev_b=4.65%
+C07_vote	{"abs_filter": true, "defensive": true, "trend_lbs": [21, 63, 252], "gate": "vote"}	dev=8.38%	dev_a=11.71%	dev_b=5.07%
+C08_vote_iv	{"abs_filter": true, "defensive": true, "trend_lbs": [21, 63, 252], "gate": "vote", "weighting": "rank_iv"}	dev=8.18%	dev_a=11.33%	dev_b=4.98%
+C09_noind	{"abs_filter": true, "defensive": true, "trend_lbs": [21, 63, 252], "exclude": ["SOXX", "IBB", "ITB", "KRE", "XME", "GDX", "IGV", "ITA", "VIXY"]}	dev=8.28%	dev_a=12.86%	dev_b=3.92%
+C10_corr85	{"abs_filter": true, "defensive": true, "trend_lbs": [21, 63, 252], "max_corr": 0.85}	dev=8.62%	dev_a=12.04%	dev_b=5.28%
+C11_rank6-12	{"abs_filter": true, "defensive": true, "trend_lbs": [21, 63, 252], "lookbacks": [126, 252]}	dev=8.91%	dev_a=12.24%	dev_b=5.54%

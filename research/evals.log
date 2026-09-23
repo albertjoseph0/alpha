@@ -1,0 +1,16 @@
+2026-09-23 r3_equity_rotation r3:eqrot_core {} etf_dev=7.40% etf_dev_a=12.77% etf_dev_b=2.35%
+2026-09-23 r3_equity_rotation r3:eqrot_trend6 {"trend_lb": 126} etf_dev=9.84% etf_dev_a=12.57% etf_dev_b=7.23%
+2026-09-23 r3_equity_rotation r3:eqrot_sharpe {"score": "sharpe"} etf_dev=5.89% etf_dev_a=9.10% etf_dev_b=2.83%
+2026-09-23 r3_equity_rotation r3:eqrot_sharpe_trend6 {"score": "sharpe", "trend_lb": 126} etf_dev=8.29% etf_dev_a=9.37% etf_dev_b=7.28%
+2026-09-23 r3_equity_rotation r3:eqrot_t6_no_trend {"trend": false} etf_dev=7.62% etf_dev_a=14.02% etf_dev_b=1.64%
+2026-09-23 r3_equity_rotation r3:eqrot_t6_trend3 {"trend_lb": 63} etf_dev=10.33% etf_dev_a=12.71% etf_dev_b=8.02%
+2026-09-23 r3_equity_rotation r3:eqrot_t6_trend9 {"trend_lb": 189} etf_dev=9.56% etf_dev_a=11.74% etf_dev_b=7.47%
+2026-09-23 r3_equity_rotation r3:eqrot_t6_no_dedup {"trend_lb": 126, "max_corr": 1.0} etf_dev=9.68% etf_dev_a=12.48% etf_dev_b=7.02%
+2026-09-23 r3_equity_rotation r3:eqrot_t6_eqwt {"trend_lb": 126, "rank_weight": false} etf_dev=9.35% etf_dev_a=12.05% etf_dev_b=6.73%
+2026-09-23 r3_equity_rotation r3:eqrot_t6_single_tranche {"trend_lb": 126, "tranche_days": "(0,)"} etf_dev=11.35% etf_dev_a=14.65% etf_dev_b=8.21%
+2026-09-23 r3_equity_rotation r3:eqrot_t6_us_only {"trend_lb": 126, "universe": "US_ONLY"} etf_dev=6.83% etf_dev_a=4.75% etf_dev_b=8.84%
+2026-09-23 r3_equity_rotation r3:eqrot_t6_frac_1_3 {"trend_lb": 126, "frac": 0.3333333333333333} etf_dev=9.19% etf_dev_a=11.71% etf_dev_b=6.69%
+2026-09-23 r3_equity_rotation r3:eqrot_t6_corr_80 {"trend_lb": 126, "max_corr": 0.8} etf_dev=9.71% etf_dev_a=13.81% etf_dev_b=5.76%
+2026-09-23 r3_equity_rotation r3:eqrot_t6_trend_cash {"trend_lb": 126, "fallback": "NONE"} etf_dev=9.23% etf_dev_a=12.46% etf_dev_b=6.16%
+2026-09-23 r3_equity_rotation r3:eqrot_t6_single_day10 {"trend_lb": 126, "tranche_days": "(10,)"} etf_dev=8.67% etf_dev_a=10.71% etf_dev_b=7.87%
+2026-09-23 r3_equity_rotation r3:eqrot_t6_refresh4 {"trend_lb": 126, "blend": false} etf_dev=7.40% etf_dev_a=10.98% etf_dev_b=3.99%

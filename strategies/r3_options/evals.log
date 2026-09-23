@@ -1,0 +1,14 @@
+{"n": 1, "config": "mom5_1tr_all", "etf_dev": 8.91, "etf_dev_a": 14.07, "etf_dev_b": 4.01}
+{"n": 2, "config": "cc_always_PBP", "etf_dev": 1.99, "etf_dev_a": 1.55, "etf_dev_b": 2.43}
+{"n": 3, "config": "cc_trend_PBP", "etf_dev": 3.35, "etf_dev_a": 1.55, "etf_dev_b": 5.17}
+{"n": 4, "config": "cc_vol_PBP", "etf_dev": 2.07, "etf_dev_a": 1.55, "etf_dev_b": 2.58}
+{"n": 5, "config": "mom5_1tr_noDEF", "etf_dev": 8.91, "etf_dev_a": 14.07, "etf_dev_b": 4.01}
+{"n": 6, "config": "sharpe7_4tr", "etf_dev": 7.15, "etf_dev_a": 9.09, "etf_dev_b": 5.18}
+{"n": 7, "config": "sharpe7_4tr_noDEF", "etf_dev": 7.16, "etf_dev_a": 9.09, "etf_dev_b": 5.19}
+{"n": 8, "config": "sharpe7_4tr_withVIXY", "etf_dev": 7.15, "etf_dev_a": 9.09, "etf_dev_b": 5.18}
+{"n": 9, "config": "sharpe5_4tr", "etf_dev": 6.67, "etf_dev_a": 8.57, "etf_dev_b": 4.73}
+{"n": 10, "config": "sharpe10_4tr", "etf_dev": 6.45, "etf_dev_a": 8.43, "etf_dev_b": 4.43}
+{"n": 11, "config": "sharpe7_4tr_invvol", "etf_dev": 5.97, "etf_dev_a": 6.62, "etf_dev_b": 5.25}
+{"n": 12, "config": "mom7_4tr", "etf_dev": 8.2, "etf_dev_a": 13.0, "etf_dev_b": 3.57}
+{"n": 13, "config": "blend50_mom5_sharpe7", "etf_dev": 7.88, "etf_dev_a": 11.41, "etf_dev_b": 4.45}
+{"n": 14, "config": "switch210_mom5_sharpe7", "etf_dev": 10.64, "etf_dev_a": 13.82, "etf_dev_b": 7.58}
