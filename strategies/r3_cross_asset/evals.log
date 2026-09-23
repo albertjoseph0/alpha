@@ -10,3 +10,10 @@ C09_noind	{"abs_filter": true, "defensive": true, "trend_lbs": [21, 63, 252], "e
 C10_corr85	{"abs_filter": true, "defensive": true, "trend_lbs": [21, 63, 252], "max_corr": 0.85}	dev=8.62%	dev_a=12.04%	dev_b=5.28%
 C11_rank6-12	{"abs_filter": true, "defensive": true, "trend_lbs": [21, 63, 252], "lookbacks": [126, 252]}	dev=8.91%	dev_a=12.24%	dev_b=5.54%
 C12_breadth	{"abs_filter": true, "defensive": true, "trend_lbs": [21, 63, 252], "breadth": true}	dev=8.64%	dev_a=11.48%	dev_b=5.74%
+C13_rank3-6-12	{"abs_filter": true, "defensive": true, "trend_lbs": [21, 63, 252], "lookbacks": [63, 126, 252], "skip": 0}	dev=8.77%	dev_a=12.29%	dev_b=5.30%
+C14_volcap20	{"abs_filter": true, "defensive": true, "trend_lbs": [21, 63, 252], "vol_cap": 0.2}	dev=9.04%	dev_a=11.18%	dev_b=6.76%
+C15_volcap15	{"abs_filter": true, "defensive": true, "trend_lbs": [21, 63, 252], "vol_cap": 0.15}	dev=8.95%	dev_a=10.83%	dev_b=6.89%
+C16_volcap25	{"abs_filter": true, "defensive": true, "trend_lbs": [21, 63, 252], "vol_cap": 0.25}	dev=9.17%	dev_a=11.84%	dev_b=6.42%
+C17_volcap20_frac15	{"abs_filter": true, "defensive": true, "trend_lbs": [21, 63, 252], "vol_cap": 0.2, "frac": 0.15}	dev=8.75%	dev_a=10.78%	dev_b=6.59%
+C18_volcap20_frac25	{"abs_filter": true, "defensive": true, "trend_lbs": [21, 63, 252], "vol_cap": 0.2, "frac": 0.25}	dev=9.17%	dev_a=11.29%	dev_b=6.92%
+C19_volcap20_deftrend	{"abs_filter": true, "defensive": true, "trend_lbs": [21, 63, 252], "vol_cap": 0.2, "def_rank": "trend"}	dev=9.04%	dev_a=10.98%	dev_b=6.96%

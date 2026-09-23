@@ -23,13 +23,14 @@ class XAsset(Strategy):
     refit_every = None
 
     def __init__(self, lookbacks=(252,), skip=21, frac=0.2, weighting="rank", abs_filter=False,
-                 defensive=False, n_def=2, group_cap=None, exclude=("VIXY",), vol_win=63, trend_lbs=None, score="mom", gate="avg", max_corr=None, corr_win=126, breadth=False,
+                 defensive=False, n_def=2, group_cap=None, exclude=("VIXY",), vol_win=63, trend_lbs=None, score="mom", gate="avg", max_corr=None, corr_win=126, breadth=False, vol_cap=None, def_rank="mom",
                  name="r3:xasset_research"):
         self.lookbacks, self.skip, self.frac = tuple(lookbacks), skip, frac
         self.weighting, self.abs_filter, self.defensive, self.n_def = weighting, abs_filter, defensive, n_def
         self.group_cap, self.exclude, self.vol_win, self.name = group_cap, set(exclude), vol_win, name
         self.score, self.gate = score, gate
         self.max_corr, self.corr_win, self.breadth = max_corr, corr_win, breadth
+        self.vol_cap, self.def_rank = vol_cap, def_rank
         self.trend_lbs = None if trend_lbs is None else tuple(trend_lbs)
 
     def predict(self, data, dates):
@@ -112,6 +113,8 @@ class XAsset(Strategy):
                 p = np.array(picked)
                 iv = rw[p] / vol[p]
                 rw[p] = iv / iv.sum() * rw[p].sum()
+            if self.vol_cap is not None:  # trim positions whose annualised vol exceeds the cap
+                rw *= np.minimum(1.0, self.vol_cap / (vol * np.sqrt(252)))
             if self.breadth:  # equity breadth: share of equity-horizon votes in downtrend -> defensive
                 eq = valid & ~excl & np.isin(grp, ("us", "intl"))
                 down = 1.0 - vote[eq].mean() if eq.any() else 0.0
@@ -121,7 +124,8 @@ class XAsset(Strategy):
                 dpass = (vote > 0.5) if self.gate == "vote" else (ex > 0)
                 d = np.flatnonzero(valid & dmask & dpass)
                 if len(d):
-                    d = d[np.argsort(-mom[d], kind="stable")][: self.n_def]
+                    dsc = ex if self.def_rank == "trend" else mom
+                    d = d[np.argsort(-dsc[d], kind="stable")][: self.n_def]
                     rw[d] += spare / len(d)
             tranche_w[j] = rw
             tw = sum(tranche_w.values()) / len(tranche_w)

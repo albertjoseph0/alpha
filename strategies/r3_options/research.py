@@ -15,7 +15,7 @@ import pandas as pd
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import harness
 from harness import MarketData, Strategy
-from strategy import SmoothMomentum
+from strategy import MomentumSleeve
 
 LOG = os.path.join(os.path.dirname(os.path.abspath(__file__)), "evals.log")
 OPT = ("PBP", "XYLD", "QYLD", "JEPI")
@@ -51,7 +51,7 @@ class CCSwitch(Strategy):
 
 
 class Combo(Strategy):
-    """Two SmoothMomentum sleeves with the same tranche days.
+    """Two sleeves with the same tranche days.
     mode 'blend' : w = a*on + (1-a)*off
     mode 'switch': on-sleeve when trend_asset's trend_len-day return > 0, else off-sleeve (whole book,
                    evaluated on each refresh day)."""
@@ -67,14 +67,24 @@ class Combo(Strategy):
         if self.mode == "blend":
             return self.a * w1 + (1 - self.a) * w2
         lp = np.log1p(data.returns[self.trend_asset].fillna(0.0)).cumsum()
-        up = ((lp - lp.shift(self.trend_len)) > 0).loc[dates].values
-        out = w2.copy()
-        out.loc[up] = w1.loc[up]
-        return out
+        lens = self.trend_len if isinstance(self.trend_len, tuple) else (self.trend_len,)
+        f = np.mean([((lp - lp.shift(L)) > 0).loc[dates].values for L in lens], axis=0)
+        return w1.mul(f, axis=0) + w2.mul(1 - f, axis=0)
+
+
+class S(Strategy):
+    """Single-sleeve strategy (sleeve args, then the config name)."""
+    refit_every = None
+
+    def __init__(self, score="sharpe", k=7, weight="eq", tranches=(0, 5, 10, 15), exclude=("VIXY",),
+                 name="r3:options_sleeve"):
+        self.sleeve, self.name = MomentumSleeve(score, k, weight, tranches, exclude), name
+
+    def predict(self, data, dates):
+        return self.sleeve.predict(data, dates)
 
 
 def configs():
-    S = SmoothMomentum
     return {
         # --- covered call vs underlying (single asset) ---
         "cc_always_PBP": lambda: CCSwitch("PBP", "SPY", "always", "r3:options_cc_always_PBP"),
@@ -104,6 +114,10 @@ def configs():
                                                 "r3:options_switch210_mom7_sharpe7"),
         "switch210_noDEF": lambda: Combo(S("mom", 5, "eq", T4, DEF), S(exclude=DEF), "switch",
                                          "r3:options_switch210_noDEF"),
+        "switchens_mom5_sharpe7": lambda: Combo(S("mom", 5, "eq", T4, ("VIXY",)), S(), "switch",
+                                                "r3:options_switchens_mom5_sharpe7", trend_len=(126, 189, 252)),
+        "switchens_mom5_cash": lambda: Combo(S("mom", 5, "eq", T4, ("VIXY",)), None, "switch",
+                                             "r3:options_switchens_mom5_cash", trend_len=(126, 189, 252)),
         "switch210_mom5_cash": lambda: Combo(S("mom", 5, "eq", T4, ("VIXY",)), None, "switch",
                                              "r3:options_switch210_mom5_cash"),
     }

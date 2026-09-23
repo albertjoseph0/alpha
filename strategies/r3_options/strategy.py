@@ -1,7 +1,14 @@
-"""r3:options_* -- cross-asset momentum with the option-income / defensive funds as candidates.
+"""r3:options_switch210_mom5_sharpe7 -- trend-switched momentum over the whole ETF universe, with the
+option-income (PBP/XYLD/QYLD/JEPI) and low-vol (USMV) funds as ordinary candidates.
 
-The one Strategy class; its no-argument defaults are the submitted configuration.
-research.py builds the other evaluated configurations from the same class.
+  * SPY 210-day (~10-month) total return > 0  -> offense: plain 12-1 momentum, top 5, equal weight
+  * otherwise                                  -> defense: Sharpe (12-1 return / 12m vol) momentum,
+                                                  top 7, equal weight (in practice bonds, gold,
+                                                  defensive sectors; never cash by rule)
+  * both sleeves: 4 staggered monthly tranches (trading days 0/5/10/15), VIXY excluded.
+The regime is re-read on each tranche day and applied to the whole book.
+
+MomentumSleeve is a helper (not a Strategy); research.py builds all evaluated configurations from it.
 
 Run:   .venv/bin/python -m harness strategies/r3_options/strategy.py --window etf_dev --benchmarks
 Live:  .venv/bin/python -m harness.live strategies/r3_options/strategy.py --capital 100000
@@ -25,7 +32,7 @@ def month_offsets(cal: pd.DatetimeIndex) -> np.ndarray:
     return np.arange(len(cal)) - start
 
 
-class SmoothMomentum(Strategy):
+class MomentumSleeve:
     """score  'sharpe': 12-1 month log return / annualised daily vol over the same year
                         (risk-adjusted 'smooth trend' momentum)
               'mom'   : plain 12-1 month log return
@@ -33,15 +40,9 @@ class SmoothMomentum(Strategy):
     tranches: trading-day offsets within the month; each tranche is refreshed monthly and the book
               is their equal average
     exclude : tickers never held (VIXY by default: a decaying hedge, never a trend asset)"""
-    name = "r3:options_sharpe_mom7"
-    refit_every = None
-
-    def __init__(self, score="sharpe", k=7, weight="eq", tranches=(0, 5, 10, 15),
-                 exclude=("VIXY",), name=None):
+    def __init__(self, score="sharpe", k=7, weight="eq", tranches=(0, 5, 10, 15), exclude=("VIXY",)):
         self.score, self.k, self.weight = score, k, weight
         self.tranches, self.exclude = tuple(tranches), tuple(exclude)
-        if name:
-            self.name = name
 
     def _targets(self, R: pd.DataFrame, when: pd.DatetimeIndex) -> pd.DataFrame:
         lr = np.log1p(R)
@@ -96,3 +97,20 @@ class SmoothMomentum(Strategy):
             if not w.empty:
                 out.loc[d] = w.mean().values
         return out
+
+
+class TrendSwitchMomentum(Strategy):
+    name = "r3:options_switch210_mom5_sharpe7"
+    refit_every = None
+    TREND_ASSET, TREND_LEN = "SPY", 210
+
+    def __init__(self):
+        self.offense = MomentumSleeve("mom", 5, "eq", (0, 5, 10, 15), ("VIXY",))
+        self.defense = MomentumSleeve("sharpe", 7, "eq", (0, 5, 10, 15), ("VIXY",))
+
+    def predict(self, data: MarketData, dates: pd.DatetimeIndex) -> pd.DataFrame:
+        w_on = self.offense.predict(data, dates)
+        w_off = self.defense.predict(data, dates)
+        lp = np.log1p(data.returns[self.TREND_ASSET].fillna(0.0)).cumsum()
+        up = ((lp - lp.shift(self.TREND_LEN)) > 0).loc[dates].values.astype(float)
+        return w_on.mul(up, axis=0) + w_off.mul(1.0 - up, axis=0)

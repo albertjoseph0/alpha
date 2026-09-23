@@ -12,3 +12,10 @@
 {"n": 12, "config": "mom7_4tr", "etf_dev": 8.2, "etf_dev_a": 13.0, "etf_dev_b": 3.57}
 {"n": 13, "config": "blend50_mom5_sharpe7", "etf_dev": 7.88, "etf_dev_a": 11.41, "etf_dev_b": 4.45}
 {"n": 14, "config": "switch210_mom5_sharpe7", "etf_dev": 10.64, "etf_dev_a": 13.82, "etf_dev_b": 7.58}
+{"n": 15, "config": "switch126_mom5_sharpe7", "etf_dev": 9.03, "etf_dev_a": 11.97, "etf_dev_b": 6.19}
+{"n": 16, "config": "switch252_mom5_sharpe7", "etf_dev": 9.77, "etf_dev_a": 13.8, "etf_dev_b": 5.91}
+{"n": 17, "config": "switch210_mom7_sharpe7", "etf_dev": 10.15, "etf_dev_a": 13.44, "etf_dev_b": 6.93}
+{"n": 18, "config": "switch210_noDEF", "etf_dev": 10.64, "etf_dev_a": 13.82, "etf_dev_b": 7.58}
+{"n": 19, "config": "switch210_mom5_cash", "etf_dev": 11.26, "etf_dev_a": 15.87, "etf_dev_b": 6.86}
+{"n": 20, "config": "switchens_mom5_sharpe7", "etf_dev": 9.72, "etf_dev_a": 13.23, "etf_dev_b": 6.36}
+{"n": 21, "config": "switchens_mom5_cash", "etf_dev": 10.09, "etf_dev_a": 14.54, "etf_dev_b": 5.85}
