@@ -1,0 +1,32 @@
+{
+  "cagr": {
+    "etf:construct_rank5_stag4": {
+      "etf_2000": 0.09996713450401673,
+      "etf_2000_06": 0.06532988204330747,
+      "etf_2007": 0.11245751783697688
+    },
+    "etf:plain_mom_top_third (baseline analog)": {
+      "etf_2000": 0.09791123977686511,
+      "etf_2000_06": 0.06775172128824947,
+      "etf_2007": 0.10882255695521126
+    },
+    "buy & hold SPY": {
+      "etf_2000": 0.08298720310751406,
+      "etf_2000_06": 0.010478040487567286,
+      "etf_2007": 0.10989527297606716
+    },
+    "equal-weight available ETFs, monthly": {
+      "etf_2000": 0.08158004701094068,
+      "etf_2000_06": 0.04726395761920421,
+      "etf_2007": 0.09428037716784554
+    }
+  },
+  "max_drawdown": {
+    "etf:construct_rank5_stag4": -0.6743104285300442,
+    "etf:plain_mom_top_third (baseline analog)": -0.5955527103983378,
+    "buy & hold SPY": -0.5518941523922489,
+    "equal-weight available ETFs, monthly": -0.5815140459145384
+  },
+  "years_beating_spy": 14,
+  "years": 27
+}
