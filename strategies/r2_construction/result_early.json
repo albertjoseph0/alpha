@@ -1,0 +1,14 @@
+{
+  "strategy": "r2:construct_rank5_stag4",
+  "window": "early",
+  "start": "1932-01-02",
+  "end": "1949-12-31",
+  "years": 18.001,
+  "cagr": 0.17688533850181765,
+  "gross_violations": 0,
+  "ruined": false,
+  "runtime_s": 1.6,
+  "audited_dates": 44,
+  "git_commit": "386c2b4",
+  "timestamp": "2026-09-23T03:10:38+00:00"
+}
