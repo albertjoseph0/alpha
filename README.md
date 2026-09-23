@@ -37,3 +37,11 @@ Holdout = 2000-01-03 → 2026-07-31, sealed until every strategy was frozen and 
   beat buy & hold in the holdout, by 3.6–4.6 points a year.
 * Caveat: the top strategy's worst drawdown was −61% against −55% for buy & hold, and it beat the
   market in only 14 of 27 holdout years.
+
+## Round 3: tradeable ETFs only (`results/round3_etf.md`)
+
+On a long-only universe of 56 real ETFs with per-ETF costs (holdout 2016–2026, sealed):
+**r3:options_switch210_mom5_sharpe7** 16.90% vs SPY 14.99% and 60/40 9.58%, max drawdown −25.7% vs −33.7%.
+It beat SPY in only 4 of 11 years, and its margin comes from 2022 and 2025. The other round-3
+strategies beat 60/40 but not SPY. Covered-call ETFs didn't raise CAGR.
+Live orders: `python -m harness.live strategies/r3_options/strategy.py --capital 100000 --refresh`.
