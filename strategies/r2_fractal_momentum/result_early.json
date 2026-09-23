@@ -1,0 +1,14 @@
+{
+  "strategy": "r2:fractal_mom_joseph",
+  "window": "early",
+  "start": "1932-01-02",
+  "end": "1949-12-31",
+  "years": 18.001,
+  "cagr": 0.1593360104358057,
+  "gross_violations": 0,
+  "ruined": false,
+  "runtime_s": 2.0,
+  "audited_dates": 44,
+  "git_commit": "52c25a1",
+  "timestamp": "2026-09-23T03:05:43+00:00"
+}

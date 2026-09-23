@@ -42,6 +42,14 @@ def signal(name, R, Rall):
         return sum(xrank(mom(lp, 21, n)) for n in (63, 126, 189, 252)) / 4
     if name == "mom12_0":
         return mom(lp, 0, 252)
+    if name == "ens_skip":
+        return xrank(mom(lp, 0, 252)) + xrank(mom(lp, 21, 252))
+    if name == "ens_12_7":
+        return xrank(mom(lp, 21, 252)) + xrank(mom(lp, 126, 252))
+    if name == "ens_3way":
+        return xrank(mom(lp, 0, 252)) + xrank(mom(lp, 21, 252)) + xrank(mom(lp, 126, 252))
+    if name == "mom18_1":
+        return mom(lp, 21, 378)
     if name == "mom12_7":
         return mom(lp, 126, 252)
     if name == "high52":

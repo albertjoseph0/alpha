@@ -17,9 +17,10 @@ def month_starts(cal, upto):
 class Construct(Strategy):
     refit_every = None
 
-    def __init__(self, frac=1/3, sell=None, weight="eq", K=1, step=1, offset=0, cap=None, volwin=63):
-        self.frac, self.sell, self.weight, self.K, self.step, self.offset, self.cap, self.volwin = \
-            frac, sell, weight, K, step, offset, cap, volwin
+    def __init__(self, frac=1/3, sell=None, weight="eq", K=1, step=1, offset=0, cap=None, volwin=63, day=0, stag=1, gap=5):
+        self.stag, self.gap = stag, gap
+        self.frac, self.sell, self.weight, self.K, self.step, self.offset, self.cap, self.volwin, self.day = \
+            frac, sell, weight, K, step, offset, cap, volwin, day
         self.name = f"c_f{frac:.3f}_s{sell}_{weight}_K{K}_st{step}o{offset}_cap{cap}_v{volwin}"
 
     def _weights(self, sel, sig, sd):
@@ -60,8 +61,15 @@ class Construct(Strategy):
         sd = np.log1p(R).rolling(self.volwin, min_periods=self.volwin // 2).std()
         ms = month_starts(data.dates, dates[-1])
         ms = ms[ms >= pd.Timestamp("1927-06-01")]
+        if self.day:
+            cal = data.dates; ms = cal[np.minimum(cal.get_indexer(ms) + self.day, len(cal) - 1)]
+            ms = ms[ms <= dates[-1]]
+        cal = data.dates
+        ev = [(cal[i], j) for j in range(self.stag)
+              for i in np.minimum(cal.get_indexer(ms) + j * self.gap, len(cal) - 1)]
+        ev = sorted(e for e in ev if e[0] <= dates[-1])
         held, tranches, targets = [], {}, {}
-        for d in ms:
+        for d, j in ev:
             sig = mom.loc[d].where(valid.loc[d]).dropna()
             n = len(sig)
             if n < 5:
@@ -77,12 +85,12 @@ class Construct(Strategy):
                 sel = keep + [a for a in order if a not in keep][: max(0, k - len(keep))]
             held = sel
             midx = d.year * 12 + d.month - 1
-            tranches[midx % self.K] = self._weights(pd.Index(sel), sig, sd.loc[d])
+            tranches[(midx % self.K, j)] = self._weights(pd.Index(sel), sig, sd.loc[d])
             if (midx - self.offset) % self.step != 0:
                 continue
             tw = pd.Series(0.0, index=I49)
             for w in tranches.values():
-                tw[w.index] += w.values / self.K
+                tw[w.index] += w.values
             # before all K tranches exist, scale up existing ones
             tw /= tw.sum()
             targets[d] = tw
