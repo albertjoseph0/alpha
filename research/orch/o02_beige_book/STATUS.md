@@ -1,33 +1,27 @@
-# o02 Beige Book sector rotation + Jev: STATUS (written by the orchestrator at hand-over)
+# o02 Beige Book sector rotation + Jev: STATUS
+
+Owner: research agent o02 (took over from the orchestrator 2026-09-24). Jev agent id "o02", budget $1.
 
 ## Done
-- s01_fetch.py → data/orch/o02_beige_book/editions.jsonl.gz: 236 editions, 1996-10 to 2026-08, with release dates.
-  Dates come from the URL (1996–2010) or the PDF file names; 14 editions fell back conservatively to the month
-  end. Texts are full reports (2011–2023, truncated at 60k chars), summary pages (1996–2010), or summary pages
-  with district highlights (2024+).
-- s02_jev.py: cuts each edition to its national summary (before the district sections) and strips dates, then
-  asks Jev the direction of change for 12 sectors (choice → expected value in [−2, 2], NaN if not mentioned),
-  plus uncertainty and outlook, plus a leakage probe ("did stocks rise over the next 6 months?"). The first run
-  hit a transient Jev 503; jev.py now retries 10×. Re-run it; cached answers are reused.
+- s01_fetch.py → data/orch/o02_beige_book/editions.jsonl.gz (orchestrator; 236 editions). Kept unchanged.
+- **s01b_dates.py → editions_fixed.jsonl.gz + release_dates_audit.csv (239 editions).** The s01 dates were wrong in
+  a lookahead direction: 2011–2012 dates parsed from in-text dates (e.g. 2011-01-03 vs the true 2011-01-12), and 2024+
+  month-end fallbacks were BEFORE the true release (URL month = report month; beigebook202402 came out 2024-03-06).
+  The fix uses the URL date, the PDF next to the link on the year page, the edition's own PDF, and "Last Update"
+  (2017+), and takes the latest date. 21 dates were changed or added: 3 editions s01 missed (2011-03-02, 2015-03-04,
+  2023-05-31); 2003-09-10 is a 404 and stays missing. All are Wednesdays except 2006-10-12 (Thu, correct), plus
+  2019-12-03 and 2022-07-19, which are conservative (the "Last Update" is 6 days after the PDF date).
+- s02_jev.py now reads editions_fixed, uses 4 threads, and its probe call adds a sector probe (the best sector over
+  the next 6 months, 9-way choice) next to the market probe.
 
-## Caveat
-The national summary has sector sections before 2017 only. From 2017 it is shorter prose, so more
-"not_mentioned" answers are expected. Fill those from "overall", and report the share of missing values
-by era.
+## Running / next
+1. Run s02_jev.py (Jev spend so far $0.011 from the orchestrator's first 58 calls). Check the score distributions
+   by era, the missing share, and the leakage probe AUC.
+2. s03_dict.py: dictionary tone baseline on sector sentences (keyword sentence selection + up/down direction words).
+3. s04_signals.py: per-release sector scores for (a) 12-1 momentum, (b) dictionary, (c) Jev → IC vs next-period
+   ETF returns on DEV; strategy.py (harness) top-3 rule; run etf_dev variants at 1× and 2× costs.
+4. PREREG.md, then etf_holdout once (ALPHA_HOLDOUT=1). README.md with the verdict.
 
-## Next steps
-1. Run s02_jev.py (Jev budget "o02" = $1). Check the score distributions by era and the leakage-probe AUC
-   against realized SPY 6-month returns.
-2. Map sectors to Select Sector SPDRs (in data/etf_universe_daily.csv from 1998-12):
-   - consumer → XLY
-   - manufacturing + transport → XLI
-   - manufacturing + construction → XLB
-   - banking → XLF
-   - energy → XLE
-   - services → XLK
-   - defensives (XLP, XLV, XLU) when overall is weakening
-3. Write a harness Strategy (rebalance on the day after each release; the harness adds a 1-day lag) and run DEV
-   `etf_dev` (2000–2015). Compare with (a) sector 12-1 momentum top 3 on the same dates, the equal-weight 9
-   sectors, and SPY; and (b) a dictionary tone baseline on sector sentences. Pre-register the rule in PREREG.md,
-   then run TEST `etf_holdout` once (ALPHA_HOLDOUT=1).
-4. README.md with the verdict.
+## Mapping (fixed before any results, from the orchestrator's hand-over)
+consumer→XLY; mean(manufacturing, transport)→XLI; mean(manufacturing, construction=mean(resi_re, cre))→XLB;
+banking→XLF; energy→XLE; services→XLK; XLP/XLV/XLU score = −overall. NaN sector → overall.

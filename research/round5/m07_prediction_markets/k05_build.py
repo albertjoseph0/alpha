@@ -57,7 +57,12 @@ cols = ["ticker", "series", "event_ticker", "category", "fee_type", "fee_multipl
         "anchor_ts", "settle_ts", "can_close_early", "result", "status", "volume_fp", "disc_first_ts", "archived",
         "title", "yes_sub_title", "close_time", "expected_expiration_time", "latest_expiration_time"]
 m = m[cols].sample(frac=1.0, random_state=7).reset_index(drop=True)
+if per == "TEST":
+    # TEST is ~3x larger; keep a seeded random 35% of EVENTS (all their markets), chosen blind to outcomes
+    ev = pd.Series(sorted(m.event_ticker.unique()))
+    keep = set(ev.sample(frac=0.35, random_state=20260924))
+    m = m[m.event_ticker.isin(keep)].reset_index(drop=True)
 m.to_csv(os.path.join(D, f"kalshi_sample_{per}.csv.gz"), index=False)
 print(per, "meta", n0, "-> sample", len(m), "events", m.event_ticker.nunique(), "series", m.series.nunique())
 print(m.category.value_counts().head(12))
-print("can_close_early", m.can_close_early.value_counts().to_dict())
+print("can_close_early", m.can_close_early.value_counts().to_dict())  # (no outcome columns printed)

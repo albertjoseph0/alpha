@@ -4,6 +4,9 @@ The Beige Book itself reports change "since the previous report", so each editio
 Input is the national summary only (cut before the district sections), with dates and years removed.
 Output: data/orch/o02_beige_book/jev_scores.parquet (one row per release; one expected-direction column
 per sector in [-2, +2], NaN when Jev says the sector isn't mentioned) and probe.parquet (leakage probe).
+Input: editions_fixed.jsonl.gz (s01b: corrected release dates, 239 editions).
+Question-set log: v1 (this file) is the only scoring set run. The probe call adds a sector probe
+("which sector performed best over the next six months?"), which is forbidden and used only to measure leakage.
 """
 import gzip
 import json
@@ -34,6 +37,8 @@ SECTORS = {
     "labor": "labor demand and employment",
     "prices": "price pressures and inflation",
 }
+PROBE_SECTORS = {"materials": "XLB", "energy": "XLE", "financials": "XLF", "industrials": "XLI", "technology": "XLK",
+                 "consumer_staples": "XLP", "utilities": "XLU", "health_care": "XLV", "consumer_discretionary": "XLY"}
 LEVELS = {"declined_sharply": -2, "declined": -1, "flat": 0, "grew": 1, "grew_strongly": 2}
 CUTS = ["Federal Reserve Bank of Boston", "First District", "Highlights by Federal Reserve District",
         "Boston Economic activity", "Boston First District"]
@@ -76,7 +81,7 @@ def expected(ans):
 
 
 def main():
-    ed = [json.loads(l) for l in gzip.open(D / "editions.jsonl.gz", "rt")]
+    ed = [json.loads(l) for l in gzip.open(D / "editions_fixed.jsonl.gz", "rt")]
     Q = questions()
 
     def one(e):
@@ -90,16 +95,25 @@ def main():
         row["outlook"] = op.get("optimistic", 0) - op.get("pessimistic", 0) - 0.5 * op.get("cautious", 0)
         return row
 
-    with ThreadPoolExecutor(6) as ex:
+    with ThreadPoolExecutor(4) as ex:
         rows = list(ex.map(one, ed))
     df = pd.DataFrame(rows).sort_values("release")
     df.to_parquet(D / "jev_scores.parquet")
     print(df.describe().round(2).T[["count", "mean", "std"]].to_string())
-    probe_q = {"probe": {"type": "noul", "instructions": "Did the US stock market rise over the six months after this report was published?"}}
-    pr = []
-    for e in ed:
-        pr.append({"release": e["release"], "probe": ask(national_summary(e["text"]), probe_q, agent=AGENT)["probe"]["noul"]})
-    pd.DataFrame(pr).to_parquet(D / "probe.parquet")
+    probe_q = {"probe": {"type": "noul", "instructions": "Did the US stock market rise over the six months after this report was published?"},
+               "probe_sector": {"type": "choice", "instructions": "Which US stock market sector performed best over the six months after this report was published?",
+                                "criteria": {k: None for k in PROBE_SECTORS}}}
+
+    def probe(e):
+        a = ask(national_summary(e["text"]), probe_q, agent=AGENT)
+        row = {"release": e["release"], "probe": a["probe"]["noul"]}
+        for k, v in a["probe_sector"]["probabilities"].items():
+            row["ps_" + k] = v
+        return row
+
+    with ThreadPoolExecutor(4) as ex:
+        pr = list(ex.map(probe, ed))
+    pd.DataFrame(pr).sort_values("release").to_parquet(D / "probe.parquet")
     print("spent", spent(AGENT))
 
 
