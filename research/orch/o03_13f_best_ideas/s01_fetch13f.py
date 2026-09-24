@@ -42,10 +42,10 @@ PAGE = "https://www.sec.gov/data-research/sec-markets-data/form-13f-data-sets"
 
 
 def cutoff_date(period: pd.Timestamp) -> pd.Timestamp:
-    """Formation cutoff: filings with FILING_DATE <= period end + 46 calendar days are 'known' at formation.
-    (Deadline is 45 days after quarter end; the portfolio is formed from filings dated up to one day after it
-    and traded at the close of the next trading day after the cutoff; see s03.)"""
-    return period + pd.Timedelta(days=46)
+    """Aggregate ('market portfolio') cutoff: filings with FILING_DATE <= period end + 45 calendar days. The
+    manager-level rule in s02 uses the exact deadline rolled to the next trading day (always >= this date), and
+    trades at the close of the following trading day, so the aggregate never uses a filing made after formation."""
+    return period + pd.Timedelta(days=45)
 
 
 def list_zips() -> list[str]:
@@ -68,11 +68,15 @@ def download(url: str, path: pathlib.Path) -> None:
         req = urllib.request.Request(url, headers={"User-Agent": sec.UA, "Accept-Encoding": "identity"})
         try:
             with urllib.request.urlopen(req, timeout=300) as r, open(tmp, "wb") as f:
+                want = int(r.headers.get("Content-Length") or 0)
                 while True:
                     b = r.read(1 << 20)
                     if not b:
                         break
                     f.write(b)
+            got = tmp.stat().st_size
+            if (want and got != want) or not zipfile.is_zipfile(tmp):
+                raise IOError(f"truncated download {got} of {want}")
             tmp.rename(path)
             return
         except Exception as e:  # noqa: BLE001
