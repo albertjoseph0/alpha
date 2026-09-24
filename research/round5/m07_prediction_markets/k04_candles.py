@@ -38,12 +38,15 @@ for i, r in enumerate(samp.itertuples()):
         continue
     start = int(max(r.anchor_ts - 8 * 86400, r.open_ts))
     end = int(r.anchor_ts)
-    path = "/historical/markets/%s/candlesticks" if r.archived else "/markets/%s/candlesticks"
-    if not r.archived:
-        # live endpoint needs the series ticker
-        path = "/series/%s/markets/%%s/candlesticks" % r.series
-    d = get(B + path % r.ticker, dict(start_ts=start, end_ts=end, period_interval=60))
+    # end a few hours after close so the final pre-close quotes are included
+    end = int(r.anchor_ts) + 3600
+    d = get(B + "/historical/markets/%s/candlesticks" % r.ticker, dict(start_ts=start, end_ts=end, period_interval=60))
     cs = d.get("candlesticks", []) or []
+    if not cs:
+        # not yet archived -> live endpoint (needs the series ticker)
+        d = get(B + "/series/%s/markets/%s/candlesticks" % (r.series, r.ticker),
+                dict(start_ts=start, end_ts=end, period_interval=60))
+        cs = d.get("candlesticks", []) or []
     arr = np.array([[c["end_period_ts"], f(c["yes_bid"].get("close")), f(c["yes_ask"].get("close")),
                      f((c.get("price") or {}).get("close")), f(c.get("volume")),
                      f(c["yes_ask"].get("low")), f(c["yes_bid"].get("high"))] for c in cs]) if cs else np.zeros((0, 7))

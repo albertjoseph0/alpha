@@ -37,12 +37,13 @@ TENORS_D = np.array([2, 7, 14, 21, 30, 45, 60, 75, 91, 120, 150, 182, 213])
 EQ_COST = 0.0001
 
 
-def load():
+def load(tag="_s21"):
+    """tag "_s21" (base since round 5b): surface calibrated to the trailing 21-day mean SKEW; "" = raw daily SKEW."""
     p = pd.read_pickle(D / "panel.pkl")
-    s = pd.read_pickle(D / "surface.pkl")
+    s = pd.read_pickle(D / f"surface{tag}.pkl")
     df = p[["SPX", "r", "q", "r_eq", "r_bill", "VIX", "SKEW"]].join(
         s[["beta", "sa30", "VIX3M_used", "VIX6M_used", "VIX1Y_used"] + [f"sa_{t}" for t in TENORS_D]])
-    ss = D / "surface_ssvi.pkl"
+    ss = D / f"surface_ssvi{tag}.pkl"
     if ss.exists():
         df = df.join(pd.read_pickle(ss)[["psi", "ratio"]])
     df["r_eq"] = df["r_eq"].fillna(0.0)
@@ -62,12 +63,12 @@ def expiry_for(dt, tenor_m):
 
 
 class Pricer:
-    def __init__(self, df, model):
+    def __init__(self, df, model, beta_mult=1.0):
         self.model = model
         self.S = df.SPX.values
         self.r = df.r.values
         self.q = df.q.values
-        self.beta = df.beta.values
+        self.beta = df.beta.values * beta_mult  # stress only (sa not re-solved)
         self.saw = np.stack([df[f"sa_{t}"].values ** 2 * t / 365 for t in TENORS_D], 1)  # total var
         self.Tg = TENORS_D / 365
         if model == "ssvi":
@@ -94,7 +95,7 @@ class Pricer:
         return put_price(S, K, tau, self.r[i], self.q[i], th, self.psi[i], -0.7)
 
 
-def run(df, pr, depth, tenor, budget, monet, hpct, floor=0.0, keep_daily=False):
+def run(df, pr, depth, tenor, budget, monet, hpct, floor=0.0, min_ask=0.0):
     idx = df.index
     S = df.SPX.values
     r_eq = df.r_eq.values
@@ -117,7 +118,7 @@ def run(df, pr, depth, tenor, budget, monet, hpct, floor=0.0, keep_daily=False):
         exp = expiry_for(idx[i], tenor)
         tau = (exp - idx[i]).days / 365
         mid = pr.put(i, K, tau)
-        ask = mid + half(mid)
+        ask = max(mid + half(mid), min_ask)
         spend = budget / 12 * navi
         n_c = spend / ask
         cost = spend

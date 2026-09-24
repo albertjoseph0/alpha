@@ -1,0 +1,22 @@
+vs BTC buy&hold: weeks=209 mean weekly excess 0.56% t=0.58; total log excess 0.84; minus best 5 weeks -1.23; minus best 10 -2.56
+   2018: mean +0.32%/wk t=0.21
+   2019: mean -0.88%/wk t=-0.64
+   2020: mean +0.34%/wk t=0.15
+   2021: mean +2.31%/wk t=0.97
+vs BTC+SMA100 control: weeks=209 mean weekly excess 0.70% t=0.86; total log excess 0.54; minus best 5 weeks -1.36; minus best 10 -2.54
+   2018: mean +0.34%/wk t=0.63
+   2019: mean -1.44%/wk t=-1.17
+   2020: mean +1.15%/wk t=0.56
+   2021: mean +2.77%/wk t=1.27
+2018 sum of simple contributions -0.81; top 5: {'ETHUSDT': 0.17, 'ZILUSDT': 0.0, 'ZRXUSDT': 0.0, 'YFIUSDT': 0.0, 'XTZUSDT': 0.0} bottom 3: {'BCCUSDT': -0.2, 'BNBUSDT': -0.17, 'BTCUSDT': -0.17}
+2019 sum of simple contributions +0.49; top 5: {'LINKUSDT': 0.3, 'ONTUSDT': 0.12, 'BNBUSDT': 0.11, 'BTCUSDT': 0.09, 'ETHUSDT': 0.08} bottom 3: {'ZECUSDT': -0.07, 'NEOUSDT': -0.07, 'ETCUSDT': -0.06}
+2020 sum of simple contributions +1.72; top 5: {'BANDUSDT': 0.32, 'ERDUSDT': 0.31, 'ZILUSDT': 0.28, 'SUSHIUSDT': 0.2, 'KAVAUSDT': 0.17} bottom 3: {'OMGUSDT': -0.16, 'ALGOUSDT': -0.1, 'RENUSDT': -0.06}
+2021 sum of simple contributions +2.18; top 5: {'LUNAUSDT': 0.48, 'MATICUSDT': 0.25, 'CHZUSDT': 0.25, 'SUSHIUSDT': 0.19, 'SANDUSDT': 0.18} bottom 3: {'IOTXUSDT': -0.12, 'WINUSDT': -0.11, 'CHRUSDT': -0.08}
+
+Start 2019-01-01 (universe >= 19 pairs):
+  canonical 2019->2020: CAGR 115.9
+  canonical 2019->2021: CAGR 177.9
+  BTC+filter 2019->2020: CAGR 191.2
+  BTC+filter 2019->2021: CAGR 135.5
+  BTC b&h 2019->2020: CAGR 176.2
+  BTC b&h 2019->2021: CAGR 130.2

@@ -1,0 +1,22 @@
+TEST period 2022-01-01 -> 2026-08-31
+                         name  cagr  maxdd  sharpe  trades  delist_hits  vs_BTC  vs_SPY
+                 BTC buy&hold  11.3  -66.9    0.46     NaN          NaN     0.0    -0.9
+                 SPY buy&hold  12.2  -24.5    0.90     NaN          NaN     0.9     0.0
+     CANONICAL (delist->last) -41.9  -92.8   -0.39   887.0          0.0   -53.2   -54.1
+           CANONICAL 2x costs -44.5  -94.2   -0.45   887.0          0.0   -55.8   -56.7
+       CANONICAL delist->zero -41.9  -92.8   -0.39   887.0          0.0   -53.2   -54.1
+    CANONICAL delist->zero 2x -44.5  -94.2   -0.45   887.0          0.0   -55.8   -56.7
+control: BTC w/ SMA100 filter   4.4  -43.2    0.30    46.0          0.0    -6.9    -7.8
+ control: EW top-30 w/ SMA100 -31.9  -84.5   -0.43  4217.0          2.0   -43.2   -44.1
+
+Calendar-year returns (%)
+            BTC buy&hold  SPY buy&hold  CANONICAL (delist->last)  CANONICAL 2x costs  CANONICAL delist->zero  CANONICAL delist->zero 2x  control: BTC w/ SMA100 filter  control: EW top-30 w/ SMA100
+2022-12-31         -65.3         -18.6                     -48.0               -48.5                   -48.0                      -48.5                          -30.5                         -37.7
+2023-12-31         155.6          26.2                     -45.7               -49.3                   -45.7                      -49.3                           34.0                          -4.9
+2024-12-31         121.3          24.9                     -26.5               -31.4                   -26.5                      -31.4                           52.4                         -35.6
+2025-12-31          -6.3          17.7                     -49.6               -52.1                   -49.6                      -52.1                            6.7                         -44.0
+2026-12-31         -10.3          13.1                     -23.9               -25.1                   -23.9                      -25.1                          -19.2                         -21.7
+
+Most-held (weeks): {'SOLUSDT': 18, 'XRPUSDT': 16, 'SUIUSDT': 16, 'FETUSDT': 14, 'PEPEUSDT': 14, 'XLMUSDT': 13, 'BONKUSDT': 13, 'ENAUSDT': 13, 'HBARUSDT': 12, 'BTCUSDT': 11, 'INJUSDT': 11, 'SEIUSDT': 11, 'DOGEUSDT': 10, 'RNDRUSDT': 10, 'BNBUSDT': 10}
+Delisting events while held: []
+Fraction of weeks invested: 0.49

@@ -3,7 +3,7 @@ State = anonymised narrative of the CURRENT release (<=12k chars) + the same com
 (<=8k chars; only if accepted within 200 days before). Questions frozen in jev_questions.py.
 Streams texts_all.jsonl.gz (sorted by filing date), resumable via Jev's on-disk cache.
 Usage: s07_jev.py [MAX_DATE]   -> DATA/jev_raw.jsonl.gz (acc -> answers) and DATA/jev_features.parquet"""
-import sys, gzip, json, time
+import sys, gzip, json, time, random
 import pandas as pd
 sys.path.insert(0, "/home/user/alpha/research/round5")
 from jev import ask, spent, BudgetExceeded
@@ -61,7 +61,18 @@ def work(job):
     if stop.is_set():
         return {"acc": acc, "has_prev": hp, "ok": False, "err": "stopped"}
     try:
-        a = ask(state, QUESTIONS, agent="m06", retries=6, timeout=60)
+        for attempt in range(40):   # Jev returns fast 503s under load: retry quickly with jitter, not 2^k backoff
+            try:
+                a = ask(state, QUESTIONS, agent="m06", retries=1, timeout=60)
+                break
+            except RuntimeError as e:
+                if ("503" in str(e) or "429" in str(e) or "502" in str(e)) and attempt < 39:
+                    time.sleep(0.5 + random.random() * min(1 + attempt, 8)); continue
+                raise
+            except OSError:
+                if attempt < 39:
+                    time.sleep(2 + random.random() * 3); continue
+                raise
     except BudgetExceeded:
         stop.set(); return {"acc": acc, "has_prev": hp, "ok": False, "err": "budget"}
     except Exception as e:

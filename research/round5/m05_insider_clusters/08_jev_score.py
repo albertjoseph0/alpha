@@ -50,7 +50,7 @@ STOP = {"inc", "corp", "corporation", "co", "company", "ltd", "llc", "lp", "the"
 
 
 def _tokens(name):
-    return [w for w in re.split(r"[^A-Za-z0-9']+", name or "") if len(w) >= 3 and w.lower() not in STOP]
+    return [w for w in re.split(r"[^A-Za-z0-9']+", name if isinstance(name, str) else "") if len(w) >= 3 and w.lower() not in STOP]
 
 
 def anonymize(text, issuer, sym, owner):

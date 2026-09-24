@@ -1,5 +1,5 @@
 """Score each press release: FinBERT (ProsusAI/finbert, original 2020-12-24 weights, trained on pre-2015
-text) over the first K narrative sentences, and Loughran-McDonald dictionary tone.
+text) over the first K=10 narrative sentences (int8-quantised), and Loughran-McDonald dictionary tone.
 Usage: s05_score.py TEXTS.jsonl.gz OUT.parquet"""
 import os, sys, re, json, gzip, time
 os.environ.setdefault("OMP_NUM_THREADS", "1")
@@ -14,8 +14,10 @@ torch.set_num_threads(1)
 REV = "4556d13015211d73dccd3fdd39d39232506f3e43"  # pytorch_model.bin sha256 e15a7b57.. committed 2020-12-24
 tok = AutoTokenizer.from_pretrained("ProsusAI/finbert", revision=REV)
 mdl = AutoModelForSequenceClassification.from_pretrained("ProsusAI/finbert", revision=REV, use_safetensors=False).eval()
+# int8 dynamic quantisation: 2x faster on the shared CPU; doc-level net tone corr 0.98 with fp32 (20-doc check)
+mdl = torch.quantization.quantize_dynamic(mdl, {torch.nn.Linear}, dtype=torch.qint8)
 lm = ps.LM()
-K = 24
+K = 10  # first 10 narrative sentences (headline, highlights, CEO quote); CPU budget
 BOIL = re.compile(r"forward-looking|conference call|webcast|non-gaap|safe harbor|www\.|http|investor relations|"
                   r"dial-in|replay|press release|reconciliation|table|incorporated by reference|exhibit|"
                   r"securities exchange act|pursuant to|signature|form 8-k", re.I)
@@ -40,7 +42,7 @@ def sentences(text):
 
 @torch.no_grad()
 def finbert(sents):
-    enc = tok(sents, return_tensors="pt", padding=True, truncation=True, max_length=96)
+    enc = tok(sents, return_tensors="pt", padding=True, truncation=True, max_length=64)
     p = torch.softmax(mdl(**enc).logits, -1).numpy()  # pos, neg, neu
     return p
 

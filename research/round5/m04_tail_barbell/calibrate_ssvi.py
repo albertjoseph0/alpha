@@ -5,6 +5,8 @@ theta30, psi are solved so the model's CBOE-style 30d variance = VIX^2 and skewn
 Other tenors: theta_T = (theta30 / varswap_tv(30d)) * varswap_tv(T), psi constant (as in chain_check.py).
 On the 2026-09-22 chain this model priced 5-46% OTM puts at 1.3-1.7x the real mid.
 Output: data/round5/m04_tail_barbell/surface_ssvi.pkl  (needs surface.pkl for the tenor curve)
+Run: python calibrate_ssvi.py [SKEW_WIN]  -> with SKEW_WIN>1 reads surface_s<WIN>.pkl (SKEW already smoothed)
+     and writes surface_ssvi_s<WIN>.pkl
 """
 import math
 import sys
@@ -34,8 +36,9 @@ def calib(vix, skew_idx, S_level, x0):
     return sol.x, float(np.abs(sol.fun).max())
 
 
-def main():
-    s = pd.read_pickle(D / "surface.pkl")
+def main(win=1):
+    tag = f"_s{win}" if win > 1 else ""
+    s = pd.read_pickle(D / f"surface{tag}.pkl")
     out = []
     x0 = None
     for i, (dt, r) in enumerate(s.iterrows()):
@@ -53,10 +56,10 @@ def main():
         if i % 1000 == 0:
             print(dt.date(), out[-1], flush=True)
     o = pd.DataFrame(out).set_index("date")
-    o.to_pickle(D / "surface_ssvi.pkl")
+    o.to_pickle(D / f"surface_ssvi{tag}.pkl")
     print(o.describe().T.round(4).to_string())
     print("days with err>1e-3:", int((o.ssvi_err > 1e-3).sum()))
 
 
 if __name__ == "__main__":
-    main()
+    main(int(sys.argv[1]) if len(sys.argv) > 1 else 1)

@@ -33,3 +33,13 @@ def cagr_m(r):
 def maxdd(r):
     eq = (1 + pd.Series(r).dropna()).cumprod()
     return (eq / eq.cummax() - 1).min()
+
+
+def md(df):
+    """DataFrame -> markdown table (no tabulate dependency)."""
+    df = pd.DataFrame(df)
+    cols = [str(df.index.name or "")] + [str(c) for c in df.columns]
+    out = ["| " + " | ".join(cols) + " |", "|" + "---|" * len(cols)]
+    for i, r in df.iterrows():
+        out.append("| " + " | ".join([str(i)] + [str(v) for v in r.values]) + " |")
+    return "\n".join(out)

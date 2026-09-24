@@ -7,7 +7,9 @@ For each day t (information known at the close of t):
   * (sigma_a30, beta) solved to VIX and SKEW (base linear-z model, pricing.py).
   * sigma_a(T) on a tenor grid solved to the variance-swap curve.
 Output: data/round5/m04_tail_barbell/surface.pkl
-Run: python calibrate_surface.py [PEXP]   (PEXP variant for sensitivity, default 0.85)
+Run: python calibrate_surface.py [PEXP] [SKEW_WIN]   (PEXP variant for sensitivity, default 0.85;
+     SKEW_WIN>1 calibrates to the trailing SKEW_WIN-day mean of SKEW (known at t), output surface_s<WIN>.pkl.
+     Added in round 5b: the raw daily SKEW is noisy and makes 30%-OTM marks jump up to 100x in flat markets.)
 """
 import math
 import sys
@@ -34,9 +36,12 @@ def fit_proxy(df, col):
     return a, b, len(ov), float(resid.std()), ov.index.min().date()
 
 
-def main(pexp=0.85):
+def main(pexp=0.85, skew_win=1):
     pricing.PEXP = pexp
     df = pd.read_pickle(D / "panel.pkl")
+    df["SKEW_RAW"] = df["SKEW"]
+    if skew_win > 1:
+        df["SKEW"] = df["SKEW"].rolling(skew_win, min_periods=1).mean()
     proxies = {}
     for col in ["VIX3M", "VIX1Y"]:
         a, b, n, sd, start = fit_proxy(df, col)
@@ -68,11 +73,11 @@ def main(pexp=0.85):
             print(dt.date(), rec["sa30"], rec["beta"], err, flush=True)
     s = pd.DataFrame(out).set_index("date")
     s = s.join(df[["SPX", "VIX", "SKEW", "r", "q", "VIX3M_used", "VIX6M_used", "VIX1Y_used", "VIX3M_proxy"]])
-    tag = "" if abs(pexp - 0.85) < 1e-9 else f"_p{pexp}"
+    tag = ("" if abs(pexp - 0.85) < 1e-9 else f"_p{pexp}") + (f"_s{skew_win}" if skew_win > 1 else "")
     s.to_pickle(D / f"surface{tag}.pkl")
     print(s.describe().T.round(4).to_string())
     print("days with calib_err>1e-3:", int((s.calib_err > 1e-3).sum()))
 
 
 if __name__ == "__main__":
-    main(float(sys.argv[1]) if len(sys.argv) > 1 else 0.85)
+    main(float(sys.argv[1]) if len(sys.argv) > 1 else 0.85, int(sys.argv[2]) if len(sys.argv) > 2 else 1)

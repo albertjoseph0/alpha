@@ -9,6 +9,7 @@ uses only rows whose label window has closed (t1 <= F). DEV holding months 2014-
 """
 import sys
 import time
+from common import *  # sets OMP_NUM_THREADS=1 before sklearn loads OpenMP
 from sklearn.ensemble import HistGradientBoostingRegressor, RandomForestRegressor
 from sklearn.linear_model import Ridge
 from common import *
@@ -181,6 +182,10 @@ def run(period, names):
     res.append(summ(bm["spy"], bm["spy"], "ctrl_spy"))
     R = pd.DataFrame(res)
     R.to_csv(OUT / f"results_{period}.csv", index=False)
+    log = R.assign(run_at=pd.Timestamp.now().strftime("%Y-%m-%d %H:%M"), period=period,
+                   note=os.environ.get("M11_NOTE", ""))
+    lf = OUT / "configs_log.csv"
+    log.to_csv(lf, mode="a", header=not lf.exists(), index=False)
     print(R.round(4).to_string())
     return R, allS, ics
 
