@@ -9,7 +9,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 spec = importlib.util.spec_from_file_location("bt", f"{HERE}/05_backtest.py")
 bt = importlib.util.module_from_spec(spec); spec.loader.exec_module(bt)
 D = bt.D
-CACHE = f"{D}/prepared.pkl"
+CACHE = f"{D}/prepared{bt.TAG}.pkl"
 
 
 def get_prepared():

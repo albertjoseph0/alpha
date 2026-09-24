@@ -47,11 +47,32 @@ def finbert(sents):
 
 if __name__ != "__main__":
     raise SystemExit  # importable only for sentences()/finbert() in tests
-inp, outp = DATA / sys.argv[1], DATA / sys.argv[2]
-rows = []; t0 = time.time()
-with gzip.open(inp, "rt") as f:
-    for i, line in enumerate(f):
-        d = json.loads(line)
+# Usage: s05_score.py TEXTS.jsonl.gz OUTPREFIX  -> DATA/OUTPREFIX_partNNN.parquet (resumable; 500 docs per part)
+import glob
+inp, pref = DATA / sys.argv[1], sys.argv[2]
+parts = sorted(glob.glob(str(DATA / f"{pref}_part*.parquet")))
+done = set()
+for q in parts:
+    done |= set(pd.read_parquet(q, columns=["acc"]).acc)
+k = len(parts)
+rows = []; t0 = time.time(); n = 0
+
+
+def flush():
+    global rows, k
+    if rows:
+        pd.DataFrame(rows).to_parquet(DATA / f"{pref}_part{k:03d}.parquet"); k += 1; rows = []
+
+
+try:
+    f = gzip.open(inp, "rt")
+    for line in f:
+        try:
+            d = json.loads(line)
+        except json.JSONDecodeError:
+            break
+        if d["acc"] in done:
+            continue
         S = sentences(d["text"])[:K]
         r = {"acc": d["acc"], "dtype": d["dtype"], "nchar": d["nchar"], "nsent": len(S)}
         if S:
@@ -66,8 +87,10 @@ with gzip.open(inp, "rt") as f:
         nw = max(len(w.split()), 1)
         r.update(lm_pos=sc["Positive"] / nw, lm_neg=sc["Negative"] / nw,
                  lm_tone=(sc["Positive"] - sc["Negative"]) / max(sc["Positive"] + sc["Negative"], 1))
-        rows.append(r)
-        if i % 250 == 0:
-            print(i, round(time.time() - t0), flush=True)
-pd.DataFrame(rows).to_parquet(outp)
-print("done", len(rows), round(time.time() - t0))
+        rows.append(r); n += 1
+        if len(rows) >= 500:
+            flush(); print(n, round(time.time() - t0), flush=True)
+except (EOFError, OSError):
+    pass  # file still being appended / truncated tail: resume next run
+flush()
+print("done", n, round(time.time() - t0))

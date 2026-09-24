@@ -50,7 +50,7 @@ def main():
             z = zipfile.ZipFile(io.BytesIO(get(BASE + k)))
             with z.open(z.namelist()[0]) as f:
                 return pd.read_csv(f, header=None)
-        with ThreadPoolExecutor(6) as inner:
+        with ThreadPoolExecutor(4) as inner:
             frames = list(inner.map(dl, keys))
         if not frames:
             open(out, "w").write(""); return sym, 0
@@ -61,7 +61,7 @@ def main():
         df.to_csv(out, index=False)
         return sym, len(keys)
 
-    with ThreadPoolExecutor(5) as ex:
+    with ThreadPoolExecutor(4) as ex:
         for i, (s, n) in enumerate(ex.map(one, usdt)):
             if i % 50 == 0: print(i, s, n, flush=True)
 

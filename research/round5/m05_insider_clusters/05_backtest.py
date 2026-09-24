@@ -12,6 +12,7 @@ import os, json, glob, hashlib
 import numpy as np, pandas as pd
 
 D = "/home/user/alpha/data/round5/m05_insider_clusters"
+TAG = "_v2"   # round 5b: full-sample event files (old events.parquet only covered 2006-07)
 
 # ---------------- cost model (ROUND TRIP, spread + slippage + commission) ----------------
 #   price < $5                                   : 300 bp
@@ -47,8 +48,8 @@ def load_bench():
 
 
 def prepare(H_list=(21, 63, 126, 252)):
-    ev = pd.read_parquet(f"{D}/events.parquet")
-    cand = pd.read_parquet(f"{D}/event_candidates.parquet")
+    ev = pd.read_parquet(f"{D}/events{TAG}.parquet")
+    cand = pd.read_parquet(f"{D}/event_candidates{TAG}.parquet")
     so = pd.read_parquet(f"{D}/shares_out.parquet"); so["cik"] = so.cik.astype(str)
     so = so.sort_values("end"); so_g = {k: g for k, g in so.groupby("cik")}
     px, sp = _load_prices()
@@ -95,7 +96,7 @@ def prepare(H_list=(21, 63, 126, 252)):
             g = so_g.get(str(e.cik))
             mcap = np.nan
             if g is not None:
-                gg = g[(g.end <= e.fdate) & (g.end >= e.fdate - pd.Timedelta(days=450))]
+                gg = g[(g.end <= e.fdate - pd.Timedelta(days=20)) & (g.end >= e.fdate - pd.Timedelta(days=450))]  # 20d lag: cover-page date precedes the filing that reports it
                 if len(gg):
                     mcap = float(gg.shares.iloc[-1]) * p_f
             # entry: first trading day strictly after F, at close; stock must trade within 5 days

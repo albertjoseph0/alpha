@@ -11,9 +11,23 @@ ev = ev[(ev.filingDate >= start) & (ev.filingDate <= end)].sort_values("filingDa
 outp = DATA / out
 done = set()
 if outp.exists():
-    with gzip.open(outp, "rt") as f:
-        for line in f:
-            done.add(json.loads(line)["acc"])
+    # robust to a truncated gzip (process killed mid-write): keep good lines, rewrite file cleanly
+    good, corrupt = [], False
+    try:
+        with gzip.open(outp, "rt") as f:
+            for line in f:
+                try:
+                    done.add(json.loads(line)["acc"]); good.append(line)
+                except json.JSONDecodeError:
+                    corrupt = True
+    except (EOFError, OSError):
+        corrupt = True
+    if corrupt:
+        tmp = outp.with_suffix(".rescue")
+        with gzip.open(tmp, "wt") as fo:
+            fo.writelines(good)
+        tmp.replace(outp)
+        print("rescued", len(good), "records from truncated", outp.name, flush=True)
 print("events", len(ev), "already", len(done), flush=True)
 
 
