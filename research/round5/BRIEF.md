@@ -64,3 +64,18 @@ CBOE index histories (`cdn.cboe.com/api/global/us_indices/daily_prices/<VIX|SKEW
 Kalshi API (`api.elections.kalshi.com/trade-api/v2`), Polymarket gamma and clob APIs, CoinGecko,
 Hugging Face model downloads, PyPI, Ken French library, Wikipedia, iShares holdings CSVs, yfinance.
 Blocked: api.binance.com, ICI, NYSE, paid order-book data. No ANTHROPIC_API_KEY is available.
+
+## Round 5b (restart after the container reset): resilience rules
+Round 5 agents were killed by a container restart before finishing. Round 5b runs 5 agents (m01, m02,
+m05, m06 resumed and m11 new). Additional rules:
+* **Resume, don't restart.** Read your folder's existing scripts and your data folder first. Reuse
+  downloaded data; re-download only what is missing or corrupt.
+* **Keep `STATUS.md` up to date** in your folder after every milestone (data done, dev result, prereg
+  written, test run): what is done, key numbers so far, and the exact next step. If you are killed, a
+  successor must be able to resume from STATUS.md alone.
+* Save intermediate results to disk (csv or parquet) as soon as they are computed, never only in memory.
+* **Data is read-only across agents.** You may read another agent's data folder, but never modify or
+  delete files there. Don't overwrite or delete existing files in your own data folder that
+  another agent may read (m01's membership and price files, m05's events, m06's S&P 500
+  intervals and prices); add new files instead.
+* With 5 agents on 4 CPUs, keep jobs single-threaded and short.
