@@ -14,9 +14,16 @@ from common import DATA
 MAX_DATE = sys.argv[1] if len(sys.argv) > 1 else "2099-01-01"
 START = "2020-01-01"
 ev = pd.read_csv(DATA / "events_8k202.csv", parse_dates=["filingDate", "accept_et"]).set_index("accessionNumber")
+import threading
+from concurrent.futures import ThreadPoolExecutor
+import jev as _jev
+_lock = threading.Lock()
+_orig_record = _jev._record
+_jev._record = lambda agent, tokens: (_lock.acquire(), _orig_record(agent, tokens), _lock.release())
+NTHREADS = 3   # network-bound I/O threads (Jev latency ~1-3 s per call); negligible CPU
+
 last = {}   # cik -> (accept_et, anonymised narrative)
-out = []
-t0 = time.time(); n_new = 0
+jobs = []   # (acc, has_prev, state or None)
 try:
     f = gzip.open(DATA / "texts_all.jsonl.gz", "rt")
     for line in f:
@@ -27,6 +34,8 @@ try:
         if d["acc"] not in ev.index:
             continue
         r = ev.loc[d["acc"]]
+        if r.filingDate > pd.Timestamp(MAX_DATE):
+            break   # file is in filing-date order
         pats = name_patterns(r.company, r["name"], r.ticker)
         cur = anonymise(narrative(d["text"], 12000), pats)
         prev = last.get(r.cik)
@@ -35,20 +44,38 @@ try:
         if r.filingDate < pd.Timestamp(START) or r.filingDate > pd.Timestamp(MAX_DATE):
             continue
         if len(cur) < 200:
-            out.append({"acc": d["acc"], "has_prev": has_prev, "ok": False}); continue
+            jobs.append((d["acc"], has_prev, None)); continue
         state = "CURRENT RELEASE:\n" + cur + "\n\nPREVIOUS RELEASE:\n" + (prev[1][:8000] if has_prev else "(not provided)")
-        try:
-            a = ask(state, QUESTIONS, agent="m06")
-        except BudgetExceeded:
-            print("BUDGET EXCEEDED", flush=True); break
-        except Exception as e:
-            print("error", d["acc"], str(e)[:200], flush=True); continue
-        out.append({"acc": d["acc"], "has_prev": has_prev, "ok": True, "ans": a})
-        n_new += 1
-        if n_new % 250 == 0:
-            print(n_new, r.filingDate.date(), round(time.time() - t0), spent("m06"), flush=True)
+        jobs.append((d["acc"], has_prev, state))
 except (EOFError, OSError):
     pass
+del last
+print("jobs", len(jobs), flush=True)
+t0 = time.time(); stop = threading.Event(); cnt = [0]
+
+
+def work(job):
+    acc, hp, state = job
+    if state is None:
+        return {"acc": acc, "has_prev": hp, "ok": False}
+    if stop.is_set():
+        return {"acc": acc, "has_prev": hp, "ok": False, "err": "stopped"}
+    try:
+        a = ask(state, QUESTIONS, agent="m06", retries=6, timeout=60)
+    except BudgetExceeded:
+        stop.set(); return {"acc": acc, "has_prev": hp, "ok": False, "err": "budget"}
+    except Exception as e:
+        print("error", acc, str(e)[:200], flush=True)
+        return {"acc": acc, "has_prev": hp, "ok": False, "err": str(e)[:100]}
+    with _lock:
+        cnt[0] += 1
+        if cnt[0] % 250 == 0:
+            print(cnt[0], round(time.time() - t0), spent("m06"), flush=True)
+    return {"acc": acc, "has_prev": hp, "ok": True, "ans": a}
+
+
+with ThreadPoolExecutor(NTHREADS) as ex:
+    out = list(ex.map(work, jobs))
 with gzip.open(DATA / "jev_raw.jsonl.gz", "wt") as fo:
     for o in out:
         fo.write(json.dumps(o) + "\n")

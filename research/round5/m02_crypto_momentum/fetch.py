@@ -21,7 +21,7 @@ def get(url, tries=8):
 def s3_list(prefix, delimiter="/"):
     keys, prefixes, marker = [], [], ""
     while True:
-        url = f"{S3}?delimiter={delimiter}&prefix={prefix}&marker={urllib.parse.quote(marker)}"
+        url = f"{S3}?delimiter={delimiter}&prefix={urllib.parse.quote(prefix)}&marker={urllib.parse.quote(marker)}"
         root = ET.fromstring(get(url))
         for c in root.findall("s:Contents", NS): keys.append(c.find("s:Key", NS).text)
         for p in root.findall("s:CommonPrefixes", NS): prefixes.append(p.find("s:Prefix", NS).text)
@@ -47,7 +47,7 @@ def main():
         keys, _ = s3_list(f"data/spot/monthly/klines/{sym}/1d/")
         keys = [k for k in keys if k.endswith(".zip")]
         def dl(k):
-            z = zipfile.ZipFile(io.BytesIO(get(BASE + k)))
+            z = zipfile.ZipFile(io.BytesIO(get(BASE + urllib.parse.quote(k))))
             with z.open(z.namelist()[0]) as f:
                 return pd.read_csv(f, header=None)
         with ThreadPoolExecutor(4) as inner:

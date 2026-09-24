@@ -146,6 +146,8 @@ def target_weights(t, p, live, age, liq, mom, trend):
         return pd.Series(dtype=float)
     elig = live.loc[t] & (age.loc[t] >= p["min_age"]) & liq.loc[t].notna() & mom.loc[t].notna()
     L = liq.loc[t][elig].sort_values(ascending=False).head(p["n_univ"])
+    if len(L) == 0:          # nothing eligible yet (e.g. min_age 180 in Dec 2017) -> cash
+        return pd.Series(dtype=float)
     if p["mode"] == "ew_univ":
         return pd.Series(1.0 / len(L), index=L.index)
     m = mom.loc[t, L.index].sort_values(ascending=False)

@@ -1,0 +1,39 @@
+                       name  cagr  maxdd  sharpe  trades  ann_turnover  delist_hits
+               BTC buy&hold  36.4  -81.2    0.80     NaN           NaN          NaN
+               SPY buy&hold  17.3  -33.7    1.05     NaN           NaN          NaN
+CANONICAL mom L28 K5 SMA100  68.1  -75.0    1.03   799.0          26.0          0.0
+                   2x costs  59.5  -75.4    0.97   799.0          26.0          0.0
+           delisted -> zero  68.1  -75.0    1.03   799.0          26.0          0.0
+              no BTC filter  25.5  -93.2    0.78  1389.0          38.3          1.0
+  BTC w/ same SMA100 filter  46.7  -72.7    0.97    36.0           5.5          0.0
+ EW top-30 w/ SMA100 filter  57.3  -73.4    1.02  3514.0          11.0          3.0
+        EW top-30 no filter  21.0  -92.1    0.71  5318.0           9.1          5.0
+       liq rank = median qv 112.9  -75.0    1.32   797.0          25.7          0.0
+     liq rank = trade count  84.9  -75.0    1.13   811.0          27.2          0.0
+               min age 180d  99.6  -54.6    1.26   763.0          24.6          0.0
+            daily rebalance 111.9  -59.4    1.30  4636.0          70.9          0.0
+            universe top-20  20.3  -75.0    0.64   793.0          25.2          0.0
+            universe top-50  62.6  -75.0    0.99   812.0          27.3          1.0
+
+Calendar-year returns (%)
+              BTC   SPY  CANONICAL mom L28 K5 SMA100  BTC w/ same SMA100 filter  EW top-30 w/ SMA100 filter
+2018-12-31  -72.3  -5.2                        -62.8                      -64.5                       -60.5
+2019-12-31   94.3  31.2                         30.2                      175.3                         9.6
+2020-12-31  302.0  18.3                        257.5                      207.6                       128.3
+2021-12-31   59.8  28.7                        360.2                       54.0                       518.7
+
+Sub-period 2018-2020 (ex-2021 mania)
+        name  cagr  maxdd  sharpe
+         BTC  29.3  -81.2    0.73
+         SPY  13.8  -33.7    0.82
+   canonical  20.1  -75.0    0.62
+canonical 2x  14.0  -75.4    0.56
+  BTC+filter  44.3  -72.7    0.97
+ EW30+filter  -0.4  -73.4    0.31
+
+Most-held instruments (weeks): {'BTCUSDT': 29, 'BNBUSDT': 25, 'LINKUSDT': 22, 'WAVESUSDT': 14, 'ETHUSDT': 13, 'NEOUSDT': 13, 'ADAUSDT': 13, 'ETCUSDT': 13, 'THETAUSDT': 13, 'LTCUSDT': 12, 'BCHABCUSDT': 12, 'ZILUSDT': 11, 'FTMUSDT': 11, 'ICXUSDT': 10, 'ZECUSDT': 10}
+Delisting events while held: []
+Universe size over dev: min 2 median 30 max 30
+Fraction of weeks invested (BTC filter on): 0.54
+
+Parameter grid (lookback x top_k x btc_sma), dev CAGR %, 1x costs

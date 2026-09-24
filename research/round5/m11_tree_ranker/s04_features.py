@@ -62,7 +62,11 @@ for k, i in enumerate(last_idx):
                       n_mem=len(mem) + n_ph, n_elig=len(el), n_nodata=nodata + n_ph,
                       n_short=int((px.notna() & ~elig).sum()),
                       n_nodata5=len([t for t in m5 if "#" in t or t not in C.columns or pd.isna(C[t].iloc[i])]),
-                      n_mem5=len(m5)))
+                      n_mem5=len(m5),
+                      # no-data members that leave the union index by next month end (their "death month")
+                      n_nodata_exit=len([t for t in (m5 | m4) if ("#" in t or t not in C.columns or pd.isna(C[t].iloc[i]))
+                                         and t not in (MEM5.get(per + 1, set()) | MEM4.get(per + 1, set()))])
+                      if (per + 1) in MEM5 else np.nan))
     P = C[el].iloc[i - 252:i + 1].ffill()
     r = R[el].iloc[i - 251:i + 1].fillna(0.0)  # 252 daily returns ending at f
     d = pd.DataFrame(index=el)

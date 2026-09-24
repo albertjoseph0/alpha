@@ -74,10 +74,12 @@ for cik, g in p.groupby("issuercik", sort=False):
         ins = w.owner_cik.unique()
         if len(ins) < MIN_INS:
             continue
+        wf = w[w.filing_date == F]
+        if len(wf) == 0:   # no filing on F contributes: stale cluster (seen before, blocked by cooldown)
+            continue
         last_ev = F
         per_ins = w.groupby("owner_cik").agg(pct=("pct_hold", "sum"), routine=("routine", "max"),
                                              ceo=("ceo_cfo", "max"), val=("value", "sum"), off=("is_off", "max"))
-        wf = w[w.filing_date == F]
         k = len(events)
         events.append(dict(
             cik=cik, fdate=F, name=wf.issuername.iloc[-1], sym=wf.sym.iloc[-1],

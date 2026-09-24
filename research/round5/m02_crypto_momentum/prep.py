@@ -17,6 +17,10 @@ STABLE_FIAT = {
     "PAXG", "XAUT", "AEUR", "EURI", "USD1", "RLUSD", "USDE", "BFUSD", "XUSD", "USDF", "TUSDB", "JPY",
     "MXN", "ARS", "COP", "PLN", "RON", "CZK", "USDQ", "GUSD", "PYUSD", "FRAX", "LUSD", "USDD",
 }
+# wrapped/staked duplicates of BTC/ETH and the stand-alone 3x BTC tokens (BULL/BEAR) - added in 5b
+EXTRA_EXCL = {"WBTC", "WBETH", "BETH", "BULL", "BEAR", "KGST", "U", "SPYB"}  # KGST/U = stables, SPYB = tokenized SPY
+REDENOM_MIN_ABS_LOG10 = 1.7   # one-day price ratio >50x or <1/50 ...
+REDENOM_MAX_DEV = 0.3         # ... and within 0.3 of a power of ten => token redenomination
 
 
 def leveraged(base, bases):
@@ -36,7 +40,8 @@ def main():
     stab = sorted(b for b in bases if b in STABLE_FIAT)
     print("leveraged tokens excluded:", len(lev), lev[:40])
     print("stable/fiat/gold excluded:", stab)
-    k = k[~k.base.isin(set(lev) | set(stab))].copy()
+    print("extra excluded:", sorted(EXTRA_EXCL & bases))
+    k = k[~k.base.isin(set(lev) | set(stab) | EXTRA_EXCL)].copy()
     k = k[k.close > 0]
     # segment at gaps
     k = k.sort_values(["symbol", "date"])
@@ -58,6 +63,16 @@ def main():
     for c in close.columns:
         live.loc[first[c]:last[c], c] = True
     close = close.ffill().where(live)
+    # back-adjust token redenominations (e.g. COCOS 1:1000, SUN, BNX, QUICK, DREP): one-day price
+    # ratio that is an (almost exact) power of ten and >50x; earlier prices are rescaled so the
+    # holder sees the residual move only. Crashes like LUNA (ratio 3e-4 = 10^-3.53) are untouched.
+    ratio = (close / close.shift(1)).stack()
+    lg = np.log10(ratio)
+    hit = lg[(lg.abs() >= REDENOM_MIN_ABS_LOG10) & ((lg - lg.round()).abs() <= REDENOM_MAX_DEV)]
+    for (d, c), v in hit.items():
+        f = 10.0 ** round(v)
+        close.loc[close.index < d, c] *= f
+        print(f"redenomination adjusted: {c} {d.date()} ratio {10**v:.4g} factor {f:g} residual {10**v/f-1:+.1%}")
     qv = wide["quote_volume"].fillna(0).where(live)
     tr = wide["trades"].fillna(0).where(live)
     close.to_parquet(f"{D}/close.parquet"); qv.to_parquet(f"{D}/qv.parquet"); tr.to_parquet(f"{D}/trades.parquet")
@@ -74,6 +89,8 @@ def main():
     r = close.pct_change(fill_method=None)
     ext = r.stack()
     ext = ext[(ext > 3) | (ext < -0.8)]
+    lowvol = r.std()
+    print("possible unlisted stablecoins (daily ret std < 1%):", lowvol[lowvol < 0.01].round(4).to_dict())
     print("extreme daily moves (>+300% or <-80%):")
     print(ext.sort_values().to_string())
 

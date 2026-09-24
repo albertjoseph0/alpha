@@ -36,7 +36,7 @@ def load():
     X["is500"] = P["is500"] - 0.5
     P[[f"x_{c}" for c in FEATS]] = X.values
     P["y"] = P.groupby("form")["ret"].rank(pct=True) - 0.5
-    P = P.merge(months[["form", "t0", "t1", "n_mem", "n_nodata"]], on="form", how="left")
+    P = P.merge(months[["form", "t0", "t1", "n_mem", "n_nodata", "n_nodata_exit"]], on="form", how="left")
     return P, months
 
 
@@ -70,7 +70,7 @@ def walk_forward(P, cfg, lo, hi):
             last_model = (model, len(tr))
         te = P[P.form == f]
         Xe = te[xc].values if cfg["kind"] == "hgb" else np.nan_to_num(te[xc].values)
-        o = te[["form", "ticker", "ret", "ended", "is500", "mom12_1", "t0", "t1", "n_mem", "n_nodata", "spy_ret"]].copy()
+        o = te[["form", "ticker", "ret", "ended", "is500", "mom12_1", "t0", "t1", "n_mem", "n_nodata", "n_nodata_exit", "spy_ret"]].copy()
         o["score"] = model.predict(Xe)
         out.append(o)
     return pd.concat(out, ignore_index=True), model
@@ -88,8 +88,10 @@ def ic_stats(ic):
 
 def backtest(S, col, k=K, cost_mult=1.0, scen="drop", ended="last"):
     """Top-k equal weight by `col`. Returns monthly DataFrame indexed by holding end (t1).
-    scen: missing-member imputation (drop / neutral / m50 / m100): expected slots k*n_nodata/n_mem
-    earn the scenario return. ended: 'last' = exit at last available price when a series stops
+    scen: missing-member imputation. Members with no price data at formation (the survivorship
+    hole) get expected weight q = n_nodata/n_mem (random-selection rate). 'drop' ignores them;
+    'neutral' = they earn the EW universe return; 'x50'/'x100' = those that leave the index during
+    the holding month (their delisting month) lose 50%/100%, the rest earn the EW return. ended: 'last' = exit at last available price when a series stops
     inside the holding window; 'm50'/'m100' = such holdings lose 50%/100%."""
     rows = []
     prev = pd.Series(dtype=float)
@@ -105,7 +107,11 @@ def backtest(S, col, k=K, cost_mult=1.0, scen="drop", ended="last"):
             r[top["ended"].values] = -0.5 if ended == "m50" else -1.0
         q = g["n_nodata"].iloc[0] / g["n_mem"].iloc[0] if scen != "drop" else 0.0
         w_real = 1 - q
-        r_miss = {"drop": 0.0, "neutral": g["ret"].mean(), "m50": -0.5, "m100": -1.0}[scen]
+        ew = g["ret"].mean()
+        fx = g["n_nodata_exit"].iloc[0] / max(g["n_nodata"].iloc[0], 1)
+        fx = 0.0 if not np.isfinite(fx) else fx
+        r_miss = {"drop": 0.0, "neutral": ew, "x50": (1 - fx) * ew - 0.5 * fx,
+                  "x100": (1 - fx) * ew - 1.0 * fx}[scen]
         gross = w_real * r.mean() + q * r_miss
         c = np.where(top["is500"].values > 0.5, COST500, COST400) * cost_mult
         w_new = pd.Series(w_real / kk, index=top.ticker.values)

@@ -1,0 +1,36 @@
+leveraged tokens excluded: 48 ['1INCHDOWN', '1INCHUP', 'AAVEDOWN', 'AAVEUP', 'ADADOWN', 'ADAUP', 'BCHDOWN', 'BCHUP', 'BNBBEAR', 'BNBBULL', 'BNBDOWN', 'BNBUP', 'BTCDOWN', 'BTCUP', 'DOTDOWN', 'DOTUP', 'EOSBEAR', 'EOSBULL', 'EOSDOWN', 'EOSUP', 'ETHBEAR', 'ETHBULL', 'ETHDOWN', 'ETHUP', 'FILDOWN', 'FILUP', 'LINKDOWN', 'LINKUP', 'LTCDOWN', 'LTCUP', 'SUSHIDOWN', 'SUSHIUP', 'SXPDOWN', 'SXPUP', 'TRXDOWN', 'TRXUP', 'UNIDOWN', 'UNIUP', 'XLMDOWN', 'XLMUP']
+stable/fiat/gold excluded: ['AEUR', 'AUD', 'BFUSD', 'BKRW', 'BUSD', 'DAI', 'EUR', 'EURI', 'FDUSD', 'FRAX', 'GBP', 'PAX', 'PAXG', 'RLUSD', 'SUSD', 'TUSD', 'USD1', 'USDC', 'USDE', 'USDP', 'USDS', 'USDSB', 'UST', 'USTC', 'XAUT', 'XUSD']
+extra excluded: ['BEAR', 'BETH', 'BULL', 'KGST', 'SPYB', 'U', 'WBETH', 'WBTC']
+symbols split at gaps >7d: 8 ['CVCUSDT', 'FTTUSDT', 'KEYUSDT', 'LUNAUSDT', 'NBTUSDT', 'STRAXUSDT', 'VENUSDT', 'VIDTUSDT']
+redenomination adjusted: COCOSUSDT 2021-01-23 ratio 1295 factor 1000 residual +29.5%
+redenomination adjusted: DREPUSDT 2021-04-02 ratio 107.6 factor 100 residual +7.6%
+redenomination adjusted: SUNUSDT 2021-06-18 ratio 0.001199 factor 0.001 residual +19.9%
+redenomination adjusted: BNXUSDT 2023-02-22 ratio 0.009031 factor 0.01 residual -9.7%
+redenomination adjusted: QUICKUSDT 2023-07-21 ratio 0.0008042 factor 0.001 residual -19.6%
+660 instruments, 196 ended before 2026-08-31 (delisted/renamed)
+LUNAUSDT 2020-08-21 2022-05-13 last close 5e-05
+LUNAUSDT#1 2022-05-31 2026-08-31 last close 0.0443
+FTTUSDT 2019-12-20 2022-11-15 last close 1.4322
+BCCUSDT 2017-11-11 2018-11-20 last close 448.7
+VENUSDT 2018-06-22 2018-07-23 last close 1.8319
+NPXSUSDT 2019-08-13 2021-04-05 last close 0.0070301
+BTTUSDT 2019-01-31 2022-01-17 last close 0.002777
+SRMUSDT 2020-08-11 2022-11-28 last close 0.24442
+possible unlisted stablecoins (daily ret std < 1%): {}
+extreme daily moves (>+300% or <-80%):
+            inst      
+2022-05-12  LUNAUSDT     -0.999703
+2022-05-11  LUNAUSDT     -0.938322
+2021-03-19  BTCSTUSDT    -0.871257
+2022-05-13  LUNAUSDT     -0.843750
+2025-04-13  OMUSDT       -0.838801
+2026-07-21  DEXEUSDT     -0.825219
+2025-04-12  VIDTUSDT#1   -0.821659
+2021-12-02  GXSUSDT       3.509088
+2021-10-15  NUUSDT        3.716469
+2021-05-20  ONGUSDT       3.719193
+2021-01-28  DOGEUSDT      3.924114
+2025-07-10  HYPERUSDT     3.931356
+2025-09-12  HIFIUSDT      4.404844
+2022-06-07  UNFIUSDT      4.520913
+2026-07-01  NFPUSDT       4.683084
