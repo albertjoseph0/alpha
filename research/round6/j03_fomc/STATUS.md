@@ -11,7 +11,8 @@ DEV = events 1994-2012, TEST = 2013-01-01 .. 2026-09-23 (sealed until PREREG.md 
       DEV: 133 S + 150 M events; TEST: 114 S + 110 M.
 - [ ] jev_features.py (question set v1) -> jev_scores.parquet. First run died on a gateway 503 at doc ~316/507 ($0.037 spent, 325 calls,
       all cached). Restarted (resume session) -> log data/round6/j03_fomc/jev_features2.log; cached docs are free.
-- [ ] leak_probe.py (running in background -> data/round6/j03_fomc/leak_probe.log)
+- [ ] leak_probe.py and jev_features.py (TEST docs) restarted in background (logs leak_probe.log, jev_features3.log).
+      Gateway is flaky (503s/hangs; ~2 calls/min). Both resume from cache when rerun. Spend so far ~$0.045 of $1.
 - [x] jev_scores.parquet for the 283 DEV docs built from cache (jf.main(283)); full run (TEST docs) still going in background.
 - [x] dev.py -> dev_results.txt/csv. Walk-forward OOS 2000-02..2012-12, 216 events, SE(IC)=0.068.
       OOS IC (eq/dur, alpha=1): a_notext 0.087/0.051, b_dict 0.012/-0.027, c_jev -0.076/-0.034.

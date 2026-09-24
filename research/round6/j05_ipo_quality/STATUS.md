@@ -23,3 +23,6 @@ Decisions so far
 - Jev cost ≈ 8k tokens/doc ≈ $0.00033/doc.
 
 Next step: wait for fetch of DEV (2010–2018) docs; then s04 → s05 → s06 → s07 (DEV) → s08 → s09 dev.
+
+## Note (orchestrator, 11:38 UTC)
+The orphaned s03_fetch.py was stopped because its agent had ended at the usage limit. Re-run it to resume; SEC responses are cached.
