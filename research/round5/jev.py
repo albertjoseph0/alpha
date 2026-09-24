@@ -34,7 +34,7 @@ MODEL = "typesafe-ai/jev"
 PRICE_PER_TOKEN = 0.042e-6
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 CACHE = ROOT / "data" / "round5" / "jev_cache"
-BUDGET_USD = {"m05": 5.0, "m06": 15.0, "m11": 5.0, "m07": 2.0}
+BUDGET_USD = {"m05": 5.0, "m06": 15.0, "m11": 5.0, "m07": 2.0, "j01": 8.0, "j02": 5.0, "j03": 1.0, "j04": 2.0, "j05": 3.0}
 DEFAULT_BUDGET = 2.0
 
 
