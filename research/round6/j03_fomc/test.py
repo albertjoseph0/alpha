@@ -42,6 +42,7 @@ def main():
     say("SPY  ", {k: round(v, 2) for k, v in m_spy.items()})
     say("60/40", {k: round(v, 2) for k, v in m_6040.items()})
     rows, rets = [], {}
+    NEU = lib.weights_from_z(0.0, 0.0, True)   # start neutral so day 1 carries no same-bar signal
     for name, cols in lib.FEATS.items():
         for mode in ("frozen", "refit"):
             if mode == "frozen":
@@ -54,20 +55,22 @@ def main():
             row = dict(set=name, mode=mode, n=len(p), ic_eq=ic(p.z_eq.values, p.y_eq.values), ic_dur=ic(p.z_dur.values, p.y_dur.values))
             for ex in ("close", "open"):
                 for cb in (3.0, 6.0):
-                    r, to = lib.backtest(sched, px, first, test_end, cb, ex)
+                    r, to = lib.backtest(sched, px, first, test_end, cb, ex, init=NEU)
                     m = lib.metrics(r)
                     row[f"CAGR_{ex}_{int(cb)}bp"] = m["CAGR"]
-                    if ex == "close" and cb == 3.0:
+                    if ex == "open" and cb == 3.0:   # PRIMARY execution (PREREG): next open, 3bp/side
                         row.update(vol=m["vol"], sharpe=m["sharpe"], maxDD=m["maxDD"], turnover_x=to,
                                    vs_SPY=m["CAGR"] - m_spy["CAGR"], vs_6040=m["CAGR"] - m_6040["CAGR"])
                         rets[(name, mode)] = r
+                    if ex == "open" and cb == 6.0:
+                        row["vs_SPY_6bp"] = m["CAGR"] - m_spy["CAGR"]
             rows.append(row)
     neutral = lib.schedule(p, px, neutral=True)
     for ex in ("close", "open"):
         for cb in (3.0, 6.0):
             m = lib.metrics(lib.backtest(neutral, px, first, test_end, cb, ex)[0])
             say(f"neutral allocator {ex} {cb}bp:", {k: round(v, 2) for k, v in m.items()})
-    r_neu = lib.backtest(neutral, px, first, test_end, 3.0, "close")[0]
+    r_neu = lib.backtest(neutral, px, first, test_end, 3.0, "open")[0]
     res = pd.DataFrame(rows)
     pd.set_option("display.width", 250)
     say(res.round(3).to_string(index=False))
@@ -81,7 +84,7 @@ def main():
     # yearly table for the primary
     yr = pd.DataFrame({"c_jev": rets[("c_jev", "frozen")], "b_dict": rets[("b_dict", "frozen")], "neutral": r_neu,
                        "SPY": r_spy.reindex(r_neu.index).fillna(0), "60/40": r_6040.reindex(r_neu.index).fillna(0)})
-    say("\nCalendar-year returns (%), close execution, 3bp:")
+    say("\nCalendar-year returns (%), next-open execution, 3bp:")
     say((((1 + yr).groupby(yr.index.year).prod() - 1) * 100).round(1).to_string())
     (OUT / "test_results.txt").write_text(buf.getvalue())
     res.to_csv(OUT / "test_results.csv", index=False)
