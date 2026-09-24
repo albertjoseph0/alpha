@@ -33,7 +33,7 @@ the exact next step), plus `PREREG.md` and `README.md` when finished.
 | j04 | research/round6/j04_spinoffs | spin-offs + Jev-read Form 10 | in progress |
 | j05 | research/round6/j05_ipo_quality | IPO prospectus quality + Jev | in progress |
 | o01 | research/orch/o01_activist_13d | activist 13D Item 4 + Jev (orchestrator's own) | s01 listing running; s02–s04 written; next: s02 text, s03 prices, s04 Jev, then analysis |
-| o02 | research/orch/o02_beige_book | Beige Book sector rotation + Jev (orchestrator's own) | s01 done (236 editions 1996–2026); next: Jev sector-change scores, harness strategy, DEV 2000–15 / TEST 2016+ |
+| o02 | research/orch/o02_beige_book | Beige Book sector rotation + Jev (orchestrator's own) | s01 done (236 editions 1996–2026); s02_jev.py written (national summary, 12 sector-direction questions, probe); run it, then build a harness strategy (DEV etf_dev 2000–15, TEST etf_holdout 2016+) vs sector momentum and dictionary baselines |
 
 The validated live strategy remains `strategies/deep_trend_switch/strategy.py` (see `research/deep/REPORT.md`).
 

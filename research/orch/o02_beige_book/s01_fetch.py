@@ -64,8 +64,9 @@ def main():
         old = sorted(set(re.findall(r'href="((?:https://www\.federalreserve\.gov)?/fomc/beigebook/\d{4}/\d{8}/default\.htm)"', page)))
         new_s = sorted(set(re.findall(r'href="(/monetarypolicy/beigebook\d{6}-summary\.htm)"', page)))
         new_f = sorted(set(re.findall(r'href="((?:https://www\.federalreserve\.gov)?/monetarypolicy/(?:beigebook/)?beigebook\d{6}\.htm)"', page)))
-        months_s = {re.search(r"(\d{6})", u).group(1) for u in new_s}
-        new = new_s + [u for u in new_f if re.search(r"(\d{6})", u).group(1) not in months_s]
+        months_f = {re.search(r"(\d{6})", u).group(1) for u in new_f}
+        # prefer the full report (sector detail lives in the district sections); summary only if no full page
+        new = new_f + [u for u in new_s if re.search(r"(\d{6})", u).group(1) not in months_f]
         links += [u if u.startswith("http") else BASE + u for u in old + new]
         print(y, len(old), len(new), flush=True)
     rows = []

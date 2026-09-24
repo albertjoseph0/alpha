@@ -34,7 +34,7 @@ MODEL = "typesafe-ai/jev"
 PRICE_PER_TOKEN = 0.042e-6
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 CACHE = ROOT / "data" / "round5" / "jev_cache"
-BUDGET_USD = {"m05": 5.0, "m06": 15.0, "m11": 5.0, "m07": 2.0, "j01": 8.0, "j02": 5.0, "j03": 1.0, "j04": 2.0, "j05": 3.0, "o01": 3.0}
+BUDGET_USD = {"m05": 5.0, "m06": 15.0, "m11": 5.0, "m07": 2.0, "j01": 8.0, "j02": 5.0, "j03": 1.0, "j04": 2.0, "j05": 3.0, "o01": 3.0, "o02": 1.0}
 DEFAULT_BUDGET = 2.0
 
 
@@ -61,7 +61,7 @@ def _record(agent: str, tokens: int) -> None:
     _ledger(agent).write_text(json.dumps(s))
 
 
-def ask(state, questions: dict, agent: str, retries: int = 5, timeout: float = 120.0) -> dict:
+def ask(state, questions: dict, agent: str, retries: int = 10, timeout: float = 120.0) -> dict:
     """Evaluate `questions` against `state`; returns the answers dict (cached)."""
     body = {"model": MODEL, "state": state, "questions": questions}
     raw = json.dumps(body, sort_keys=True).encode()
@@ -76,7 +76,10 @@ def ask(state, questions: dict, agent: str, retries: int = 5, timeout: float = 1
         raise BudgetExceeded(f"{agent} reached its Jev budget of ${cap:.2f}; ask the orchestrator")
     delay = 2.0
     for attempt in range(retries):
-        req = urllib.request.Request(URL, data=raw, headers={"Content-Type": "application/json"}, method="POST")
+        headers = {"Content-Type": "application/json"}
+        if os.environ.get("AI_GATEWAY_API_KEY"):  # local runs; in the cloud session the proxy injects auth
+            headers["Authorization"] = f"Bearer {os.environ['AI_GATEWAY_API_KEY']}"
+        req = urllib.request.Request(URL, data=raw, headers=headers, method="POST")
         try:
             with urllib.request.urlopen(req, timeout=timeout) as r:
                 out = json.loads(r.read())
@@ -84,7 +87,7 @@ def ask(state, questions: dict, agent: str, retries: int = 5, timeout: float = 1
         except urllib.error.HTTPError as e:
             msg = e.read().decode(errors="ignore")[:500]
             if e.code in (429, 500, 502, 503, 504) and attempt < retries - 1:
-                time.sleep(delay); delay *= 2; continue
+                time.sleep(delay); delay = min(delay * 2, 60.0); continue
             raise RuntimeError(f"Jev HTTP {e.code}: {msg}") from None
         except (urllib.error.URLError, TimeoutError):
             if attempt < retries - 1:
