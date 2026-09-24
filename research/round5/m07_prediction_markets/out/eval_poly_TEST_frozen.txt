@@ -1,0 +1,36 @@
+=== poly TEST rule: buy leading side at H=72h before scheduled close if tradeable price in [0.85,0.97]
+window ('2024-07-01', '2026-09-01'), SPY CAGR 0.1804; target = SPY + 0.20 = 0.3804
+--- BASE costs: events=485, mkts=492, mean_p=0.9184, win=0.934, pnl_c=0.2387, pnl_ci=(np.float64(-2.001), np.float64(2.347)), ret=0.0026, ret_ci=(np.float64(-0.0217), np.float64(0.0256)), fee_c=0.326, hold_d=3.1733, full_util_ann=0.2693
+    sim f=0.05 of equity/event (sample opportunities only): final=1.0403, cagr=0.0184, maxdd=-0.2925, years=2.1684, util=0.1056, streak=1, worst_bet=-1.0
+    sim f=0.10 of equity/event (sample opportunities only): final=1.1538, cagr=0.0682, maxdd=-0.4393, years=2.1684, util=0.1699, streak=1, worst_bet=-1.0
+    capacity-capped sim K=$10,000: cagr=-0.0679 final=0.8586 util=0.0190
+    capacity-capped sim K=$100,000: cagr=-0.0305 final=0.9351 util=0.0059
+    capacity-capped sim K=$1,000,000: cagr=-0.0041 final=0.9911 util=0.0009
+--- 2x COSTS: events=485, mkts=492, mean_p=0.9184, win=0.934, pnl_c=-1.0008, pnl_ci=(np.float64(-3.239), np.float64(1.105)), ret=-0.0106, ret_ci=(np.float64(-0.0346), np.float64(0.012)), fee_c=0.5653, hold_d=3.1733, full_util_ann=-1.0964
+    sim f=0.05 of equity/event (sample opportunities only): final=0.7597, cagr=-0.119, maxdd=-0.3882, years=2.1684, util=0.1056, streak=1, worst_bet=-1.0
+    sim f=0.10 of equity/event (sample opportunities only): final=0.69, cagr=-0.1573, maxdd=-0.5132, years=2.1684, util=0.1697, streak=1, worst_bet=-1.0
+    capacity-capped sim K=$10,000: cagr=-0.0905 final=0.8142 util=0.0191
+    capacity-capped sim K=$100,000: cagr=-0.0382 final=0.9190 util=0.0060
+    capacity-capped sim K=$1,000,000: cagr=-0.0053 final=0.9886 util=0.0009
+--- opportunity supply: 485 event-bets over 2.17 y = 224/yr in the sample; median cap per event $4, mean $418; sum of caps x hold-days / period-days = $895 of capital deployable on average
+--- $ profit at full capacity (sum cap*ret)/yr: $-4,084 in sample; $-940,670 scaled to the universe (sampling fraction 0.004342)
+=== capacity-limited annual return K=$10,000: utilization 1.0000 x fully-deployed rate 0.2693 = 0.2693 (2x costs: -1.0964); SPY 0.1804
+=== capacity-limited annual return K=$100,000: utilization 1.0000 x fully-deployed rate 0.2693 = 0.2693 (2x costs: -1.0964); SPY 0.1804
+=== capacity-limited annual return K=$1,000,000: utilization 0.2061 x fully-deployed rate 0.2693 = 0.0555 (2x costs: -0.2260); SPY 0.1804
+--- worst losing streak (consecutive losing event bets, settlement order): 1
+--- per year
+        n       p    win     ret   pnl_c
+year                                    
+2024    4  0.9110  1.000  0.0840  7.5463
+2025   48  0.9207  0.875 -0.0631 -5.8840
+2026  433  0.9182  0.940  0.0091  0.8500
+--- per category
+Empty DataFrame
+Columns: [n, p, win, ret, pnl_c]
+Index: []
+--- artifact sensitivities (base costs)
+--- incl. unclean resolutions (0/0, 1/1 treated as reported): events=485, mkts=492, mean_p=0.9184, win=0.934, pnl_c=0.2387, pnl_ci=(np.float64(-2.001), np.float64(2.347)), ret=0.0026, ret_ci=(np.float64(-0.0217), np.float64(0.0256)), fee_c=0.326, hold_d=3.1733, full_util_ann=0.2693
+--- clean resolutions only (DEV definition): events=485, mkts=492, mean_p=0.9184, win=0.934, pnl_c=0.2387, pnl_ci=(np.float64(-2.001), np.float64(2.347)), ret=0.0026, ret_ci=(np.float64(-0.0217), np.float64(0.0256)), fee_c=0.326, hold_d=3.1733, full_util_ann=0.2693
+--- lifetime volume >= $10k: events=91, mkts=91, mean_p=0.9144, win=0.9011, pnl_c=-2.6703, pnl_ci=(np.float64(-9.454), np.float64(2.782)), ret=-0.0286, ret_ci=(np.float64(-0.1018), np.float64(0.031)), fee_c=0.3422, hold_d=3.1436, full_util_ann=-2.5577
+--- price age <= 2h: events=473, mkts=480, mean_p=0.9188, win=0.9323, pnl_c=0.0307, pnl_ci=(np.float64(-2.16), np.float64(2.12)), ret=0.0003, ret_ci=(np.float64(-0.0237), np.float64(0.0235)), fee_c=0.3243, hold_d=3.1724, full_util_ann=0.0307
+--- one market per event (highest price): events=485, mkts=485, mean_p=0.9186, win=0.934, pnl_c=0.219, pnl_ci=(np.float64(-2.018), np.float64(2.325)), ret=0.0024, ret_ci=(np.float64(-0.0219), np.float64(0.0254)), fee_c=0.3253, hold_d=3.1733, full_util_ann=0.246

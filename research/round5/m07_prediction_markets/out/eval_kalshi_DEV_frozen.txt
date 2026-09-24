@@ -6,17 +6,17 @@ window ('2021-07-15', '2024-07-01'), SPY CAGR 0.0945; target = SPY + 0.20 = 0.29
     capacity-capped sim K=$10,000: cagr=0.0141 final=1.0423 util=0.0026
     capacity-capped sim K=$100,000: cagr=0.0044 final=1.0130 util=0.0008
     capacity-capped sim K=$1,000,000: cagr=0.0006 final=1.0017 util=0.0001
---- 2x COSTS: events=286, mkts=303, mean_p=0.961, win=0.9633, pnl_c=-5.1666, pnl_ci=(np.float64(-7.699), np.float64(-2.926)), ret=-0.0455, ret_ci=(np.float64(-0.0687), np.float64(-0.0251)), fee_c=-0.3841, hold_d=0.2618, full_util_ann=-32.5485
-    sim f=0.05 of equity/event (sample opportunities only): final=0.5135, cagr=-0.2015, maxdd=-0.4937, years=2.9624, util=0.0067, streak=5, worst_bet=-1.0
-    sim f=0.10 of equity/event (sample opportunities only): final=0.255, cagr=-0.3695, maxdd=-0.752, years=2.9624, util=0.0135, streak=5, worst_bet=-1.0
-    capacity-capped sim K=$10,000: cagr=-0.0563 final=0.8423 util=0.0026
-    capacity-capped sim K=$100,000: cagr=-0.0170 final=0.9504 util=0.0009
-    capacity-capped sim K=$1,000,000: cagr=-0.0016 final=0.9952 util=0.0001
+--- 2x COSTS: events=286, mkts=303, mean_p=0.961, win=0.9633, pnl_c=-2.7073, pnl_ci=(np.float64(-4.99), np.float64(-0.757)), ret=-0.0273, ret_ci=(np.float64(-0.0503), np.float64(-0.0075)), fee_c=0.2207, hold_d=0.2618, full_util_ann=-19.492
+    sim f=0.05 of equity/event (sample opportunities only): final=0.6674, cagr=-0.1276, maxdd=-0.3566, years=2.9624, util=0.0067, streak=5, worst_bet=-1.0
+    sim f=0.10 of equity/event (sample opportunities only): final=0.4318, cagr=-0.2468, maxdd=-0.5987, years=2.9624, util=0.0135, streak=5, worst_bet=-1.0
+    capacity-capped sim K=$10,000: cagr=-0.0335 final=0.9041 util=0.0026
+    capacity-capped sim K=$100,000: cagr=-0.0104 final=0.9696 util=0.0009
+    capacity-capped sim K=$1,000,000: cagr=-0.0010 final=0.9972 util=0.0001
 --- opportunity supply: 286 event-bets over 2.96 y = 97/yr in the sample; median cap per event $153, mean $900; sum of caps x hold-days / period-days = $90 of capital deployable on average
 --- $ profit at full capacity (sum cap*ret)/yr: $562 in sample; $562 scaled to the universe (sampling fraction 1.0)
-=== capacity-limited annual return K=$10,000: utilization 0.0090 x fully-deployed rate -3.7313 = -0.0335 (2x costs: -0.2926); SPY 0.0945
-=== capacity-limited annual return K=$100,000: utilization 0.0009 x fully-deployed rate -3.7313 = -0.0034 (2x costs: -0.0293); SPY 0.0945
-=== capacity-limited annual return K=$1,000,000: utilization 0.0001 x fully-deployed rate -3.7313 = -0.0003 (2x costs: -0.0029); SPY 0.0945
+=== capacity-limited annual return K=$10,000: utilization 0.0090 x fully-deployed rate -3.7313 = -0.0335 (2x costs: -0.1752); SPY 0.0945
+=== capacity-limited annual return K=$100,000: utilization 0.0009 x fully-deployed rate -3.7313 = -0.0034 (2x costs: -0.0175); SPY 0.0945
+=== capacity-limited annual return K=$1,000,000: utilization 0.0001 x fully-deployed rate -3.7313 = -0.0003 (2x costs: -0.0018); SPY 0.0945
 --- worst losing streak (consecutive losing event bets, settlement order): 2
 --- per year
         n       p     win     ret   pnl_c

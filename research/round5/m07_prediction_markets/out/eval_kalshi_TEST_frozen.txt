@@ -1,0 +1,45 @@
+=== kalshi TEST rule: buy leading side at H=1h before scheduled close if tradeable price in [0.95,0.97]
+window ('2024-07-01', '2026-07-20'), SPY CAGR 0.1766; target = SPY + 0.20 = 0.3766
+--- BASE costs: events=38, mkts=44, mean_p=0.9605, win=0.9474, pnl_c=-2.0557, pnl_ci=(np.float64(-9.964), np.float64(3.281)), ret=-0.0213, ret_ci=(np.float64(-0.1032), np.float64(0.034)), fee_c=0.2375, hold_d=0.0626, full_util_ann=-56.8967
+    sim f=0.05 of equity/event (sample opportunities only): final=0.9577, cagr=-0.0208, maxdd=-0.0866, years=2.0507, util=0.0003, streak=1, worst_bet=-1.0
+    sim f=0.10 of equity/event (sample opportunities only): final=0.9121, cagr=-0.0439, maxdd=-0.1704, years=2.0507, util=0.0007, streak=1, worst_bet=-1.0
+    capacity-capped sim K=$10,000: cagr=-0.0176 final=0.9643 util=0.0003
+    capacity-capped sim K=$100,000: cagr=0.0032 final=1.0065 util=0.0001
+    capacity-capped sim K=$1,000,000: cagr=0.0044 final=1.0090 util=0.0000
+--- 2x COSTS: events=38, mkts=44, mean_p=0.9605, win=0.9474, pnl_c=-4.1746, pnl_ci=(np.float64(-12.097), np.float64(1.17)), ret=-0.0423, ret_ci=(np.float64(-0.1227), np.float64(0.0119)), fee_c=0.2341, hold_d=0.0626, full_util_ann=-112.8271
+    sim f=0.05 of equity/event (sample opportunities only): final=0.9204, cagr=-0.0397, maxdd=-0.0946, years=2.0507, util=0.0003, streak=2, worst_bet=-1.0
+    sim f=0.10 of equity/event (sample opportunities only): final=0.8424, cagr=-0.0802, maxdd=-0.1849, years=2.0507, util=0.0007, streak=2, worst_bet=-1.0
+    capacity-capped sim K=$10,000: cagr=-0.0324 final=0.9348 util=0.0003
+    capacity-capped sim K=$100,000: cagr=-0.0050 final=0.9897 util=0.0001
+    capacity-capped sim K=$1,000,000: cagr=0.0011 final=1.0022 util=0.0000
+--- opportunity supply: 38 event-bets over 2.05 y = 19/yr in the sample; median cap per event $1,448, mean $67,528; sum of caps x hold-days / period-days = $208 of capital deployable on average
+--- $ profit at full capacity (sum cap*ret)/yr: $41,115 in sample; $41,115 scaled to the universe (sampling fraction 1.0)
+=== capacity-limited annual return K=$10,000: utilization 0.0208 x fully-deployed rate -56.8967 = -1.1853 (2x costs: -2.3505); SPY 0.1766
+=== capacity-limited annual return K=$100,000: utilization 0.0021 x fully-deployed rate -56.8967 = -0.1185 (2x costs: -0.2350); SPY 0.1766
+=== capacity-limited annual return K=$1,000,000: utilization 0.0002 x fully-deployed rate -56.8967 = -0.0119 (2x costs: -0.0235); SPY 0.1766
+--- worst losing streak (consecutive losing event bets, settlement order): 1
+--- per year
+       n       p    win     ret   pnl_c
+year                                   
+2024  11  0.9582  1.000  0.0356  3.4255
+2025  16  0.9622  0.875 -0.0980 -9.4472
+2026  11  0.9605  1.000  0.0333  3.2142
+--- per category
+                      n       p     win     ret    pnl_c
+category                                                
+Crypto               15  0.9600  1.0000  0.0337   3.2567
+Sports                7  0.9607  0.8571 -0.1140 -11.0950
+Financials            6  0.9600  1.0000  0.0337   3.2550
+Entertainment         3  0.9567  0.6667 -0.3109 -29.7644
+Economics             2  0.9650  1.0000  0.0287   2.7900
+Politics              2  0.9700  1.0000  0.0238   2.3200
+Climate and Weather   1  0.9650  1.0000  0.0287   2.7900
+Mentions              1  0.9600  1.0000  0.0337   3.2600
+Transportation        1  0.9500  1.0000  0.0437   4.1900
+--- artifact sensitivities (base costs)
+--- no tape-discovery filter (on-schedule only): events=46, mkts=52, mean_p=0.9615, win=0.9565, pnl_c=-1.2337, pnl_ci=(np.float64(-7.776), np.float64(3.195)), ret=-0.0128, ret_ci=(np.float64(-0.0808), np.float64(0.0331)), fee_c=0.2323, hold_d=0.0735, full_util_ann=-34.3011
+--- OFF-schedule closes only (possible early close = lookahead): events=193, mkts=204, mean_p=0.9612, win=0.9041, pnl_c=-6.4437, pnl_ci=(np.float64(-10.572), np.float64(-2.528)), ret=-0.0663, ret_ci=(np.float64(-0.109), np.float64(-0.0258)), fee_c=0.2353, hold_d=0.0459, full_util_ann=-69.5089
+--- everything (no filters): events=255, mkts=272, mean_p=0.9614, win=0.9039, pnl_c=-6.4784, pnl_ci=(np.float64(-10.256), np.float64(-3.126)), ret=-0.0668, ret_ci=(np.float64(-0.106), np.float64(-0.0322)), fee_c=0.2342, hold_d=0.0459, full_util_ann=-83.4977
+--- order size 1 contract (fee rounding): events=38, mkts=44, mean_p=0.9605, win=0.9474, pnl_c=-2.8158, pnl_ci=(np.float64(-10.724), np.float64(2.526)), ret=-0.029, ret_ci=(np.float64(-0.1102), np.float64(0.026)), fee_c=1.0, hold_d=0.0626, full_util_ann=-77.2355
+--- quote age <= 2h: events=37, mkts=43, mean_p=0.9605, win=0.9459, pnl_c=-2.1994, pnl_ci=(np.float64(-10.32), np.float64(3.282)), ret=-0.0228, ret_ci=(np.float64(-0.1068), np.float64(0.034)), fee_c=0.2374, hold_d=0.0625, full_util_ann=-60.6149
+--- one market per event (highest price): events=38, mkts=38, mean_p=0.9613, win=0.9474, pnl_c=-2.1297, pnl_ci=(np.float64(-10.049), np.float64(3.208)), ret=-0.022, ret_ci=(np.float64(-0.1039), np.float64(0.0332)), fee_c=0.235, hold_d=0.0626, full_util_ann=-58.6469
