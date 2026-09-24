@@ -9,14 +9,14 @@ S3 = "https://s3-ap-northeast-1.amazonaws.com/data.binance.vision"
 BASE = "https://data.binance.vision/"
 NS = {"s": "http://s3.amazonaws.com/doc/2006-03-01/"}
 
-def get(url, tries=5):
+def get(url, tries=8):
     for i in range(tries):
         try:
-            with urllib.request.urlopen(url, timeout=60) as r:
+            with urllib.request.urlopen(url, timeout=15) as r:
                 return r.read()
         except Exception as e:
             if i == tries - 1: raise
-            time.sleep(2 * (i + 1))
+            time.sleep(1)
 
 def s3_list(prefix, delimiter="/"):
     keys, prefixes, marker = [], [], ""
@@ -46,13 +46,12 @@ def main():
         if os.path.exists(out): return sym, "cached"
         keys, _ = s3_list(f"data/spot/monthly/klines/{sym}/1d/")
         keys = [k for k in keys if k.endswith(".zip")]
-        frames = []
-        for k in keys:
+        def dl(k):
             z = zipfile.ZipFile(io.BytesIO(get(BASE + k)))
             with z.open(z.namelist()[0]) as f:
-                df = pd.read_csv(f, header=None)
-            frames.append(df)
-            time.sleep(0.05)
+                return pd.read_csv(f, header=None)
+        with ThreadPoolExecutor(6) as inner:
+            frames = list(inner.map(dl, keys))
         if not frames:
             open(out, "w").write(""); return sym, 0
         df = pd.concat(frames)
@@ -62,7 +61,7 @@ def main():
         df.to_csv(out, index=False)
         return sym, len(keys)
 
-    with ThreadPoolExecutor(6) as ex:
+    with ThreadPoolExecutor(5) as ex:
         for i, (s, n) in enumerate(ex.map(one, usdt)):
             if i % 50 == 0: print(i, s, n, flush=True)
 

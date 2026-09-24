@@ -21,8 +21,16 @@ def norm(x):
     return x.strip().replace(".", "-").upper()
 
 
-ch["add_t"] = ch["add_t"].map(norm)
-ch["rem_t"] = ch["rem_t"].map(norm)
+# ticker renames between an addition (old ticker) and the current list / a later removal (new
+# ticker). Hand-built from the inconsistency log; yfinance keeps history under the NEW ticker.
+RENAME = {"PSTG": "P", "CHK": "EXE", "ZI": "GTM", "HTA": "HR", "UA/UAA": "UAA", "UAA/UA": "UAA",
+          "GPS": "GAP", "ELY": "MODG", "HFC": "DINO", "BRKS": "AZTA", "ERI": "CZR", "ADS": "BFH",
+          "IIVI": "COHR", "AAXN": "AXON", "CFX": "ENOV", "WTW": "WW", "WWE": "TKO", "WYND": "TNL",
+          "APY": "CHX", "SGMS": "LNW", "INCR": "SYNH", "ESV": "VAL", "JCOM": "ZD", "OZRK": "OZK",
+          "CSAL": "UNIT", "HYH": "AVNS", "POL": "AVNT", "JDSU": "VIAV", "SAI": "LDOS", "FII": "FHI",
+          "DV": "ATGE", "TPX": "SGI", "WXS": "WEX"}
+ch["add_t"] = ch["add_t"].map(norm).map(lambda x: RENAME.get(x, x) if isinstance(x, str) else x)
+ch["rem_t"] = ch["rem_t"].map(norm).map(lambda x: RENAME.get(x, x) if isinstance(x, str) else x)
 members = set(cur["Symbol"].map(norm))
 print("current members:", len(members), "changes:", len(ch), "unparsed dates:", bad,
       "range", ch["date"].min().date(), ch["date"].max().date())
@@ -36,14 +44,19 @@ for me in months:
     while ci < len(ch) and ch.loc[ci, "date"] > me:
         r = ch.loc[ci]
         if isinstance(r.add_t, str):
-            if r.add_t in members:
+            ph = [m for m in members if m.startswith(r.add_t + "#")]
+            if ph:  # an earlier company that used the same ticker (placeholder, no price data)
+                members.discard(ph[0])
+            elif r.add_t in members:
                 members.discard(r.add_t)
             else:
                 log.append((r.date.date(), "added-not-in-set", r.add_t, r.add_n))
         if isinstance(r.rem_t, str):
             if r.rem_t in members:
                 log.append((r.date.date(), "removed-already-in-set", r.rem_t, r.rem_n))
-            members.add(r.rem_t)
+                members.add(r.rem_t + "#" + str(r.date.year))  # ticker collision -> no data
+            else:
+                members.add(r.rem_t)
         ci += 1
     snap[me] = sorted(members)
 

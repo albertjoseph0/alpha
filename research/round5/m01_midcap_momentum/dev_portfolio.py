@@ -38,12 +38,13 @@ for name, p in cands.items():
         for cm in (0, 1, 2):
             to = 0 if name == "Market" else TO_MOM
             r = run(p, sw, to=to, c=C_MID * cm)
+            bm = mkt_m.reindex(r.index)
             ex = (r.groupby(r.index.year).apply(lambda x: (1 + x).prod() - 1)
                   - bm.groupby(bm.index.year).apply(lambda x: (1 + x).prod() - 1))
             rows.append(dict(port=name, switch=sw, costx=cm, cagr=cagr(r), mkt=cagr(bm),
                              excess=cagr(r) - cagr(bm), maxdd=maxdd(r), vol=r.std() * np.sqrt(12),
-                             yrs_beat=(ex > 0).mean(), time_in=df_u if False else None))
-T = pd.DataFrame(rows).drop(columns="time_in")
+                             yrs_beat=(ex > 0).mean()))
+T = pd.DataFrame(rows)
 pd.set_option("display.width", 200)
 print(f"DEV {DEV}  TO={TO_MOM}/month  one-way cost={C_MID*1e4:.0f}bp")
 print(T.to_string(float_format=lambda x: f"{x:.3f}"))
@@ -55,3 +56,10 @@ for a, b in (("1927", "1945"), ("1946", "1963"), ("1964", "1979"), ("1980", "199
     r = run(cands["ME2xP5"], True).loc[a:b]
     r0 = run(cands["ME2xP5"], False).loc[a:b]
     print(a, b, f"ME2xP5 sw {cagr(r):.3f} raw {cagr(r0):.3f} mkt {cagr(mkt_m.loc[a:b]):.3f}")
+
+# worst 12-month windows (momentum crashes) in dev, raw vs switched
+r0 = run(cands["ME2xP5"], False); r1 = run(cands["ME2xP5"], True)
+roll = lambda r: (1 + r).rolling(12).apply(np.prod, raw=True) - 1
+w = pd.DataFrame({"raw": roll(r0), "switched": roll(r1), "mkt": roll(mkt_m.reindex(r0.index))})
+print("worst 12m windows of raw ME2xP5:"); print(w.nsmallest(5, "raw").round(3).to_string())
+print("worst single months raw:", r0.nsmallest(5).round(3).to_dict())

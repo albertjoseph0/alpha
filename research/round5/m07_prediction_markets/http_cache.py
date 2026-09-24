@@ -35,7 +35,7 @@ def get(url, params=None, cache=True, tries=8):
     if cache and os.path.exists(p):
         with gzip.open(p, "rt") as f:
             return json.load(f)
-    delay = 1.0
+    delay = 2.0
     for i in range(tries):
         gap = time.time() - _last["t"]
         if gap < MIN_GAP:
@@ -45,7 +45,7 @@ def get(url, params=None, cache=True, tries=8):
             r = _SESSION.get(url, timeout=60)
         except requests.RequestException:
             time.sleep(delay)
-            delay = min(delay * 2, 60)
+            delay = min(delay * 2, 20)
             continue
         if r.status_code == 200:
             data = r.json()
@@ -62,5 +62,5 @@ def get(url, params=None, cache=True, tries=8):
                     json.dump(data, f)
             return data
         time.sleep(delay)
-        delay = min(delay * 2, 60)
+        delay = min(delay * 2, 20)
     raise RuntimeError(f"failed {url}: {r.status_code} {r.text[:200]}")

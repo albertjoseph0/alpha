@@ -49,9 +49,20 @@ def read_zip_csv(blob):
         return pd.read_csv(f, header=None, dtype=str)
 
 
+M02 = "/home/user/alpha/data/round5/m02_crypto_momentum/raw"  # same archive files, read-only reuse
+
+
 def fetch_symbol(prefix, out):
     if os.path.exists(out):
         return
+    if "/spot/" in prefix:
+        # agent m02 downloads the identical Binance 1d spot files (all 11 columns); reuse if complete
+        sym = os.path.basename(out)
+        src = f"{M02}/{sym}"
+        if os.path.exists(src) and os.path.getsize(src) > 0 and time.time() - os.path.getmtime(src) > 30:
+            df = pd.read_csv(src, dtype=str)
+            df.to_csv(out, index=False, header=False)
+            return
     keys, _ = s3_list(prefix)
     keys = [k for k in keys if k.endswith(".zip")]
     frames = []
