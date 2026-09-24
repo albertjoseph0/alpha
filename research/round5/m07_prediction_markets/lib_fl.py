@@ -18,8 +18,9 @@ def exec_and_fee(df, k=1.0, C=100):
     p = df.p.values
     if df.venue.iloc[0] == "kalshi":
         half = np.nan_to_num(p - df.pmid.values, nan=0.005)
-        ex = p + 0.005 * k + half * (k - 1)
-        fee = np.ceil(np.round(0.07 * C * ex * (1 - ex) * 100, 6)) / 100 / C * k
+        ex = np.minimum(p + 0.005 * k + half * (k - 1), 1.0)
+        fx = np.clip(ex, 0.01, 0.99)               # fee formula is only meaningful inside (0,1)
+        fee = np.ceil(np.round(0.07 * C * fx * (1 - fx) * 100, 6)) / 100 / C * k
     else:
         ex = p + 0.01 * k
         fee = 0.05 * k * ex * (1 - ex)

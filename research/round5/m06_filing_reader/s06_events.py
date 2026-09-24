@@ -12,7 +12,9 @@ ev = pd.read_csv(DATA / "events_8k202.csv", parse_dates=["filingDate", "accept_e
 sc = pd.concat([pd.read_parquet(f) for f in sorted(glob.glob(str(DATA / "sc_part*.parquet")))]).drop_duplicates("acc")
 ev = ev.merge(sc, left_on="accessionNumber", right_on="acc", how="inner")
 
-px = pd.read_parquet(DATA / "prices.parquet")
+px = pd.read_parquet(DATA / "prices.parquet", columns=["date", "ticker", "Open", "Close"])
+if (DATA / "prices_pre.parquet").exists():   # 2018-08..2019-08 closes so 2020 events get 12-1 momentum (s04c)
+    px = pd.concat([pd.read_parquet(DATA / "prices_pre.parquet"), px], ignore_index=True)
 O = px.pivot(index="date", columns="ticker", values="Open")
 C = px.pivot(index="date", columns="ticker", values="Close")
 days = C["SPY"].dropna().index

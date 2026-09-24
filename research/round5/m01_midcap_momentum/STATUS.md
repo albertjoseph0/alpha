@@ -32,7 +32,11 @@ Last updated: 2026-09-24 (round 5b resume)
   ME3xP5 1x 11.4% vs mkt 10.9% (+0.5), 2x 9.8% (-1.1); DD -53% (mkt -50%); beat mkt 17/33 yrs.
   ME3xP5+switch 1x 11.2% (+0.3), 2x 9.8% (-1.1), DD -39%. vs ME3 size quintile 10.5%.
   => Portfolio-level verdict NO EDGE (prereg criterion: >+2 at 1x and >0 at 2x not met).
-  Next: stock-level (optional, priority 2) then README.md.
+- STOCK DEV DONE (stock_dev.py rev chg -> stock_dev_summary.csv, stock_dev.log, books/), 2012-01..2018-12,
+  1x costs vs SPY 12.3%: top5 -4.5..-10.0 pts even in survivor-biased 'drop'; top10 -3.4..-4.2; top80 ~0.
+  Missing-price hole 36-45% of members. Concentration monotonically hurts -> no stock TEST pre-registered
+  (DEV already fails; stock TEST 2019+ deliberately NOT run).
+- README.md WRITTEN: final verdict NO EDGE. m01 COMPLETE. (Optional, not done: stock TEST 2019+.)
 
 ## Next steps
 1. Pick final French config on DEV only; write PREREG.md; run French TEST 1994-2026 once.

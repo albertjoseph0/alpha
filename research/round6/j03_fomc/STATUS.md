@@ -18,7 +18,7 @@ DEV = events 1994-2012, TEST = 2013-01-01 .. 2026-09-23 (sealed until PREREG.md 
       CAGR next-open 3bp: a 8.40, b 5.38, c 1.53; neutral 5.69; SPY 1.93; 60/40 4.70.
       Paired c-b: -4.1 pts/yr, t=-2.29. Jev features' univariate corr with next-period returns all |r|<0.08.
       => DEV says Jev adds nothing (negative). Question set v1 only; no iteration (budget + multiple testing).
-- [ ] PREREG.md
+- [x] PREREG.md written (primary c_jev frozen, next-open, 3bp; test.py edited: next-open primary, neutral start)
 - [ ] test.py run once
 - [ ] README.md
 

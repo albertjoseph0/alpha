@@ -22,6 +22,7 @@ D = os.path.join(ROOT, "data/round5/m07_prediction_markets")
 O = os.path.join(os.path.dirname(__file__), "out")
 PER, V, H, LO, HI = sys.argv[1], sys.argv[2], int(sys.argv[3]), float(sys.argv[4]), float(sys.argv[5])
 TAG = sys.argv[6] if len(sys.argv) > 6 else "frozen"
+FRAC = float(sys.argv[7]) if len(sys.argv) > 7 else 1.0     # sampling fraction of the universe (capacity scaling)
 WIN = {("DEV", "kalshi"): ("2021-07-15", "2024-07-01"), ("DEV", "poly"): ("2022-10-01", "2024-07-01"),
        ("TEST", "kalshi"): ("2024-07-01", "2026-07-20"), ("TEST", "poly"): ("2024-07-01", "2026-09-01")}
 T0, T1 = [pd.Timestamp(x, tz="UTC").timestamp() for x in WIN[(PER, V)]]
@@ -40,7 +41,7 @@ if V == "kalshi":
     s["cap"] = 0.10 * s.v24 * s.p                     # $ : 10% of contracts traded in the prior 24h
 else:
     s["clean"] = s.result.isin(['["0", "1"]', '["1", "0"]', '["0.5", "0.5"]'])
-    s["base"] = s.clean
+    s["base"] = True if PER == "TEST" else s.clean     # PREREG: TEST primary has no outcome-based filter
     s["cap"] = 0.10 * s.vol_total / s.life_d          # $ : 10% of average daily $ volume (lifetime avg)
     jf = os.path.join(D, f"poly_jev_{PER}.csv.gz")
     if os.path.exists(jf):                            # Jev market-type labels (descriptive only)
@@ -89,7 +90,15 @@ yrs = (T1 - T0) / (365.25 * 86400)
 P(f"--- opportunity supply: {len(e1)} event-bets over {yrs:.2f} y = {len(e1) / yrs:.0f}/yr in the sample;"
   f" median cap per event ${e1.cap.median():,.0f}, mean ${e1.cap.replace(np.inf, np.nan).mean():,.0f};"
   f" sum of caps x hold-days / period-days = ${(e1.cap * e1.days).sum() / (yrs * 365.25):,.0f} of capital deployable on average")
-P(f"--- $ profit at full capacity (sum cap*ret)/yr: ${(e1.cap * e1.ret).sum() / yrs:,.0f}")
+P(f"--- $ profit at full capacity (sum cap*ret)/yr: ${(e1.cap * e1.ret).sum() / yrs:,.0f} in sample; "
+  f"${(e1.cap * e1.ret).sum() / yrs / FRAC:,.0f} scaled to the universe (sampling fraction {FRAC})")
+full = L.deployed_rate(e1)
+full2 = L.deployed_rate(L.event_bets(b2))
+dep = (e1.cap * e1.days).sum() / FRAC / (yrs * 365.25)
+for K in (1e4, 1e5, 1e6):
+    U = min(1.0, dep / K)
+    P(f"=== capacity-limited annual return K=${K:,.0f}: utilization {U:.4f} x fully-deployed rate {full:.4f} = {full * U:.4f}"
+      f" (2x costs: {full2 * U:.4f}); SPY {spy:.4f}")
 P("--- worst losing streak (consecutive losing event bets, settlement order):", L.simulate(e1)["streak"])
 P("--- per year")
 e1["year"] = pd.to_datetime(e1.d, unit="s").dt.year
@@ -105,6 +114,7 @@ if V == "kalshi":
     report(L.select(s, H, LO, HI, filters=["base"], max_age=2), "quote age <= 2h", full=False)
 else:
     report(L.select(s, H, LO, HI, filters=["all"]), "incl. unclean resolutions (0/0, 1/1 treated as reported)", full=False)
+    report(L.select(s, H, LO, HI, filters=["clean"]), "clean resolutions only (DEV definition)", full=False)
     report(L.select(s[s.vol_total >= 10000], H, LO, HI, filters=["base"]), "lifetime volume >= $10k", full=False)
     report(L.select(s, H, LO, HI, filters=["base"], max_age=2), "price age <= 2h", full=False)
     if "objective" in s:

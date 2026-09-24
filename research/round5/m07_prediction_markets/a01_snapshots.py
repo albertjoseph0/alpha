@@ -99,9 +99,9 @@ def kalshi():
 
 # ---------------------------------------------------------------- Polymarket
 def poly():
-    s = pd.read_csv(os.path.join(D, f"poly_sample_{per}.csv.gz"), low_memory=False)
+    s = pd.read_csv(os.path.join(D, f"poly_sample_{per}.csv.gz"), low_memory=False, dtype={"id": str, "event_id": str})
     with gzip.open(os.path.join(D, f"poly_hist_{per}.pkl.gz"), "rb") as f:
-        P = pickle.load(f)
+        P = {str(k): v for k, v in pickle.load(f).items()}
     s = s[s.id.isin(P.keys())].copy()
     st = pd.to_datetime(s.startDate, utc=True, errors="coerce", format="ISO8601")
     s["life_d"] = ((s.closed_ts - (st - pd.Timestamp(0, tz="UTC")).dt.total_seconds()) / 86400).clip(lower=1).fillna(30)
