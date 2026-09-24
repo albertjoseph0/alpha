@@ -29,9 +29,11 @@ def edgar(url):
 def read_texts(path=None):
     """Read texts.jsonl.gz tolerating a partially written tail (the fetcher may be running)."""
     if path is None:  # DEV texts + TEST texts (fetched by two processes into separate files)
-        out = []
-        for f in ["texts.jsonl.gz", "texts_dev2.jsonl.gz", "texts_test.jsonl.gz", "texts_test2.jsonl.gz"]:
-            out += read_texts(DATA / f)
+        out, seen = [], set()
+        for f in ["texts.jsonl.gz", "texts_dev2.jsonl.gz", "texts_test.jsonl.gz", "texts_x.jsonl.gz"]:
+            for r in read_texts(DATA / f):
+                if r["acc"] not in seen:
+                    seen.add(r["acc"]); out.append(r)
         return out
     out = []
     try:

@@ -33,7 +33,7 @@ def build(ver):
     P["after_hours"] = ((P.hour >= 16) | (P.hour < 9.5)).astype(int)
     if ver:
         J = pd.DataFrame([{"acc": r["acc"], "nstate": r["nstate"], **jev_flat(r["a"])} for r in read_texts(DATA / f"jev_{ver}.jsonl.gz")])
-        P = P.merge(J, on="acc", how="left")
+        P = P.merge(J.drop_duplicates("acc"), on="acc", how="left")
     return P
 
 
