@@ -1,28 +1,22 @@
-# m06 filing reader: STATUS
+# m06 filing reader: STATUS (Round 5b resume, 2026-09-24 ~11:30 UTC)
 
 ## Done
 - s01 universe: point-in-time S&P 500 intervals (data/.../sp500_pit_intervals.csv, READ-ONLY for others) + ticker_cik.csv
-- s02: events_8k202.csv = 14,579 8-K Item 2.02 filings 2019-10..2026-09 made while the firm was an S&P 500 member (acceptance time UTC->ET in accept_et)
-- s04: prices.parquet (yfinance adjusted OHLCV, 580 tickers + SPY; 53 delisted tickers missing). READ-ONLY for others.
-- s05 (FinBERT + LM scorer) and s06 (event table) written, not yet run on full data.
-- Round 5b restart: texts_dev.jsonl.gz was truncated (1,912 good records to 2020-07). Rescued into texts_all.jsonl.gz;
-  s03 now self-rescues truncated output.
+- s02: events_8k202.csv = 14,579 8-K Item 2.02 filings 2019-10..2026-09 while the firm was an S&P 500 member
+- s03: texts_all.jsonl.gz complete (all 14,579). s04: prices.parquet (53 delisted tickers missing; stress-tested).
+- s05: FinBERT + LM scored for all 14,579 events (sc_part000..029.parquet).
+- s07 Jev (base run): 3,173 events 2020-01..2021-06 in jev_features.parquet ($0.76 spent of $15).
+  Jev scoring was NOT extended to all events (time); Jev comparison uses a sample (see below).
+- The old run_s07_loop.sh was stuck (another agent's shell matched its pgrep pattern) and was killed.
+
+## Design decision (Jev sample)
+- Full-sample comparison: price / +LM / +FinBERT on all DEV (2020-22) and TEST (2023+) events.
+- Identical-events Jev comparison: all four sets (price, +LM, +FinBERT, +Jev) on Jev-covered events only:
+  DEV = 2020-01..2021-06 (cached), TEST = 2023 filings (+2022-10..12 for the first rebalance's eligible set).
 
 ## Running
-- s03 text fetch into data/.../texts_all.jsonl.gz, dev range then test range (log s03_all.log). Re-run the same
-  command to resume: `python s03_fetch_text.py 2019-10-01 2022-12-31 texts_all.jsonl.gz` then `... 2023-01-01 2026-12-31 ...`
-
-- s05 FinBERT (int8, first 16 narrative sentences) + LM scorer, resumable -> DATA/sc_partNNN.parquet
-  (re-run `python s05_score.py texts_all.jsonl.gz sc` after the fetch finishes; it skips scored accs).
-- s07 Jev features (questions frozen in jev_questions.py, 28 questions; text anonymised by textprep.py),
-  3 I/O threads; cost ~5.7k tokens/call (~$0.00024/call, ~$3.4 for all ~14k events). Resumable via jev cache.
-  Run `python s07_jev.py` (no arg = all dates) at the end to produce jev_features.parquet for all events.
-- s04b: yfinance retry for 53 delisted tickers recovered nothing (Yahoo purged them). m01's close.pkl has
-  empty columns for them. Survivorship handled by stress test (see README).
-
-- Background drivers (02:40 UTC): run_s05_loop.sh (FinBERT, K=10 sentences, 64 tokens, int8; ~0.5 s/doc)
-  and run_s07_loop.sh (Jev; fast jittered retry because the gateway returns frequent 503s; ~1.3 calls/s).
-  Both re-run until s03 fetch ends; logs s05_loop.log / s07_loop.log in DATA. If killed, just relaunch them.
+- s07 Jev sample run: `python s07_jev.py 2023-12-31 2022-10-01` -> DATA/jev_features_2022-10-01_2023-12-31.parquet
+  (log DATA/s07_b.log; resumable via Jev cache; just re-run the same command if killed)
 
 ## Next
-- s06_events.py (event table) -> s08_model.py dev -> PREREG.md -> s08_model.py test (ONCE) -> README.md
+- s06_events.py (merges all jev_features*.parquet) -> s08_model.py dev -> PREREG.md -> s08 test ONCE -> leakage probe -> README.md

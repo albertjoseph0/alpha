@@ -70,8 +70,11 @@ for c_ in ["fb_mean", "fb_head", "fb_neg", "lm_tone", "lm_neg", "lm_pos"]:
     E[c_ + "_chg"] = np.where(E.has_prev == 1, E[c_] - prev, np.nan)
 for N in H:
     E[f"ar_{N}"] = E[f"r_{N}"] - E[f"spy_{N}"]
-jf = DATA / "jev_features.parquet"
-if jf.exists():
-    E = E.merge(pd.read_parquet(jf), on="acc", how="left")
+jfs = sorted(glob.glob(str(DATA / "jev_features*.parquet")))   # base run + dated sample runs
+if jfs:
+    J = pd.concat([pd.read_parquet(f) for f in jfs], ignore_index=True)
+    J = J.sort_values("jev_ok").drop_duplicates("acc", keep="last")   # prefer a successful answer
+    E = E.merge(J, on="acc", how="left")
+    E["jev_ok"] = E.jev_ok.fillna(False).astype(bool)
 E.to_parquet(DATA / "events_scored.parquet")
 print(len(E), "events;", round(E.has_px.mean(), 3), "with prices;", E.session.value_counts().to_dict())

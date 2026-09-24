@@ -1,0 +1,67 @@
+DEV events: 283  (S=133, M=150); OOS from 2000-01-01
+Holding period (days between events): median 21.0
+[S] corr(dy2 on day, next-period SPY xs) = -0.121; with TLT xs = 0.013 (n=133)
+[M] corr(dy2 on day, next-period SPY xs) = -0.089; with TLT xs = 0.015 (n=150)
+
+Backtest window 2000-02-02 -> 2012-12-31 (walk-forward OOS inside DEV). Costs 3bp/side (and 6bp).
+Benchmarks: SPY {'CAGR': np.float64(1.93), 'vol': np.float64(21.48), 'sharpe': np.float64(0.2), 'maxDD': np.float64(-55.19)}
+            60/40 SPY/IEF {'CAGR': np.float64(4.7), 'vol': np.float64(11.74), 'sharpe': np.float64(0.45), 'maxDD': np.float64(-32.59)}
+            neutral allocator (same menu, z=0) {'CAGR': np.float64(5.65), 'vol': np.float64(13.45), 'sharpe': np.float64(0.48), 'maxDD': np.float64(-32.05)} | next-open 3bp CAGR 5.69
+
+OOS information coefficients and backtests by feature set and ridge penalty (alpha*n):
+     set  alpha   n  ic_eq  ric_eq  ic_dur  ric_dur  ic_eq_S  ic_dur_S  ic_eq_M  ic_dur_M  CAGR_close_3bp    vol  sharpe   maxDD  turnover_x  CAGR_close_6bp  CAGR_open_3bp  CAGR_open_6bp
+a_notext    1.0 216  0.087   0.102   0.051   -0.078    0.108    -0.156    0.076     0.183           8.293 16.116   0.575 -33.274      16.066           7.772          8.398          7.877
+  b_dict    1.0 216  0.012   0.029  -0.027   -0.059    0.107    -0.093   -0.050     0.017           5.210 13.674   0.440 -35.444      16.750           4.683          5.378          4.850
+   c_jev    1.0 216 -0.076  -0.050  -0.034   -0.085    0.048    -0.111   -0.174     0.014           0.950 13.490   0.137 -44.575      17.522           0.420          1.527          0.995
+a_notext    0.1 216  0.064   0.080   0.054   -0.040    0.063    -0.133    0.070     0.180           8.764 15.954   0.606 -28.374      16.102           8.240          8.806          8.281
+  b_dict    0.1 216  0.009   0.019   0.014   -0.036    0.083    -0.098   -0.042     0.093           5.769 13.991   0.471 -31.380      16.915           5.233          5.880          5.343
+   c_jev    0.1 216 -0.061  -0.059   0.000   -0.049    0.004    -0.088   -0.115     0.055           2.137 14.051   0.221 -35.548      17.238           1.610          2.479          1.950
+a_notext   10.0 216  0.100   0.106   0.044   -0.099    0.135    -0.178    0.080     0.176           6.807 16.301   0.485 -35.215      15.688           6.306          6.838          6.336
+  b_dict   10.0 216  0.020   0.037  -0.055   -0.082    0.121    -0.096   -0.041    -0.032           4.917 13.866   0.415 -37.862      16.582           4.396          4.951          4.430
+   c_jev   10.0 216 -0.081  -0.038  -0.068   -0.101    0.079    -0.128   -0.203    -0.032           1.519 12.940   0.181 -46.534      17.305           0.993          2.060          1.531
+
+Paired differences (alpha=1, close, 3bp): annualised mean diff, t-stat on event-period returns
+  a - neutral :   2.47 pts/yr (log), t =  1.02, periods = 217
+  b - neutral :  -0.42 pts/yr (log), t = -0.20, periods = 217
+  c - neutral :  -4.56 pts/yr (log), t = -2.05, periods = 217
+  c - b       :  -4.13 pts/yr (log), t = -2.29, periods = 217
+  c - SPY     :  -0.97 pts/yr (log), t = -0.30, periods = 217
+
+Power: 216 OOS events -> SE(IC) ~ 0.068; 2-sigma detectable IC ~ 0.136. Holding periods overlap none (event-to-event), so n is the effective sample.
+
+Full-DEV ridge coefficients (c set, standardised features, target in % excess return per period):
+            y_eq  y_dur
+dy2_bp    -0.158  0.046
+spy_day   -0.182 -0.130
+tlt_day    0.149  0.057
+dict_net  -0.005  0.068
+dict_dnet -0.112  0.034
+cos_prev   0.073  0.064
+dissents   0.079 -0.046
+J_hawk     0.005 -0.040
+J_guid     0.024 -0.031
+J_infl    -0.018 -0.019
+J_bs       0.024  0.123
+J_risk    -0.111 -0.019
+
+Ablation (drop one Jev feature; OOS IC eq / dur, alpha=1). Base c: -0.076 -0.034
+  -J_hawk : ic_eq -0.063  ic_dur -0.028
+  -J_guid : ic_eq -0.060  ic_dur -0.024
+  -J_infl : ic_eq -0.072  ic_dur -0.030
+  -J_bs   : ic_eq -0.056  ic_dur -0.062
+  -J_risk : ic_eq -0.073  ic_dur -0.025
+
+Univariate corr of each feature with next-period excess returns (all DEV events, descriptive):
+  feature  corr_eq  corr_dur  corr_eq_S  corr_eq_M
+   dy2_bp   -0.089     0.017     -0.121     -0.089
+  spy_day   -0.105    -0.102      0.004     -0.180
+  tlt_day    0.102     0.030      0.204      0.042
+ dict_net   -0.026     0.030     -0.032      0.005
+dict_dnet   -0.051     0.015     -0.035     -0.070
+ cos_prev    0.048     0.034      0.024      0.061
+ dissents    0.053    -0.026      0.078      0.029
+   J_hawk    0.009    -0.015      0.022     -0.023
+   J_guid    0.023     0.006      0.039     -0.014
+   J_infl    0.005     0.015     -0.044      0.026
+     J_bs   -0.002     0.081      0.054     -0.011
+   J_risk   -0.069    -0.035     -0.077     -0.022

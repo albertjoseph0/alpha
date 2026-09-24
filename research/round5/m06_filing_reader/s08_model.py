@@ -2,9 +2,11 @@
 MODE=dev : filings 2020-01..2022-12, purged leave-one-year-out CV (out-of-fold scores), prices truncated
            at 2022-12-30 so nothing from the sealed test period is read.
 MODE=test: final models fit on all dev events (labels ending <= 2022-12-30), applied to 2023-01.. events.
-Usage: s08_model.py dev|test
-Outputs (research folder): results_<mode>.csv (portfolio stats), ic_<mode>.csv, jev_q_<mode>.csv,
-monthly_<mode>.parquet in DATA."""
+Usage: s08_model.py dev|test [full|jev]
+  full: price / +LM / +FinBERT on every event.  jev: identical-events comparison of price / +LM / +FinBERT / +Jev
+  restricted to Jev-scored events (DEV 2020-01..2021-06 with half-year folds; TEST 2023 filings, first rebalance
+  2023-01, last rebalance the month after Jev coverage ends).
+Outputs (research folder): results_<mode>_<sub>.csv (portfolio stats), ic_<mode>_<sub>.csv; monthly_*.parquet in DATA."""
 import sys, warnings
 import numpy as np, pandas as pd
 from scipy.stats import spearmanr
@@ -14,7 +16,8 @@ from common import DATA, RES
 warnings.filterwarnings("ignore")
 
 MODE = sys.argv[1]
-assert MODE in ("dev", "test")
+SUB = sys.argv[2] if len(sys.argv) > 2 else "full"
+assert MODE in ("dev", "test") and SUB in ("full", "jev")
 DEV_START, DEV_END = pd.Timestamp("2020-01-01"), pd.Timestamp("2022-12-31")
 DEV_PX_END = pd.Timestamp("2022-12-30")
 TEST_START = pd.Timestamp("2023-01-01")
@@ -34,9 +37,18 @@ JEV = sorted(c for c in E.columns if c.startswith("j_")) + ["jev_has_prev"]
 PREV_Q = ("j_guid_spec_vs_prev", "j_caution_vs_prev", "j_tone_vs_prev")
 for c in [c for c in JEV if c.startswith(PREV_Q)]:
     E.loc[E.jev_has_prev != 1, c] = np.nan      # comparison answers only meaningful with a previous release
-SETS = {"price": PRICE, "price+dict": PRICE + DICT, "price+finbert": PRICE + FB, "price+jev": PRICE + JEV,
-        "all": PRICE + DICT + [f for f in FB if f != "has_prev"] + JEV,
-        "dict_only": DICT, "finbert_only": FB, "jev_only": JEV}
+FB_NP = [f for f in FB if f != "has_prev"]
+if SUB == "full":
+    SETS = {"price": PRICE, "price+dict": PRICE + DICT, "price+finbert": PRICE + FB, "price+dict+finbert": PRICE + DICT + FB_NP,
+            "dict_only": DICT, "finbert_only": FB}
+else:
+    SETS = {"price": PRICE, "price+dict": PRICE + DICT, "price+finbert": PRICE + FB, "price+jev": PRICE + JEV,
+            "all": PRICE + DICT + FB_NP + JEV, "jev_only": JEV}
+    E = E[E.jev_ok].copy()
+    JEV_DEV_END = pd.Timestamp("2021-06-30")      # base Jev run covers dev filings 2020-01..2021-06
+    if MODE == "dev":
+        E = E[E.filingDate <= JEV_DEV_END]
+JEV_END = E.filingDate.max() if SUB == "jev" else None
 
 E = E[E.has_px & E.gap_x.notna() & (E.filingDate >= (DEV_START if MODE == "dev" else pd.Timestamp("2020-01-01")))].copy()
 E["ym"] = E.entry_date.dt.to_period("M")
@@ -71,10 +83,15 @@ def fit_predict(tr, te, cols, kind):
 def scores(kind, cols):
     if MODE == "dev":   # purged leave-one-year-out
         s = pd.Series(np.nan, index=E.index)
-        for yr in (2020, 2021, 2022):
-            te = E[E.filingDate.dt.year == yr]
-            y0, y1 = pd.Timestamp(f"{yr}-01-01"), pd.Timestamp(f"{yr}-12-31")
-            tr = E[(E.filingDate.dt.year != yr)]
+        folds = ([(pd.Timestamp(f"{y}-01-01"), pd.Timestamp(f"{y}-12-31")) for y in (2020, 2021, 2022)] if SUB == "full" else
+                 [(pd.Timestamp(a), pd.Timestamp(b)) for a, b in (("2020-01-01", "2020-06-30"), ("2020-07-01", "2020-12-31"),
+                                                                  ("2021-01-01", "2021-06-30"))])
+        for y0, y1 in folds:
+            inf = E.filingDate.between(y0, y1)
+            te = E[inf]
+            if len(te) == 0:
+                continue
+            tr = E[~inf]
             tr = tr[~((tr.entry_date < y0) & (tr[f"end_{H}"] >= y0))]       # labels overlapping the fold
             tr = tr[~((tr.entry_date > y1) & (tr.entry_date <= y1 + pd.Timedelta(days=95)))]  # embargo
             s.loc[te.index] = fit_predict(tr, te, cols, kind)[0]
@@ -107,6 +124,8 @@ month_first = pd.Series(days, index=days).groupby(days.to_period("M")).first()
 REB = [d for d in month_first.values if d >= pd.Timestamp("2020-02-01")]
 if MODE == "test":
     REB = [d for d in month_first.values if d >= TEST_START]
+if SUB == "jev":   # stop when the eligible set would include releases after Jev coverage ends
+    REB = [d for d in REB if d <= month_first[(JEV_END + pd.offsets.MonthBegin(1)).to_period("M")]]
 REB = pd.DatetimeIndex(REB)
 pos = pd.Series(np.arange(len(days)), index=days)
 
@@ -171,7 +190,7 @@ def run_all(df, score_cols):
                     "excess_net_2x": net2["cagr"] - spy["cagr"], "maxdd": net["maxdd"], "maxdd_spy": spy["maxdd"],
                     "vol": net["vol"], "ir_vs_spy": te.mean() / te.std() * np.sqrt(12),
                     "turnover_pm": R.turnover.mean(), "avg_eligible": nel, "distinct_names": nnames})
-        R.to_parquet(DATA / f"monthly_{MODE}_{name.replace('+', '_')}.parquet")
+        R.to_parquet(DATA / f"monthly_{MODE}_{SUB}_{name.replace('+', '_')}.parquet")
     return pd.DataFrame(out)
 
 
@@ -189,6 +208,8 @@ if __name__ == "__main__":
         # final models: fit on every dev event whose label ended by 2022-12-30; score events filed from
         # 2022-10 (so the first test rebalance on 2023-01-03 has a full eligible set); IC on 2023+ filings only
         tr = E[(E.filingDate <= DEV_END) & (E[f"end_{H}"] <= DEV_PX_END)]
+        if SUB == "jev":
+            tr = tr[tr.filingDate <= JEV_DEV_END]   # identical training events for all four sets
         te_mask = E.filingDate >= pd.Timestamp("2022-10-01")
         coefs = {}
         for kind in ("logit", "gbt"):
@@ -201,10 +222,10 @@ if __name__ == "__main__":
                     coefs[sname] = pd.Series(m.coef_[0], index=cols)
                 ic_rows.append({"score": c, **ic_stats(E[E.filingDate >= TEST_START], c)})
                 print(c, {k: round(v, 4) for k, v in ic_rows[-1].items() if isinstance(v, float)}, flush=True)
-        pd.concat(coefs, names=["set", "feature"]).rename("coef").to_csv(RES / "coefs_final.csv")
+        pd.concat(coefs, names=["set", "feature"]).rename("coef").to_csv(RES / f"coefs_final_{SUB}.csv")
     E["s_control_all"] = 0.0     # no-skill control: hold every eligible name
-    pd.DataFrame(ic_rows).to_csv(RES / f"ic_{MODE}.csv", index=False)
-    E.to_parquet(DATA / f"events_{MODE}_oof.parquet")
+    pd.DataFrame(ic_rows).to_csv(RES / f"ic_{MODE}_{SUB}.csv", index=False)
+    E.to_parquet(DATA / f"events_{MODE}_{SUB}_oof.parquet")
     res = run_all(E, score_cols)
     Rc, nel, _ = backtest(E, "s_control_all", topn=None)
     yrs = len(Rc) / 12
@@ -213,6 +234,6 @@ if __name__ == "__main__":
             "avg_eligible": nel}
     ctrl["excess_net"] = ctrl["cagr_net"] - ctrl["cagr_spy"]
     res = pd.concat([res, pd.DataFrame([ctrl])])
-    res.to_csv(RES / f"results_{MODE}.csv", index=False)
+    res.to_csv(RES / f"results_{MODE}_{SUB}.csv", index=False)
     pd.set_option("display.width", 250)
     print(res.round(4).to_string())

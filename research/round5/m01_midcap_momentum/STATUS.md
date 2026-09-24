@@ -25,8 +25,14 @@ Last updated: 2026-09-24 (round 5b resume)
   own revision history -> DATA/membership_wikirev.csv (+ wiki_rev/ cache). Rate-limited (429), slow.
 
 ## In progress
-- wiki_revisions.py running (log DATA/wiki_rev.log). Then: extend stock_bt.py (event-based
-  survivorship bounds, membership source option), run stock DEV 2012-2018 only.
+- wiki_revisions.py FINISHED: DATA/membership_wikirev.csv (177 month-ends 2011-2025, ~400 names).
+- PREREG.md WRITTEN (French: primary ME3xP5 no switch, secondary ME3xP5+switch, 15bp x 0.80 TO/month,
+  bench = French Mkt).
+- FRENCH TEST DONE (run once, french_test.py -> french_test.csv, french_test_yearly.csv), 1994-01..2026-07:
+  ME3xP5 1x 11.4% vs mkt 10.9% (+0.5), 2x 9.8% (-1.1); DD -53% (mkt -50%); beat mkt 17/33 yrs.
+  ME3xP5+switch 1x 11.2% (+0.3), 2x 9.8% (-1.1), DD -39%. vs ME3 size quintile 10.5%.
+  => Portfolio-level verdict NO EDGE (prereg criterion: >+2 at 1x and >0 at 2x not met).
+  Next: stock-level (optional, priority 2) then README.md.
 
 ## Next steps
 1. Pick final French config on DEV only; write PREREG.md; run French TEST 1994-2026 once.

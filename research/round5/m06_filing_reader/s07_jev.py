@@ -2,7 +2,9 @@
 State = anonymised narrative of the CURRENT release (<=12k chars) + the same company's PREVIOUS release
 (<=8k chars; only if accepted within 200 days before). Questions frozen in jev_questions.py.
 Streams texts_all.jsonl.gz (sorted by filing date), resumable via Jev's on-disk cache.
-Usage: s07_jev.py [MAX_DATE]   -> DATA/jev_raw.jsonl.gz (acc -> answers) and DATA/jev_features.parquet"""
+Usage: s07_jev.py [MAX_DATE [START]]   -> DATA/jev_raw.jsonl.gz (acc -> answers) and DATA/jev_features.parquet
+(with START given: DATA/jev_raw_START_MAX.jsonl.gz and DATA/jev_features_START_MAX.parquet; the previous-release
+context is still built from all earlier texts)"""
 import sys, gzip, json, time, random
 import pandas as pd
 sys.path.insert(0, "/home/user/alpha/research/round5")
@@ -12,7 +14,8 @@ from jev_questions import QUESTIONS
 from common import DATA
 
 MAX_DATE = sys.argv[1] if len(sys.argv) > 1 else "2099-01-01"
-START = "2020-01-01"
+START = sys.argv[2] if len(sys.argv) > 2 else "2020-01-01"
+SUF = "" if len(sys.argv) <= 2 else f"_{START}_{MAX_DATE}"
 ev = pd.read_csv(DATA / "events_8k202.csv", parse_dates=["filingDate", "accept_et"]).set_index("accessionNumber")
 import threading
 from concurrent.futures import ThreadPoolExecutor
@@ -87,7 +90,7 @@ def work(job):
 
 with ThreadPoolExecutor(NTHREADS) as ex:
     out = list(ex.map(work, jobs))
-with gzip.open(DATA / "jev_raw.jsonl.gz", "wt") as fo:
+with gzip.open(DATA / f"jev_raw{SUF}.jsonl.gz", "wt") as fo:
     for o in out:
         fo.write(json.dumps(o) + "\n")
 
@@ -105,5 +108,5 @@ for o in out:
                 r[f"j_{k}__{opt}"] = p
     rows.append(r)
 F = pd.DataFrame(rows)
-F.to_parquet(DATA / "jev_features.parquet")
+F.to_parquet(DATA / f"jev_features{SUF}.parquet")
 print("done", len(F), "ok", int(F.jev_ok.sum()), "spent", spent("m06"), round(time.time() - t0))
