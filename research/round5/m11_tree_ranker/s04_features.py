@@ -17,7 +17,7 @@ V = pd.read_pickle(DATA / "volume.pkl")
 spy = C["SPY"].dropna()
 cal = spy.index
 C = C.reindex(cal).astype("float64")
-V = V.reindex(cal).astype("float64")
+V = V.loc[:, ~V.columns.duplicated()].reindex(index=cal, columns=C.columns).astype("float64")
 R = C.pct_change(fill_method=None)
 DV = C * V
 
