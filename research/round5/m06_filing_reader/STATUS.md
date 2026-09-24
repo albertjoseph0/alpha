@@ -14,9 +14,19 @@
 - Identical-events Jev comparison: all four sets (price, +LM, +FinBERT, +Jev) on Jev-covered events only:
   DEV = 2020-01..2021-06 (cached), TEST = 2023 filings (+2022-10..12 for the first rebalance's eligible set).
 
+## DEV results (done; details in PREREG.md)
+- results_dev_full.csv / ic_dev_full.csv: all price/text models negative OOF IC (logit price -0.19 t-3.9), -13..-15 pts/yr vs SPY.
+- results_dev_jev.csv / ic_dev_jev.csv (Jev subset 2020-01..2021-06): all negative; price+jev IC -0.13 (t -1.95).
+- Fixed before prereg: label overlap with day0_x (labels now start at the open after entry); prices_pre.parquet (s04c) so 2020 events have momentum.
+- PREREG.md WRITTEN (frozen).
+## TEST full DONE (ran once, ~11:36 UTC): results_test_full.csv / ic_test_full.csv
+- 45 months 2023-01..2026-09, SPY 21.8%/yr. Verdict strategy logit price+dict+finbert 14.0% net (-7.8 pts), IC -0.002 (t -0.07).
+  logit price 20.7% (-1.1), +dict 16.1%, +finbert 15.2%; control EW 13.1%. All test ICs |t| < 1.1. -> NO EDGE.
+
 ## Running
-- s07 Jev sample run: `python s07_jev.py 2023-12-31 2022-10-01` -> DATA/jev_features_2022-10-01_2023-12-31.parquet
-  (log DATA/s07_b.log; resumable via Jev cache; just re-run the same command if killed)
+- s07 Jev TEST sample, CUT to 2023-06-30 because the gateway ran at ~0.5 calls/s (prereg allows this):
+  `JEV_THREADS=6 python s07_jev.py 2023-06-30 2022-10-01` -> DATA/jev_features_2022-10-01_2023-06-30.parquet (log s07_c.log)
+- s10_leak_probe.py (Jev forward-question probe, 300 dev + 300 test-2023 events) -> RES/leak_probe.csv (log DATA/s10.log)
 
 ## Next
-- s06_events.py (merges all jev_features*.parquet) -> s08_model.py dev -> PREREG.md -> s08 test ONCE -> leakage probe -> README.md
+- when s07 ends: `s06_events.py` then `s08_model.py test jev` (once) -> README.md

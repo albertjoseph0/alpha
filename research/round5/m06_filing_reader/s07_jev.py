@@ -23,7 +23,7 @@ import jev as _jev
 _lock = threading.Lock()
 _orig_record = _jev._record
 _jev._record = lambda agent, tokens: (_lock.acquire(), _orig_record(agent, tokens), _lock.release())
-NTHREADS = 3   # network-bound I/O threads (Jev latency ~1-3 s per call); negligible CPU
+NTHREADS = int(__import__("os").environ.get("JEV_THREADS", "3"))   # network-bound I/O threads; negligible CPU
 
 last = {}   # cik -> (accept_et, anonymised narrative)
 jobs = []   # (acc, has_prev, state or None)

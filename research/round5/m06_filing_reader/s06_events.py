@@ -1,5 +1,5 @@
 """Build the event table: acceptance time -> last pre-news close (ip), first executable open (ie, entry),
-price features known by the entry-day close, and forward returns from the entry open (stock and SPY),
+price features known by the entry-day close, and forward returns from the NEXT open ie+1 (stock and SPY),
 joined with FinBERT/LM scores (sc_part*.parquet) and Jev features (jev_features.parquet, if present).
 Timing: accepted <= 09:15 ET on a trading day -> that day's open; accepted 09:15-16:00 -> next open
 (intraday reaction is untradeable and counted in the gap); accepted >= 16:00 or non-trading day -> next open.
@@ -50,13 +50,15 @@ for r in ev.itertuples():
             rec["mom_1m"] = c[ip] / c[ip - 21] - 1
             lr = np.diff(np.log(c[ip - 60:ip + 1]))
             rec["vol60"] = np.nanstd(lr) * np.sqrt(252)
+            # labels start at the open AFTER the entry day: day0_x (entry open->close) is a feature, so a label
+            # starting at the entry open would contain it (found in dev: it produced a spurious IC of 0.10)
             for N in H:
-                j = ie + N - 1
-                if j < len(days):
-                    cc = c[ie:j + 1]; ok = np.isfinite(cc)
+                j = ie + N
+                if j < len(days) and np.isfinite(o[ie + 1]):
+                    cc = c[ie + 1:j + 1]; ok = np.isfinite(cc)
                     last = cc[ok][-1] if ok.any() else np.nan   # delisted mid-hold: exit at last close
-                    rec[f"r_{N}"] = last / o[ie] - 1
-                    rec[f"spy_{N}"] = s[j] / so[ie] - 1
+                    rec[f"r_{N}"] = last / o[ie + 1] - 1
+                    rec[f"spy_{N}"] = s[j] / so[ie + 1] - 1
                     rec[f"end_{N}"] = days[j]
     recs.append(rec)
 E = pd.DataFrame(recs)
