@@ -79,3 +79,15 @@ m05, m06 resumed and m11 new). Additional rules:
   another agent may read (m01's membership and price files, m05's events, m06's S&P 500
   intervals and prices); add new files instead.
 * With 5 agents on 4 CPUs, keep jobs single-threaded and short.
+
+## Jev (TypeSafe) is available via Vercel AI Gateway (added 2026-09-24)
+* Use the shared client `research/round5/jev.py` (`sys.path.insert(0, "research/round5"); from jev import ask`).
+  Its docstring documents the question formats. The credential is injected by the proxy, so there is no key in code.
+  Responses are cached on disk, and each agent has a hard USD cap (m05 $5, m06 $15, m11 $5; total
+  account balance ~$55). At $0.042 per million input tokens, $1 buys about 24M tokens.
+* Jev returns calibrated typed answers (yes/no probability, choice with probabilities, score). It is
+  weak at arithmetic, counting and dates, so keep all numbers in code.
+* **Lookahead rule for Jev:** ask only about facts stated in the text, never about the future. Strip
+  company names, tickers and dates from the state. Jev's features feed a model you train on DEV
+  only (boosted trees or logistic regression). Always compare against the same model without Jev
+  features, and against a cheap dictionary baseline (Loughran–McDonald), on identical dates.
