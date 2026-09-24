@@ -19,7 +19,7 @@ D = f"{ROOT}/data/round6/j04_spinoffs"
 P = f"{D}/prices"
 os.makedirs(P, exist_ok=True)
 meta = pd.read_csv(f"{D}/meta.csv")
-ev = meta[meta.is_spin_doc & meta.spin_exch.isin(["NYSE", "NASDAQ", "AMEX"])].copy()
+ev = meta[meta.is_spin_doc & (meta.spin_exch.isin(["NYSE", "NASDAQ", "AMEX"]) | meta.spin_exch.isna())].copy()
 print(len(ev), "exchange-listed spin docs")
 
 
@@ -73,10 +73,11 @@ for _, r in ev.iterrows():
         info["last_filing"] = rec.filingDate.max().date() if len(rec) else None
         info["edgar_tickers"] = ",".join(s.get("tickers") or [])
         info["sic"] = float(s["sic"]) if s.get("sic") else None
+        info["edgar_exchanges"] = ",".join(str(x) for x in (s.get("exchanges") or []) if x)
         info["n_recent"] = len(rec)
         if len(s["filings"].get("files", [])):
             info["older_pages"] = len(s["filings"]["files"])
-    cands = [str(r.spin_ticker).replace(".", "-")] + [t.replace(".", "-") for t in (info.get("edgar_tickers") or "").split(",") if t]
+    cands = ([str(r.spin_ticker).replace(".", "-")] if isinstance(r.spin_ticker, str) else []) + [t.replace(".", "-") for t in (info.get("edgar_tickers") or "").split(",") if t]
     used = None
     for tk in dict.fromkeys(cands):
         h = hist(tk)

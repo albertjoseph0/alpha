@@ -1,23 +1,26 @@
-"""Score each 13D's Item 4 with Jev (factual questions only; names/dates stripped), plus a separate
-filer-type question that sees ONLY the filer names (no subject company), and a leakage probe.
+"""Score each event's representative 13D Item 4 with Jev (factual questions only; subject/filer names, ticker
+and dates stripped), plus a separate filer-type question that sees ONLY the filer names, and a leakage probe.
 
-Output: data/orch/o01_activist_13d/jev.parquet (one row per adsh, numeric feature columns)
-        data/orch/o01_activist_13d/probe.parquet (forbidden-question answers on a DEV sample)
+Question set V1 (frozen before any return was looked at; see STATUS.md / PREREG.md).
+
+Usage:  s04_jev.py score [n]      -> jev.parquet (all events in panel.parquet, or the first n for a cost check)
+        s04_jev.py probe [n=300]  -> probe.parquet: forbidden question on DEV events, (a) on the same anonymized
+                                     state the features use and (b) worst case with name, ticker and date shown
 """
-import gzip
 import json
 import pathlib
+import random
 import re
 import sys
 from concurrent.futures import ThreadPoolExecutor
 
 import pandas as pd
 
-ROOT = pathlib.Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(ROOT / "research" / "round5"))
-from jev import ask, spent  # noqa: E402
+from common import D, ROOT
 
-D = ROOT / "data" / "orch" / "o01_activist_13d"
+sys.path.insert(0, str(ROOT / "research" / "round5"))
+from jev import CACHE, ask, spent  # noqa: E402
+
 AGENT = "o01"
 
 INTENT = {
@@ -52,69 +55,99 @@ PROBE_Q = {"probe_outperform": {"type": "noul", "instructions": "Did the company
 DATE = re.compile(r"\b(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},?\s+\d{4}\b|\b\d{1,2}/\d{1,2}/\d{2,4}\b|\b(19|20)\d{2}\b")
 
 
-def anonymize(text: str, subject: str, filers: str) -> str:
+def anonymize(text: str, subject: str, filers: str, tk: str) -> str:
     t = DATE.sub("[date]", text)
     for name in [subject] + [re.sub(r"\s+\(CIK.*", "", x) for x in str(filers).split(" | ")]:
         name = re.sub(r"\s+\(.*", "", str(name)).strip()
-        for token in {name, name.replace(",", ""), " ".join(name.split()[:2])}:
+        for token in sorted({name, name.replace(",", ""), " ".join(name.split()[:2])}, key=len, reverse=True):
             if len(token) >= 4:
                 t = re.sub(re.escape(token), "[entity]", t, flags=re.I)
+    if isinstance(tk, str) and len(tk) >= 2:
+        t = re.sub(r"\b" + re.escape(tk.replace("-", ".")) + r"\b", "[ticker]", t)
     return t[:9000]
 
 
-def flatten(adsh, a):
-    row = {"adsh": adsh}
+def state_of(r) -> dict:
+    return {"schedule_13d_item4_purpose_of_transaction": anonymize(r["item4"], r["subject_name"], r["filer_names"], r["tk"])}
+
+
+def filer_state(r) -> dict:
+    names = " | ".join(re.sub(r"\s+\(CIK.*", "", x).strip() for x in str(r["filer_names"]).split(" | "))
+    return {"reporting_person_names": names[:600]}
+
+
+def flatten(key, a):
+    row = {"key": key}
     for k, v in a.items():
-        if v["type"] == "noul":
+        if "noul" in v:
             row[k] = v["noul"]
-        elif v["type"] == "score":
+        elif "score" in v:
             row[k] = v["score"]
-        elif v["type"] == "choice":
+        elif "choice" in v:
             row[k] = v["choice"]
-            for opt, p in v["probabilities"].items():
+            for opt, p in v.get("probabilities", {}).items():
                 row[f"{k}_p_{opt}"] = p
             row[f"{k}_conf"] = v.get("confidence")
     return row
 
 
-def main(probe_n: int = 300):
-    f = pd.read_csv(D / "filings.csv", dtype=str).set_index("adsh")
-    with gzip.open(D / "texts.jsonl.gz", "rt") as fh:
-        tx = pd.DataFrame([json.loads(l) for l in fh]).drop_duplicates("adsh").set_index("adsh")
-    tx = tx[tx["n_chars"] >= 80]
-    jobs = []
-    for adsh, r in tx.iterrows():
-        m = f.loc[adsh]
-        jobs.append((adsh, anonymize(r["item4"], m["subject_name"], m["filer_names"]), str(m["filer_names"])[:600]))
-    print("scoring", len(jobs), "spent so far", spent(AGENT), flush=True)
+def panel():
+    p = pd.read_parquet(D / "panel.parquet")
+    return p[p["item4"].str.len() >= 80]
 
-    def one(job):
-        adsh, state, filers = job
+
+def score(n=None):
+    p = panel()
+    if n:
+        p = p.sample(int(n), random_state=1)
+    print("scoring", len(p), "spent so far", spent(AGENT), flush=True)
+
+    def one(item):
+        idx, r = item
         try:
-            a = ask(state, QUESTIONS, agent=AGENT)
-            b = ask({"reporting_person_names": filers}, FILER_Q, agent=AGENT)
-            return flatten(adsh, {**a, **b})
+            a = ask(state_of(r), QUESTIONS, agent=AGENT)
+            b = ask(filer_state(r), FILER_Q, agent=AGENT)
+            return flatten(r["rep_adsh"], {**a, **b})
         except Exception as e:  # noqa: BLE001
-            return {"adsh": adsh, "error": str(e)[:200]}
+            return {"key": r["rep_adsh"], "error": str(e)[:200]}
 
-    with ThreadPoolExecutor(6) as ex:
-        rows = list(ex.map(one, jobs))
-    pd.DataFrame(rows).to_parquet(D / "jev.parquet")
-    print("done", spent(AGENT), flush=True)
+    with ThreadPoolExecutor(4) as ex:
+        rows = list(ex.map(one, p.iterrows()))
+    out = pd.DataFrame(rows).rename(columns={"key": "rep_adsh"})
+    out.to_parquet(D / ("jev.parquet" if not n else "jev_sample.parquet"))
+    print("done", len(out), "errors", out.get("error", pd.Series(dtype=str)).notna().sum(), "spent", spent(AGENT), flush=True)
+    print("cache tokens", cache_tokens(), flush=True)
 
-    # leakage probe on a DEV sample (filings 2014-2019)
-    dev = [j for j in jobs if "2014" <= f.loc[j[0], "file_date"][:4] <= "2019"]
-    import random
-    random.Random(0).shuffle(dev)
-    prow = []
-    for adsh, state, _ in dev[:probe_n]:
+
+def probe(n=300):
+    p = panel()
+    p = p[(p["file_date"] >= "2014-01-01") & (p["file_date"] <= "2019-12-31")]
+    idx = list(p.index)
+    random.Random(0).shuffle(idx)
+    rows = []
+    for i in idx[:int(n)]:
+        r = p.loc[i]
+        named = {"company": r["subject_name"], "ticker": r["tk"], "filing_date": str(r["file_date"].date()),
+                 "schedule_13d_item4_purpose_of_transaction": r["item4"][:9000]}
         try:
-            prow.append({"adsh": adsh, "probe": ask(state, PROBE_Q, agent=AGENT)["probe_outperform"]["noul"]})
+            a = ask(state_of(r), PROBE_Q, agent=AGENT)["probe_outperform"]["noul"]
+            b = ask(named, PROBE_Q, agent=AGENT)["probe_outperform"]["noul"]
+            rows.append({"rep_adsh": r["rep_adsh"], "probe_anon": a, "probe_named": b})
         except Exception as e:  # noqa: BLE001
-            prow.append({"adsh": adsh, "probe": None, "error": str(e)[:200]})
-    pd.DataFrame(prow).to_parquet(D / "probe.parquet")
-    print("probe done", spent(AGENT), flush=True)
+            rows.append({"rep_adsh": r["rep_adsh"], "error": str(e)[:200]})
+    pd.DataFrame(rows).to_parquet(D / "probe.parquet")
+    print("probe done", len(rows), spent(AGENT), flush=True)
+
+
+def cache_tokens():
+    tot, n = 0, 0
+    for f in pathlib.Path(CACHE / AGENT).glob("*/*.json"):
+        u = json.loads(f.read_text()).get("usage") or {}
+        tot += int(u.get("input_tokens", 0)); n += 1
+    return {"calls": n, "input_tokens": tot, "usd": tot * 0.042e-6}
 
 
 if __name__ == "__main__":
-    main()
+    cmd = sys.argv[1] if len(sys.argv) > 1 else "score"
+    arg = sys.argv[2] if len(sys.argv) > 2 else None
+    {"score": score, "probe": probe}[cmd](*( [arg] if arg else []))

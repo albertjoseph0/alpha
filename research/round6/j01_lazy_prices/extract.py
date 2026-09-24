@@ -94,14 +94,20 @@ def extract_sections(text: str, form: str) -> dict:
     return out
 
 
+_JUNK = re.compile(r"(?i)(table of contents|index|page \d+|\d+|[ivx]+|part [iv]+|\(?continued\)?|.{0,60}\|\s*\d+)")
+
+
 def paragraphs(sec_text: str, min_chars: int = 40):
-    """Split into paragraphs; drop page headers/footers and short fragments."""
-    ps = []
-    for p in re.split(r"\n\s*\n|\n(?=[A-Z•●\-])", sec_text):
+    """Split into paragraphs; drop page headers/footers; re-join paragraphs broken by page breaks
+    (a chunk starting in lower case continues the previous one)."""
+    chunks = []
+    for p in re.split(r"\n\s*\n", sec_text):
         p = " ".join(p.split())
-        if len(p) < min_chars:
+        if not p or _JUNK.fullmatch(p):
             continue
-        if re.fullmatch(r"(table of contents|page \d+|\d+)", p, re.I):
-            continue
-        ps.append(p)
-    return ps
+        if chunks and (p[0].islower() or (chunks[-1][-1] not in '.:;?!"\u201d)' and p[0].isalpha()
+                                          and len(chunks[-1]) > 80 and chunks[-1][-1].isalpha())):
+            chunks[-1] = chunks[-1] + " " + p
+        else:
+            chunks.append(p)
+    return [p for p in chunks if len(p) >= min_chars]

@@ -16,6 +16,12 @@
   mom12_1 top25 8.4%, EW universe 11.1% (2014-01..2019-12). Logged, not used for selection.
 - m05 insider events only cover 2006-2007 at the moment -> insider feature skipped (not cheaply available).
 
+- FINRA done (183 months). Panel rebuilt with full short features.
+- DEV selection run (all 6 configs, configs_log.csv): all IC ~0 (|t|<0.4); best HGB IC = hgb_l31_i300
+  (IC 0.0034, t 0.24) -> frozen. DEV: model 8.2%/yr vs SPY 12.2%, EW 11.1%, mom 8.4%; +switch 4.4%.
+  report_dev_hgb_l31_i300.md has everything.
+- PREREG.md written (2026-09-24) BEFORE any test run.
+
 ## Next step
-- when s03 finishes (log DATA/s03.log reaches 2026-08): rerun s04, then `s05_model.py dev` (all 6 configs),
-  pick best by DEV mean rank IC, write PREREG.md, then `s05_model.py test <config>` once; s06_report.py.
+- run TEST once: `s05_model.py test hgb_l31_i300 rf_baseline ridge_linear` then `s06_report.py test hgb_l31_i300`;
+  then write README.md.

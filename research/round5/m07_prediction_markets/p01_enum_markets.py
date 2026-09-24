@@ -36,24 +36,40 @@ while t < e0:
     t = b
     if os.path.exists(part):
         continue
-    rows, cur = [], None
-    for _ in range(2000):
-        d = get(G, dict(closed="true", limit=500, after_cursor=cur,
-                        end_date_min=a.strftime("%Y-%m-%dT%H:%M:%SZ"),
-                        end_date_max=b.strftime("%Y-%m-%dT%H:%M:%SZ")), cache=False)
-        ms = d.get("markets", []) if isinstance(d, dict) else []
-        for m in ms:
-            r = {k: m.get(k) for k in KEEP}
-            ev = (m.get("events") or [{}])[0]
-            r["event_id"] = ev.get("id")
-            r["event_slug"] = ev.get("slug")
-            r["event_title"] = ev.get("title")
-            r["event_endDate"] = ev.get("endDate")
-            r["series_slug"] = ev.get("seriesSlug")
-            rows.append(r)
-        cur = d.get("next_cursor") if isinstance(d, dict) else None
-        if not cur or not ms:
-            break
+    def fetch(a, b):
+        rows, cur = [], None
+        for _ in range(2000):
+            d = get(G, dict(closed="true", limit=500, after_cursor=cur,
+                            end_date_min=a.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                            end_date_max=b.strftime("%Y-%m-%dT%H:%M:%SZ")), cache=False, tries=4)
+            ms = d.get("markets", []) if isinstance(d, dict) else []
+            for m in ms:
+                r = {k: m.get(k) for k in KEEP}
+                ev = (m.get("events") or [{}])[0]
+                r["event_id"] = ev.get("id")
+                r["event_slug"] = ev.get("slug")
+                r["event_title"] = ev.get("title")
+                r["event_endDate"] = ev.get("endDate")
+                r["series_slug"] = ev.get("seriesSlug")
+                rows.append(r)
+            cur = d.get("next_cursor") if isinstance(d, dict) else None
+            if not cur or not ms:
+                break
+        return rows
+
+    try:
+        rows = fetch(a, b)
+    except RuntimeError:
+        # some cursors are refused (403 from the CDN); retry the window as 6-hour sub-windows
+        rows = []
+        u = a
+        while u < b:
+            v = min(u + timedelta(hours=6), b)
+            try:
+                rows += fetch(u, v)
+            except RuntimeError:
+                print("PARTIAL window", u, v, flush=True)
+            u = v
     pd.DataFrame(rows, columns=KEEP + ["event_id", "event_slug", "event_title", "event_endDate", "series_slug"]) \
         .to_csv(part, index=False)
     print(a.date(), len(rows), flush=True)

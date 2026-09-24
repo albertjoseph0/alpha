@@ -81,6 +81,14 @@ def download(url: str, path: pathlib.Path) -> None:
     raise RuntimeError(f"download failed {url}")
 
 
+def todate(s: pd.Series) -> pd.Series:
+    d = pd.to_datetime(s, format="%d-%b-%Y", errors="coerce")
+    bad = d.isna() & s.notna()
+    if bad.any():
+        d[bad] = pd.to_datetime(s[bad], format="mixed", errors="coerce")
+    return d
+
+
 def norm_cusip(s: pd.Series) -> pd.Series:
     s = s.astype(str).str.strip().str.upper().str.replace(r"[^0-9A-Z]", "", regex=True)
     return s.where(s.str.len() != 8, "0" + s)  # leading zero dropped by some filers
@@ -115,8 +123,8 @@ def process(path: pathlib.Path, tag: str) -> None:
                          "ISCONFIDENTIALOMITTED"] if c in summ.columns]
     f = f.merge(summ[scols], on="ACCESSION_NUMBER", how="left")
     f = f[f.SUBMISSIONTYPE.isin(["13F-HR", "13F-HR/A"])].copy()
-    f["filing_date"] = pd.to_datetime(f.FILING_DATE, format="mixed", dayfirst=False)
-    f["period"] = pd.to_datetime(f.PERIODOFREPORT, format="mixed", dayfirst=False)
+    f["filing_date"] = todate(f.FILING_DATE)
+    f["period"] = todate(f.PERIODOFREPORT)
     f["cutoff"] = f.period.map(cutoff_date)
     f["early"] = f.filing_date <= f.cutoff
     f["mult"] = np.where(f.filing_date >= pd.Timestamp("2023-01-03"), 1.0, 1000.0)
@@ -152,34 +160,56 @@ def process(path: pathlib.Path, tag: str) -> None:
         value=("value", "sum"), shares=("shares", "sum"), issuer=("issuer", "first"),
         title=("title", "first")).reset_index()
     del parts
+    # ---- units repair. Many filers report VALUE in $ instead of $ thousands (or the reverse after 2023).
+    # Consensus price per (period, cusip) = median over filers of value/shares; each filing's scale error is the
+    # median over its rows of (its implied price / consensus); a ~1000x (or ~1/1000x) filing is rescaled.
+    # Rows that still disagree with the consensus price by more than 4x are flagged `bad` (typos, bonds coded SH,
+    # shares in wrong units) and left out of the aggregate market portfolio.
+    pos["period"] = meta.loc[pos.ACCESSION_NUMBER, "period"].to_numpy()
+    pos["px"] = pos.value / pos.shares.where(pos.shares > 0)
+    pos["px_med"] = pos.groupby(["period", "CUSIP"]).px.transform("median")
+    pos["ratio"] = pos.px / pos.px_med
+    fr = pos.groupby("ACCESSION_NUMBER").ratio.median()
+    scale = pd.Series(1.0, index=fr.index)
+    scale[fr > 300] = 1e-3
+    scale[fr < 1 / 300] = 1e3
+    pos["value"] = pos.value * scale.reindex(pos.ACCESSION_NUMBER).fillna(1.0).to_numpy()
+    pos["px"] = pos.value / pos.shares.where(pos.shares > 0)
+    pos["px_med"] = pos.groupby(["period", "CUSIP"]).px.transform("median")
+    pos["ratio"] = pos.px / pos.px_med
+    pos["bad"] = ~pos.ratio.between(0.25, 4.0)
+    pos["alt_value"] = pos.shares * pos.px_med  # value implied by shares at the consensus price
+
     stats = pos.groupby("ACCESSION_NUMBER").agg(n_pos=("CUSIP", "size"), tot_value=("value", "sum"))
+    stats["n_bad"] = pos.groupby("ACCESSION_NUMBER").bad.sum()
+    stats["bad_share"] = pos[pos.bad].groupby("ACCESSION_NUMBER").value.sum() / stats.tot_value
+    stats["scale"] = scale
     f = f.merge(stats, left_on="ACCESSION_NUMBER", right_index=True, how="left")
     f["n_pos"] = f.n_pos.fillna(0).astype(int)
     f["tot_value"] = f.tot_value.fillna(0.0)
+    f["bad_share"] = f.bad_share.fillna(0.0)
     keep = ["ACCESSION_NUMBER", "CIK", "FILINGMANAGER_NAME", "SUBMISSIONTYPE", "REPORTTYPE", "ISAMENDMENT",
             "AMENDMENTTYPE", "OTHERINCLUDEDMANAGERSCOUNT", "TABLEENTRYTOTAL", "TABLEVALUETOTAL",
-            "filing_date", "period", "cutoff", "early", "amend", "n_pos", "tot_value"]
+            "filing_date", "period", "cutoff", "early", "amend", "n_pos", "tot_value", "n_bad", "bad_share",
+            "scale"]
     f = f[[c for c in keep if c in f.columns]]
     PROC.mkdir(parents=True, exist_ok=True)
     f.to_parquet(PROC / f"{tag}_filings.parquet", index=False)
 
     orig = f[~f.amend].set_index("ACCESSION_NUMBER")
-    p2 = pos[pos.ACCESSION_NUMBER.isin(orig.index)].copy()
-    p2["period"] = orig.loc[p2.ACCESSION_NUMBER, "period"].to_numpy()
+    p2 = pos[pos.ACCESSION_NUMBER.isin(orig.index) & ~pos.bad].copy()
     p2["early"] = orig.loc[p2.ACCESSION_NUMBER, "early"].to_numpy()
     agg = p2.groupby(["period", "CUSIP", "early"]).agg(
         value=("value", "sum"), shares=("shares", "sum"), n_filers=("ACCESSION_NUMBER", "nunique"),
-        issuer=("issuer", "first"), title=("title", "first")).reset_index()
-    # 13F-implied price: median over filers of value/shares (robust to a few mis-scaled filers)
-    p2["px"] = p2.value / p2.shares.replace(0, np.nan)
-    pxm = p2.groupby(["period", "CUSIP"]).px.median().rename("px_med").reset_index()
-    agg = agg.merge(pxm, on=["period", "CUSIP"], how="left")
+        px_med=("px_med", "first"), issuer=("issuer", "first"), title=("title", "first")).reset_index()
     agg.to_parquet(PROC / f"{tag}_agg.parquet", index=False)
 
     cand = orig[(orig.n_pos >= 5) & (orig.n_pos <= 150) & (orig.tot_value >= 50e6)].index
-    pos[pos.ACCESSION_NUMBER.isin(cand)].to_parquet(PROC / f"{tag}_pos.parquet", index=False)
-    print(f"  {tag}: filings {len(f)} orig {len(orig)} positions {len(pos)} agg {len(agg)} cand {len(cand)}",
-          flush=True)
+    pc = pos[pos.ACCESSION_NUMBER.isin(cand)].drop(columns=["px", "ratio"])
+    pc.to_parquet(PROC / f"{tag}_pos.parquet", index=False)
+    print(f"  {tag}: filings {len(f)} orig {len(orig)} positions {len(pos)} agg {len(agg)} cand {len(cand)} "
+          f"rescaled {(scale != 1).sum()} bad rows {int(pos.bad.sum())} total early $T "
+          f"{agg[agg.early].value.sum() / 1e12:.1f}", flush=True)
 
 
 def main():

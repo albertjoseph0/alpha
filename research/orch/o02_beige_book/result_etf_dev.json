@@ -1,0 +1,14 @@
+{
+  "strategy": "o02:beige_dict_top3",
+  "window": "etf_dev",
+  "start": "2000-01-03",
+  "end": "2015-12-31",
+  "years": 16.0,
+  "cagr": 0.05346222114277266,
+  "gross_violations": 0,
+  "ruined": false,
+  "runtime_s": 5.3,
+  "audited_dates": 32,
+  "git_commit": "75001fb",
+  "timestamp": "2026-09-24T03:05:47+00:00"
+}

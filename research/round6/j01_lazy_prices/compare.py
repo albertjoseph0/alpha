@@ -50,39 +50,50 @@ def sim_features(cur: dict, pri: dict):
 
 def para_diff(cur_text: str, pri_text: str, thr: float = 0.5):
     """Paragraphs of the current version with no close match (word-set Jaccard >= thr) in the prior version,
-    and vice versa. Numbers are ignored (only words), so updated figures do not count as changes."""
+    and vice versa. Numbers are ignored (only words), so updated figures do not count as changes.
+    Candidates come from an inverted index on rarer words; paragraphs with no rare word are compared to all."""
     pc, pp = paragraphs(cur_text or ""), paragraphs(pri_text or "")
-    sc = [set(words(p)) for p in pc]
-    sp = [set(words(p)) for p in pp]
-    # inverted index to avoid all-pairs work on long sections
-    inv = {}
-    for j, s in enumerate(sp):
-        for w in s:
-            inv.setdefault(w, []).append(j)
+    wc = [words(p) for p in pc]
+    wp = [words(p) for p in pp]
+    sc = [set(w) for w in wc]
+    sp = [set(w) for w in wp]
 
-    def best(s, others_sets, inv_):
+    def index(sets):
+        df = Counter(w for st in sets for w in st)
+        lim = max(3, int(0.05 * len(sets)))
+        inv = {}
+        for j, st in enumerate(sets):
+            for w in st:
+                if df[w] <= lim:
+                    inv.setdefault(w, []).append(j)
+        return inv, {frozenset(st) for st in sets}
+
+    def best(s, others, idx):
+        inv_, exact = idx
+        if frozenset(s) in exact:
+            return 1.0
         cnt = Counter()
         for w in s:
-            for j in inv_.get(w, ()):
-                cnt[j] += 1
+            js = inv_.get(w)
+            if js:
+                cnt.update(js)
+        cand = [j for j, _ in cnt.most_common(5)] if cnt else range(len(others))
         b = 0.0
-        for j, c in cnt.most_common(8):
-            u = len(s) + len(others_sets[j]) - c
-            b = max(b, c / u if u else 0)
+        for j in cand:
+            o = others[j]
+            inter = len(s & o)
+            b = max(b, inter / (len(s) + len(o) - inter))
         return b
 
-    new = [p for p, s in zip(pc, sc) if s and best(s, sp, inv) < thr]
-    invc = {}
-    for j, s in enumerate(sc):
-        for w in s:
-            invc.setdefault(w, []).append(j)
-    gone = [p for p, s in zip(pp, sp) if s and best(s, sc, invc) < thr]
-    nw_new = sum(len(words(p)) for p in new)
-    nw_gone = sum(len(words(p)) for p in gone)
-    nw_cur = sum(len(s) for s in sc) or 1
-    return new, gone, {"n_par_cur": len(pc), "n_par_pri": len(pp), "n_new": len(new), "n_gone": len(gone),
-                       "frac_new_words": nw_new / max(sum(len(words(p)) for p in pc), 1),
-                       "frac_gone_words": nw_gone / max(sum(len(words(p)) for p in pp), 1)}
+    ip, ic = index(sp), index(sc)
+    newi = [i for i, s in enumerate(sc) if s and best(s, sp, ip) < thr]
+    gonei = [i for i, s in enumerate(sp) if s and best(s, sc, ic) < thr]
+    ncur = sum(len(w) for w in wc)
+    npri = sum(len(w) for w in wp)
+    return [pc[i] for i in newi], [pp[i] for i in gonei], {
+        "n_par_cur": len(pc), "n_par_pri": len(pp), "n_new": len(newi), "n_gone": len(gonei),
+        "frac_new_words": sum(len(wc[i]) for i in newi) / max(ncur, 1),
+        "frac_gone_words": sum(len(wp[i]) for i in gonei) / max(npri, 1)}
 
 
 _MONTHS = r"(january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|jun|jul|aug|sep|sept|oct|nov|dec)\.?"

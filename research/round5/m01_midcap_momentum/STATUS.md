@@ -10,8 +10,23 @@ Last updated: 2026-09-24 (round 5b resume)
   ME2xPRIOR5 17.4% (DD -79%) / switch 14.9% (DD -55%); ME4xPRIOR5 16.9% / switch 15.0% (DD -38%);
   top decile 16.2% / 15.0%; market 9.9%.
 
+## Done this session (5b)
+- French DEV choice (french_dev_select.py -> french_dev_select.csv):
+  ME3xP5 chosen because ME3 (NYSE 40-60th pct) is the size bucket that matches the S&P 400
+  (ME2/3/4 DEV CAGRs 17.4/16.9/16.9% are within noise). ME3xP5 1x: 16.9% (+7.0 vs mkt, DD -75%);
+  with switch 14.7% (+4.8, DD -45%). Switch costs -1.85 log-pts/yr (+8.9/yr in down months,
+  -10.8/yr in up months); avoids 1929-32 (-72% -> -23%), 1937-38, 1973-74, but misses the
+  1932-33 rebound (+55% -> 0%). Primary = no switch (max DEV excess), switch = pre-registered secondary.
+- bench_close.pkl (NEW file): SPY IJH MDY XMMO XMHQ RSP. No S&P 400 equal-weight ETF available (EWMC gone).
+- iShares historical holdings: NOT available (only latest-holdings.csv).
+- Membership quality concern: Wikipedia change table has only 17/25/43/21 changes in 2012-2015 vs
+  ~50/yr later -> reconstruction likely incomplete in early DEV (future-addition look-ahead risk).
+  Fix in progress: wiki_revisions.py builds an independent strictly-PIT membership from the page's
+  own revision history -> DATA/membership_wikirev.csv (+ wiki_rev/ cache). Rate-limited (429), slow.
+
 ## In progress
-- Resumed: reading scripts, checking data.
+- wiki_revisions.py running (log DATA/wiki_rev.log). Then: extend stock_bt.py (event-based
+  survivorship bounds, membership source option), run stock DEV 2012-2018 only.
 
 ## Next steps
 1. Pick final French config on DEV only; write PREREG.md; run French TEST 1994-2026 once.

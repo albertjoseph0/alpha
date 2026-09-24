@@ -6,6 +6,9 @@ usage: python s03_sections.py <from_date> <to_date> [pilot_n_ciks] [forms]
 """
 import gzip
 import hashlib
+import threading
+import queue
+from collections import Counter
 import json
 import re
 import sys
@@ -21,11 +24,11 @@ _W = re.compile(r"[a-z]{3,}")
 
 
 def hashed_bow(text):
-    v = np.zeros(NB, dtype=np.int32)
-    for w in _W.findall(text.lower()):
-        v[int(hashlib.md5(w.encode()).hexdigest()[:8], 16) % NB] += 1
-    nz = np.nonzero(v)[0]
-    return {int(i): int(v[i]) for i in nz}
+    out = {}
+    for w, k in Counter(_W.findall(text.lower())).items():
+        b = int(hashlib.md5(w.encode()).hexdigest()[:8], 16) % NB
+        out[b] = out.get(b, 0) + k
+    return out
 
 
 def stored(cik):
@@ -56,30 +59,42 @@ def main():
         F = F[F.cik.isin(ck)]
     print("filings to consider:", len(F), flush=True)
     t0, n, nbytes = time.time(), 0, 0
+    jobs = []
     for cik, g in F.groupby("cik"):
         have = stored(cik)
-        g = g[~g.acc.isin(have)]
-        for r in g.itertuples():
+        jobs += list(g[~g.acc.isin(have)].itertuples())
+    print("to fetch:", len(jobs), flush=True)
+    q = queue.Queue(maxsize=4)
+
+    def producer():   # download thread (network wait only); parsing stays on the main thread
+        for r in jobs:
             url = f"https://www.sec.gov/Archives/edgar/data/{r.cik}/{r.acc.replace('-', '')}/{r.primary}"
             try:
-                h = get(url, cache=False)
+                q.put((r, get(url, cache=False)))
             except Exception as e:
                 print("fail", r.acc, e, flush=True)
-                continue
-            nbytes += len(h)
-            txt = html_to_text(h)
-            del h
-            secs = extract_sections(txt, r.form)
-            rec = {"acc": r.acc, "cik": int(r.cik), "form": r.form, "filing_date": str(r.filing_date.date()),
-                   "report_date": r.report_date, "accept": r.accept, "ticker": r.ticker,
-                   "n_chars": len(txt), "bow": hashed_bow(txt), **secs}
-            with gzip.open(SD / f"{cik}.jsonl.gz", "at", compresslevel=9) as fh:
-                fh.write(json.dumps(rec) + "\n")
-            n += 1
-            if n % 100 == 0:
-                el = time.time() - t0
-                print(f"{n} done, {el/n:.2f}s/filing, {nbytes/1e9:.2f} GB downloaded, "
-                      f"{sum(f.stat().st_size for f in SD.glob('*.gz'))/1e6:.0f} MB stored", flush=True)
+        q.put(None)
+
+    threading.Thread(target=producer, daemon=True).start()
+    while True:
+        item = q.get()
+        if item is None:
+            break
+        r, h = item
+        nbytes += len(h)
+        txt = html_to_text(h)
+        del h
+        secs = extract_sections(txt, r.form)
+        rec = {"acc": r.acc, "cik": int(r.cik), "form": r.form, "filing_date": str(r.filing_date.date()),
+               "report_date": r.report_date, "accept": r.accept, "ticker": r.ticker,
+               "n_chars": len(txt), "bow": hashed_bow(txt), **secs}
+        with gzip.open(SD / f"{r.cik}.jsonl.gz", "at", compresslevel=9) as fh:
+            fh.write(json.dumps(rec) + "\n")
+        n += 1
+        if n % 200 == 0:
+            el = time.time() - t0
+            print(f"{n} done, {el/n:.2f}s/filing, {nbytes/1e9:.2f} GB downloaded, "
+                  f"{sum(f.stat().st_size for f in SD.glob('*.gz'))/1e6:.0f} MB stored", flush=True)
     print("finished", n, round(time.time() - t0), "s", flush=True)
 
 

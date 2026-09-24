@@ -39,12 +39,12 @@ missing_f = f"{D}/px_missing.txt"
 missing = set(open(missing_f).read().split()) if os.path.exists(missing_f) else set()
 todo = [t for t in todo if t not in missing]
 print("todo", len(todo), flush=True)
-B = 40
+B = int(os.environ.get("YF_BATCH", 40))
 for i in range(0, len(todo), B):
     batch = todo[i:i + B]
     try:
         d = yf.download(batch, start="2005-01-01", auto_adjust=False, actions=True, progress=False,
-                        group_by="ticker", threads=True, timeout=30)
+                        group_by="ticker", threads=os.environ.get("YF_THREADS", "1") == "1", timeout=30)
     except Exception as e:
         print("ERR", e, flush=True); time.sleep(10); continue
     for t in batch:

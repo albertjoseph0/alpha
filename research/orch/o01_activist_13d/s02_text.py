@@ -56,7 +56,11 @@ def extract(raw: str, is_xml: bool):
 
 def main(limit=None):
     f = pd.read_csv(D / "filings.csv", dtype=str)
-    f = f[f["ticker"].notna()]
+    # only filings that belong to investable, priced events (s05_events.py) -- the strategy universe
+    ev = pd.read_parquet(D / "events.parquet")
+    ev = ev[ev["investable"] & ev["entry_date"].notna()]
+    want = {a for lst in ev["adsh_list"] for a in lst.split("|")}
+    f = f[f["adsh"].isin(want)]
     done = set()
     if OUT.exists():
         with gzip.open(OUT, "rt") as fh:

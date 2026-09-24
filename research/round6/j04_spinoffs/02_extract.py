@@ -28,7 +28,7 @@ for _, r in docs[docs.fetched].iterrows():
     row = dict(cik=r.cik, name=r["name"], doc_date=r.doc_date, first_form10=r.first_form10, root=r.root,
                is_spin_doc=spin, spin_ticker=st, spin_exch=se, parent_ticker=pt, parent_exch=pe, ratio=rt,
                n_ratio=nrt, shares_doc=shares_out(fl), parent_name=pn, name_word=nw, doc_chars=len(fl))
-    if spin and st and se in ("NYSE", "NASDAQ", "AMEX"):
+    if spin and (se in ("NYSE", "NASDAQ", "AMEX") or se is None):
         sp, pa = aliases(fl, nw, pn, [st, pt])
         an = anonymise(fl, sp, pa, [st, pt])
         sec = sections(an)

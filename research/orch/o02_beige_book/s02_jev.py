@@ -95,7 +95,7 @@ def main():
         row["outlook"] = op.get("optimistic", 0) - op.get("pessimistic", 0) - 0.5 * op.get("cautious", 0)
         return row
 
-    with ThreadPoolExecutor(4) as ex:
+    with ThreadPoolExecutor(1) as ex:
         rows = list(ex.map(one, ed))
     df = pd.DataFrame(rows).sort_values("release")
     df.to_parquet(D / "jev_scores.parquet")
@@ -111,7 +111,7 @@ def main():
             row["ps_" + k] = v
         return row
 
-    with ThreadPoolExecutor(4) as ex:
+    with ThreadPoolExecutor(1) as ex:
         pr = list(ex.map(probe, ed))
     pd.DataFrame(pr).sort_values("release").to_parquet(D / "probe.parquet")
     print("spent", spent(AGENT))
