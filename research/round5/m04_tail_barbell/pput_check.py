@@ -49,7 +49,6 @@ def replicate(df, pr, h):
                 mark = n * max(K - S[i], 0.0)
             tot = eqv + mark
             K = 5.0 * math.floor(0.95 * S[i] / 5.0)
-            m = 1 if dt.month < 12 else -11
             exp = third_friday(dt.year + (dt.month // 12), dt.month % 12 + 1)
             tau = (exp - dt).days / 365
             P = pr.put(i, K, tau) * (1 + h)
@@ -62,15 +61,17 @@ def replicate(df, pr, h):
 
 
 def main():
-    df = load()
+    df = load("_s21")
+    raw = load("")
     df["r_tr"] = pd.read_pickle(Path(__file__).resolve().parents[3] / "data/round5/m04_tail_barbell/panel.pkl")["r_tr"].reindex(df.index).fillna(0.0)
     pput = pd.read_pickle(Path(__file__).resolve().parents[3] / "data/round5/m04_tail_barbell/panel.pkl")["PPUT"].reindex(df.index).ffill()
     res = {"PPUT": pput / pput.iloc[0]}
-    models = ["linz"] + (["ssvi"] if "psi" in df.columns else [])
-    for mod in models:
-        pr = Pricer(df, mod)
-        for h in [0.0, 0.025]:
-            res[f"{mod}_h{h}"] = replicate(df, pr, h)
+    raw["r_tr"] = df["r_tr"]
+    for tag, d in [("raw", raw), ("s21", df)]:
+        for mod in ["linz", "ssvi"]:
+            pr = Pricer(d, mod)
+            for h in [0.0, 0.025]:
+                res[f"{mod}_{tag}_h{h}"] = replicate(d, pr, h)
     tr = (1 + df.r_tr).cumprod()
     res["SP500TR"] = tr / tr.iloc[0]
     V = pd.DataFrame(res)

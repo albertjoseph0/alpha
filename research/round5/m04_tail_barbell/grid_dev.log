@@ -1,0 +1,58 @@
+             name    cagr     vol   maxdd  sharpe_raw  excess_vs_ref  n_deploy
+0             spy  0.1027  0.1637 -0.4752      0.6791         0.0000       NaN
+1      97_3_bills  0.1011  0.1588 -0.4627      0.6863        -0.0016       0.0
+2  cashcrash_dd20  0.1007  0.1601 -0.4703      0.6797        -0.0019       1.0
+3  cashcrash_dd30  0.1011  0.1599 -0.4675      0.6824        -0.0016       1.0
+{'depth': 0.2, 'tenor': 2, 'budget': 0.01, 'monet': 0, 'base_exc': np.float64(-0.0053), 'x2_exc': np.float64(-0.0055), 'ssvi_exc': np.float64(-0.0055), 'tick_exc': np.float64(-0.006), 'rawskew_exc': np.float64(-0.005)}
+{'depth': 0.2, 'tenor': 2, 'budget': 0.01, 'monet': 5, 'base_exc': np.float64(-0.0044), 'x2_exc': np.float64(-0.0047), 'ssvi_exc': np.float64(-0.0045), 'tick_exc': np.float64(-0.0052), 'rawskew_exc': np.float64(-0.0041)}
+{'depth': 0.2, 'tenor': 2, 'budget': 0.02, 'monet': 0, 'base_exc': np.float64(-0.0105), 'x2_exc': np.float64(-0.0111), 'ssvi_exc': np.float64(-0.0109), 'tick_exc': np.float64(-0.0121), 'rawskew_exc': np.float64(-0.0099)}
+{'depth': 0.2, 'tenor': 2, 'budget': 0.02, 'monet': 5, 'base_exc': np.float64(-0.0087), 'x2_exc': np.float64(-0.0094), 'ssvi_exc': np.float64(-0.0089), 'tick_exc': np.float64(-0.0103), 'rawskew_exc': np.float64(-0.0082)}
+{'depth': 0.2, 'tenor': 2, 'budget': 0.033, 'monet': 0, 'base_exc': np.float64(-0.0173), 'x2_exc': np.float64(-0.0182), 'ssvi_exc': np.float64(-0.018), 'tick_exc': np.float64(-0.0199), 'rawskew_exc': np.float64(-0.0164)}
+{'depth': 0.2, 'tenor': 2, 'budget': 0.033, 'monet': 5, 'base_exc': np.float64(-0.0144), 'x2_exc': np.float64(-0.0155), 'ssvi_exc': np.float64(-0.0147), 'tick_exc': np.float64(-0.017), 'rawskew_exc': np.float64(-0.0136)}
+{'depth': 0.2, 'tenor': 4, 'budget': 0.01, 'monet': 0, 'base_exc': np.float64(-0.0028), 'x2_exc': np.float64(-0.0032), 'ssvi_exc': np.float64(-0.003), 'tick_exc': np.float64(-0.003), 'rawskew_exc': np.float64(-0.0027)}
+{'depth': 0.2, 'tenor': 4, 'budget': 0.01, 'monet': 5, 'base_exc': np.float64(-0.0028), 'x2_exc': np.float64(-0.0032), 'ssvi_exc': np.float64(-0.0028), 'tick_exc': np.float64(-0.003), 'rawskew_exc': np.float64(-0.0025)}
+{'depth': 0.2, 'tenor': 4, 'budget': 0.02, 'monet': 0, 'base_exc': np.float64(-0.0057), 'x2_exc': np.float64(-0.0065), 'ssvi_exc': np.float64(-0.0059), 'tick_exc': np.float64(-0.0061), 'rawskew_exc': np.float64(-0.0055)}
+{'depth': 0.2, 'tenor': 4, 'budget': 0.02, 'monet': 5, 'base_exc': np.float64(-0.0056), 'x2_exc': np.float64(-0.0064), 'ssvi_exc': np.float64(-0.0056), 'tick_exc': np.float64(-0.006), 'rawskew_exc': np.float64(-0.005)}
+{'depth': 0.2, 'tenor': 4, 'budget': 0.033, 'monet': 0, 'base_exc': np.float64(-0.0094), 'x2_exc': np.float64(-0.0107), 'ssvi_exc': np.float64(-0.0097), 'tick_exc': np.float64(-0.01), 'rawskew_exc': np.float64(-0.009)}
+{'depth': 0.2, 'tenor': 4, 'budget': 0.033, 'monet': 5, 'base_exc': np.float64(-0.0092), 'x2_exc': np.float64(-0.0105), 'ssvi_exc': np.float64(-0.0092), 'tick_exc': np.float64(-0.0098), 'rawskew_exc': np.float64(-0.0083)}
+{'depth': 0.3, 'tenor': 2, 'budget': 0.01, 'monet': 0, 'base_exc': np.float64(-0.0058), 'x2_exc': np.float64(-0.0061), 'ssvi_exc': np.float64(-0.0062), 'tick_exc': np.float64(-0.0081), 'rawskew_exc': np.float64(-0.0041)}
+{'depth': 0.3, 'tenor': 2, 'budget': 0.01, 'monet': 5, 'base_exc': np.float64(-0.005), 'x2_exc': np.float64(-0.0053), 'ssvi_exc': np.float64(-0.0048), 'tick_exc': np.float64(-0.0073), 'rawskew_exc': np.float64(-0.0023)}
+{'depth': 0.3, 'tenor': 2, 'budget': 0.02, 'monet': 0, 'base_exc': np.float64(-0.0117), 'x2_exc': np.float64(-0.0122), 'ssvi_exc': np.float64(-0.0124), 'tick_exc': np.float64(-0.0161), 'rawskew_exc': np.float64(-0.0082)}
+{'depth': 0.3, 'tenor': 2, 'budget': 0.02, 'monet': 5, 'base_exc': np.float64(-0.0099), 'x2_exc': np.float64(-0.0106), 'ssvi_exc': np.float64(-0.0097), 'tick_exc': np.float64(-0.0146), 'rawskew_exc': np.float64(-0.0046)}
+{'depth': 0.3, 'tenor': 2, 'budget': 0.033, 'monet': 0, 'base_exc': np.float64(-0.0192), 'x2_exc': np.float64(-0.02), 'ssvi_exc': np.float64(-0.0204), 'tick_exc': np.float64(-0.0264), 'rawskew_exc': np.float64(-0.0136)}
+{'depth': 0.3, 'tenor': 2, 'budget': 0.033, 'monet': 5, 'base_exc': np.float64(-0.0163), 'x2_exc': np.float64(-0.0174), 'ssvi_exc': np.float64(-0.016), 'tick_exc': np.float64(-0.0241), 'rawskew_exc': np.float64(-0.0077)}
+{'depth': 0.3, 'tenor': 4, 'budget': 0.01, 'monet': 0, 'base_exc': np.float64(-0.0031), 'x2_exc': np.float64(-0.0035), 'ssvi_exc': np.float64(-0.0033), 'tick_exc': np.float64(-0.0044), 'rawskew_exc': np.float64(-0.0024)}
+{'depth': 0.3, 'tenor': 4, 'budget': 0.01, 'monet': 5, 'base_exc': np.float64(-0.0024), 'x2_exc': np.float64(-0.0028), 'ssvi_exc': np.float64(-0.0025), 'tick_exc': np.float64(-0.0038), 'rawskew_exc': np.float64(-0.0018)}
+{'depth': 0.3, 'tenor': 4, 'budget': 0.02, 'monet': 0, 'base_exc': np.float64(-0.0063), 'x2_exc': np.float64(-0.007), 'ssvi_exc': np.float64(-0.0065), 'tick_exc': np.float64(-0.0087), 'rawskew_exc': np.float64(-0.0047)}
+{'depth': 0.3, 'tenor': 4, 'budget': 0.02, 'monet': 5, 'base_exc': np.float64(-0.0048), 'x2_exc': np.float64(-0.0056), 'ssvi_exc': np.float64(-0.0049), 'tick_exc': np.float64(-0.0076), 'rawskew_exc': np.float64(-0.0037)}
+{'depth': 0.3, 'tenor': 4, 'budget': 0.033, 'monet': 0, 'base_exc': np.float64(-0.0103), 'x2_exc': np.float64(-0.0116), 'ssvi_exc': np.float64(-0.0108), 'tick_exc': np.float64(-0.0143), 'rawskew_exc': np.float64(-0.0078)}
+{'depth': 0.3, 'tenor': 4, 'budget': 0.033, 'monet': 5, 'base_exc': np.float64(-0.0079), 'x2_exc': np.float64(-0.0093), 'ssvi_exc': np.float64(-0.0082), 'tick_exc': np.float64(-0.0126), 'rawskew_exc': np.float64(-0.0061)}
+
+selected (max base DEV CAGR):
+ depth                0.3000
+tenor                4.0000
+budget               0.0100
+monet                5.0000
+base_cagr            0.1003
+base_exc            -0.0024
+base_maxdd          -0.4696
+base_vol             0.1610
+base_net_bleed_py    0.0022
+base_n_monet         5.0000
+base_avg_put_w       0.0007
+x2_cagr              0.0999
+x2_exc              -0.0028
+x2_maxdd            -0.4706
+ssvi_cagr            0.1002
+ssvi_exc            -0.0025
+ssvi_maxdd          -0.4693
+tick_cagr            0.0989
+tick_exc            -0.0038
+tick_maxdd          -0.4698
+rawskew_cagr         0.1008
+rawskew_exc         -0.0018
+rawskew_maxdd       -0.4697
+/home/user/alpha/research/round5/m04_tail_barbell/grid_dev.py:71: Pandas4Warning: Starting with pandas version 4.0 all arguments of all will be keyword-only.
+  "| in all of base/x2/ssvi/tick:", int(((g[["base_exc", "x2_exc", "ssvi_exc", "tick_exc"]] > 0).all(1)).sum()))
+
+configs beating SPY in base: 0 of 24 | in all of base/x2/ssvi/tick: 0

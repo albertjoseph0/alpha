@@ -1,19 +1,20 @@
-# m04 tail barbell: STATUS (round 5b)
+# m04 tail barbell: STATUS (round 5b): COMPLETE
+
+Verdict: **NO EDGE**. The full write-up is in README.md.
+
+## Key numbers
+- DEV 1990-2007: 0 of 24 configs beat SPY (-0.24 to -1.92 pts/yr). The frozen rule (30% OTM, 4-month, 1%/yr, 5x monetize) made 10.03% vs 10.27%.
+- TEST 2008-2026, run once after PREREG.md: frozen rule 11.17% vs SPY 11.37% (-0.20 pts). 2x costs: -0.24. SSVI: -0.22.
+  Canonical Universa-like config: -0.94 pts. 0 of 24 configs beat SPY on TEST.
+- Post-test ladder/hold/20x grid (tainted): 0 of 48 beat SPY on DEV or TEST.
+- Perfect-hindsight bound at a 3.3%/yr budget: +8 pts/yr on TEST at most, +5 on DEV.
+- Real Cboe VXTH: 10.05% vs SP500TR 11.49% over 2008-26 (+114% in 2020). Without 2008 and 2020 it lags by 7.2 pts/yr.
+- PPUT replication with the model: 7.21% vs 7.63% (1990-2026), yearly correlation 0.99.
 
 ## Done
-- Previous instance: data in data/round5/m04_tail_barbell/, panel.pkl (prep_data.py), pricer (pricing.py) validated on
-  the 2026-09-22 SPX chain (linz/real mid 0.93-1.16, SSVI 1.3-1.7x).
-- surface.pkl: daily linz calibration to raw VIX/SKEW (calibrate_surface.py; 700 of 9244 days with residual 1e-3 to 0.06, harmless).
-- surface_ssvi.pkl: daily SSVI calibration to raw SKEW (calibrate_ssvi.py).
-- FINDING: the raw daily SKEW is noisy. In flat markets (July 1990, Nov 2006) SKEW moves 105->132 and the 30%-OTM
-  model mark jumps 10-100x. That would create fake "crash gains" and fake monetisations. Base surface is therefore
-  calibrated to the trailing 21-day mean SKEW (surface_s21.pkl, surface_ssvi_s21.pkl; queue script running).
-  The raw-SKEW surface is kept as the "rawskew" sensitivity.
-- pput_check.py: replicating CBOE PPUT (5% OTM 1-month puts) with the raw linz surface gives CAGR 7.23% vs real 7.63%
-  (1990-2026), yearly corr 0.991, mean yearly diff -0.36 pts (1990s: -0.06; 2000-07: -1.2; 2008+: -0.15).
-- backtest.py engine done; smoke test DEV (raw surface, 30% OTM, 2m, 3.3%/yr): CAGR 8.9% vs SPY 10.3%.
+All steps are done: calibration (raw and 21-day-mean SKEW, linz and SSVI), DEV grid, PREREG, one TEST run, post-test robustness grid,
+oracle bound, PPUT/VXTH cross-check, README.
 
 ## Next
-1. Wait for surface_s21.pkl and surface_ssvi_s21.pkl (logs calibrate_*_s21.log), then run grid_dev.py -> grid_dev.csv.
-2. Write PREREG.md with the selected config, then evaluate.py test (once).
-3. Rerun pput_check.py on the s21 surface, run the VXTH cross-check, write README.md.
+Nothing is required. Possible extension (not needed for the verdict): validate the 30%-OTM wing historically, if any
+historical SPX chain snapshot (for example 2008 or 2020) becomes available.

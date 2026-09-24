@@ -197,4 +197,4 @@ if __name__ == "__main__":
         run("dev", names)
     else:
         assert (OUT / "PREREG.md").exists(), "write PREREG.md first"
-        run("test", [sys.argv[2]])
+        run("test", sys.argv[2:])

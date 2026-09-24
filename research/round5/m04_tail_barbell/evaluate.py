@@ -52,6 +52,18 @@ def main(p):
             t["multiple"] = t.proceeds / t.cost
             t.to_csv(OUT / f"trades_{p}.csv", index=False, float_format="%.6f")
             put_w = res.put_w
+    # descriptive (declared in PREREG): canonical Universa-like config 30% OTM, 2m, 3.3%/yr, 5x monetize
+    for cname in ["base", "x2", "ssvi"]:
+        pm, kw = cases[cname]
+        res, st, tr = bt.run(df, prs[pm], 0.30, 2, 0.033, 5, **kw)
+        navs["canon_" + cname] = res.nav
+        yrs = (res.index[-1] - res.index[0]).days / 365.25
+        rows.append(dict(name="canon_" + cname, **bt.metrics(res.nav, spy.nav), **st,
+                         net_bleed_py=(st["prem_paid"] - st["sale_proc"]) / yrs, avg_put_w=res.put_w.mean()))
+        if cname == "base":
+            t = pd.DataFrame(tr, columns=["date", "kind", "proceeds", "cost"])
+            t["multiple"] = t.proceeds / t.cost
+            t.to_csv(OUT / f"trades_canon_{p}.csv", index=False, float_format="%.6f")
     ev = pd.DataFrame(rows)
     ev.to_csv(OUT / f"eval_{p}.csv", index=False, float_format="%.5f")
     print(ev.round(4).to_string())

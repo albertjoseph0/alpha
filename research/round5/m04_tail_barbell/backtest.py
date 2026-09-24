@@ -123,17 +123,17 @@ def run(df, pr, depth, tenor, budget, monet, hpct, floor=0.0, min_ask=0.0):
         n_c = spend / ask
         cost = spend
         eq -= spend * (1 + EQ_COST)
-        prem_paid += spend
+        prem_paid += spend / navi  # as a fraction of NAV at the time
         return mid
 
-    def sell(i):
+    def sell(i, navi):
         nonlocal eq, n_c, sale_proc
         tau = (exp - idx[i]).days / 365
         mid = pr.put(i, K, tau)
         bid = max(mid - half(mid), 0.0)
         proceeds = n_c * bid
         eq += proceeds * (1 - EQ_COST)
-        sale_proc += proceeds
+        sale_proc += proceeds / navi
         n_c = 0.0
         return proceeds
 
@@ -145,7 +145,7 @@ def run(df, pr, depth, tenor, budget, monet, hpct, floor=0.0, min_ask=0.0):
         roll = i == 0 or month[i] != month[i - 1]
         trig = monet is not None and n_c > 0 and last_mark >= monet * cost and not roll
         if roll or trig:
-            proceeds = sell(i) if n_c > 0 else 0.0
+            proceeds = sell(i, navi) if n_c > 0 else 0.0
             if proceeds or roll:
                 trades.append((idx[i], "monetize" if trig else "roll", proceeds, cost))
             navi = eq
@@ -226,3 +226,61 @@ def cagr_excl(nav, years):
         ((nav[nav.index.year == y].index[-1] - nav[nav.index.year == y].index[0]).days + 1) / 365.25
         for y in years if (nav.index.year == y).any())
     return float(np.prod(1 + keep.values) ** (1 / frac) - 1)
+
+
+def run_ladder(df, pr, depth, tenor, budget, monet, hpct, hold, floor=0.0, min_ask=0.0):
+    """Post-TEST extension (round 5b, flagged tainted): overlapping tranches.
+    Each monthly roll buys a new tranche (same strike/expiry/budget rule as run) and keeps the old ones;
+    a tranche is sold at the `hold`-th roll after its purchase (hold=1 is identical to run()).
+    With hold=tenor a tranche is sold on the first trading day of its expiry month (about 2-3 weeks left).
+    Monetize (per tranche, 1-day lag): mark at t-1 >= monet x cost -> sell at t, proceeds to equity; no re-strike
+    (the next roll buys the next tranche as usual)."""
+    idx, S, r_eq = df.index, df.SPX.values, df.r_eq.values
+    month = idx.month.values
+    n = len(idx)
+    eq = 1.0
+    tr = []  # dicts K, exp, n, cost, age, last_mark
+    nav = np.empty(n)
+    putv = np.empty(n)
+    prem = sale = 0.0
+    nmon = 0
+
+    def half(mid):
+        return max(hpct * mid, floor)
+
+    for i in range(n):
+        if i > 0:
+            eq *= 1 + r_eq[i]
+        roll = i == 0 or month[i] != month[i - 1]
+        marks = [t["n"] * pr.put(i, t["K"], (t["exp"] - idx[i]).days / 365) for t in tr]
+        navi = eq + sum(marks)
+        keep = []
+        for t, mk in zip(tr, marks):
+            if roll:
+                t["age"] += 1
+            trig = monet is not None and t["last_mark"] >= monet * t["cost"]
+            if trig or (roll and t["age"] >= hold):
+                mid = mk / t["n"]
+                proceeds = t["n"] * max(mid - half(mid), 0.0)
+                eq += proceeds * (1 - EQ_COST)
+                sale += proceeds / navi
+                nmon += int(trig and not (roll and t["age"] >= hold))
+            else:
+                t["last_mark"] = mk
+                keep.append(t)
+        tr = keep
+        if roll:
+            navi = eq + sum(t["last_mark"] for t in tr)
+            K = 5.0 * round(S[i] * (1 - depth) / 5.0)
+            exp = expiry_for(idx[i], tenor)
+            mid = pr.put(i, K, (exp - idx[i]).days / 365)
+            ask = max(mid + half(mid), min_ask)
+            spend = budget / 12 * navi
+            eq -= spend * (1 + EQ_COST)
+            prem += spend / navi
+            tr.append(dict(K=K, exp=exp, n=spend / ask, cost=spend, age=0, last_mark=spend / ask * mid))
+        pv = sum(t["last_mark"] for t in tr)
+        nav[i] = eq + pv
+        putv[i] = pv
+    out = pd.DataFrame({"nav": nav, "put_w": putv / nav}, index=idx)
+    return out, dict(prem_paid=prem, sale_proc=sale, n_monetize=nmon), None
