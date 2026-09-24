@@ -13,7 +13,19 @@ import pandas as pd
 
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT / "research" / "round5"))
-from jev import ask, spent  # noqa: E402
+from jev import ask as _ask, spent  # noqa: E402
+import time  # noqa: E402
+
+
+def ask(state, questions, agent, tries=6):
+    """jev.ask with extra patience for transient gateway 503s."""
+    for k in range(tries):
+        try:
+            return _ask(state, questions, agent=agent)
+        except RuntimeError as e:
+            if "503" not in str(e) and "429" not in str(e) or k == tries - 1:
+                raise
+            time.sleep(30 * (k + 1))
 
 D = ROOT / "data" / "round6" / "j03_fomc"
 AGENT = "j03"

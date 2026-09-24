@@ -31,7 +31,7 @@ def best_section(f, head, score, window=6000, skip_toc=True):
 
 
 rows, n = [], 0
-with gzip.open(DATA / "sections.jsonl.gz", "wt") as fo:
+with gzip.open(DATA / "sections.tmp.gz", "wt") as fo:
     for r in c.itertuples():
         p = TXT / f"{r.acc}.txt.gz"
         if not p.exists():
@@ -79,15 +79,23 @@ with gzip.open(DATA / "sections.jsonl.gz", "wt") as fo:
         secs = {}
         mt = re.compile(r"table of contents\s*\|", re.I).search(cov, 400)
         secs["cover"] = cov[: min(3500, mt.start() if mt else 3500)]
-        secs["summary"], _ = best_section(f[:len(f) // 2], r"prospectus summary|summary", r"summary highlights|overview|our company|our business", 1200)
-        if secs["summary"]:
-            i0 = f.find(secs["summary"]); secs["summary"] = f[i0: i0 + 9000]
+        def direct(pat, n, flags=re.I):
+            mm = re.search(pat, f, flags)
+            return f[mm.start(): mm.start() + n] if mm else ""
+        secs["summary"] = direct(r"summary\s+(?:This|The following) summary (?:highlights|provides|contains)", 9000) or \
+            direct(r"PROSPECTUS SUMMARY\s+(?!\|)", 9000, 0)
+        if not secs["summary"]:
+            secs["summary"], _ = best_section(f[:len(f) // 2], r"prospectus summary|summary", r"summary highlights|overview|our company|our business", 1200)
+            if secs["summary"]:
+                i0 = f.find(secs["summary"]); secs["summary"] = f[i0: i0 + 9000]
         secs["uop"], d["uop_score"] = best_section(f, r"use of proceeds", r"proceeds", 4500)
-        secs["risk"], _ = best_section(f, r"risk factors", r"adversely", 9000)
+        secs["risk"] = direct(r"risk factors\s+(?:An )?(?:investing|investment|an investment) in (?:our|the|shares|these)", 9000) or \
+            best_section(f, r"risk factors", r"adversely", 9000)[0]
         secs["pss"], d["pss_score"] = best_section(f, r"principal (?:and selling )?(?:stock|share)holders|security ownership of certain beneficial",
                                                    r"beneficial", 6000)
-        secs["sfd"], _ = best_section(f, r"summary (?:consolidated |historical |combined |selected |financial )+(?:financial )?(?:and operating )?(?:data|information)",
-                                      r"net (?:income|loss|\(loss\))", 4000)
+        secs["sfd"] = direct(r"SUMMARY (?:CONSOLIDATED |HISTORICAL |COMBINED |SELECTED |PRO FORMA |AND |FINANCIAL )+(?:FINANCIAL )?(?:AND OPERATING |AND OTHER )?(?:DATA|INFORMATION)\s+(?!\|\s*\d)", 4000, 0) or \
+            best_section(f, r"summary (?:consolidated |historical |combined |selected |financial )+(?:financial )?(?:and operating )?(?:data|information)",
+                         r"net (?:income|loss|\(loss\))", 4000)[0]
         full_lo = f.lower()
         s_all = " ".join(secs.values()).lower()
         d["kw_netloss"] = bool(re.search(r"history of (?:net )?losses|have incurred (?:significant )?(?:net )?losses|not (?:yet )?(?:been|achieved) profitab|may never (?:achieve|become) profitab", secs["risk"] + secs["summary"], re.I))
@@ -105,8 +113,10 @@ with gzip.open(DATA / "sections.jsonl.gz", "wt") as fo:
         rows.append(d)
         fo.write(json.dumps({"acc": r.acc, **secs}) + "\n")
         n += 1
+(DATA / "sections.tmp.gz").replace(DATA / "sections.jsonl.gz")
 m = pd.DataFrame(rows)
-m.to_csv(DATA / "meta.csv", index=False)
+m.to_csv(DATA / "meta.tmp.csv", index=False)
+(DATA / "meta.tmp.csv").replace(DATA / "meta.csv")
 print(n, m[["ipo_text", "blank_check", "units", "warrants_cover", "best_efforts", "ads", "kw_top_lead", "selling_only",
             "kw_netloss", "kw_repay", "kw_sponsor", "kw_dual", "kw_controlled", "kw_mw", "kw_customer_conc"]].mean().round(2))
 print("ticker", m.ticker.notna().mean(), "price", m.offer_price.notna().mean(), "shares", m.shares_offered.notna().mean())

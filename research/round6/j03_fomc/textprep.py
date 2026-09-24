@@ -106,12 +106,14 @@ STOP = {"Federal", "Reserve", "Bank", "Board", "Committee", "Open", "Market", "C
 def build_surnames(raw_texts):
     import collections
     c = collections.Counter()
+    raw_texts = list(raw_texts)
+    lower = collections.Counter(w for t in raw_texts for w in re.findall(r"\b[a-z]{3,}\b", t))
     pat = re.compile(r"\b[A-Z][a-z]+(?:\s+[A-Z]\.)+\s+([A-Z][a-z]+(?:[A-Z][a-z]+)?)(?:,? Jr\.)?")
     pat2 = re.compile(r"\b(?:Messrs|Mr|Ms|Mrs|Mmes)\.\s+([A-Z][a-z]+)")
     for t in raw_texts:
         c.update(pat.findall(t))
         c.update(pat2.findall(t))
-    names = sorted(n for n, k in c.items() if k >= 2 and n not in STOP and len(n) > 2)
+    names = sorted(n for n, k in c.items() if k >= 2 and n not in STOP and len(n) > 2 and lower[n.lower()] < 3)
     SURNAMES[:] = names
     return names
 

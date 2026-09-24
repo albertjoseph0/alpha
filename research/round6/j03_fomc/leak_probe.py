@@ -12,7 +12,8 @@ import pandas as pd
 
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT / "research" / "round5"))
-from jev import ask, spent  # noqa: E402
+from jev import spent  # noqa: E402
+from jev_features import ask  # noqa: E402  (same client, with 503 retry)
 
 D = ROOT / "data" / "round6" / "j03_fomc"
 Q = {
